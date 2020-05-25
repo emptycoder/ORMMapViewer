@@ -1,0 +1,83 @@
+﻿using ORMMap.Model.Entitites;
+using ORMMap.VectorTile;
+using ORMMap.VectorTile.Geometry;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Text;
+
+namespace ORMMap
+{
+    public static class MVTDrawer
+    {
+        private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics);
+
+        public static void DrawLayer(VectorTileLayer layer, Pallete pallete, Graphics graphics)
+        {
+            int featureCount = layer.FeatureCount();
+            for (int i = 0; i < featureCount; i++)
+            {
+                VectorTileFeature feature = layer.GetFeature(i);
+                if (feature.GeometryType == GeomType.POLYGON || feature.GeometryType == GeomType.LINESTRING)
+                {
+                    featureDrawDictionary[feature.GeometryType](feature, pallete, graphics);
+                }
+                else
+                {
+                    // Console.WriteLine(feature.ToString());
+                }
+            }
+        }
+
+        private static Dictionary<GeomType, DrawDelegate> featureDrawDictionary = new Dictionary<GeomType, DrawDelegate>()
+        {
+            { GeomType.POLYGON, DrawPolygon },
+            { GeomType.LINESTRING, DrawLineString }
+        };
+
+        private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics)
+        {
+            List<PointF> points = new List<PointF>();
+            var list = feature.Geometry<int>();
+            foreach (var item in list)
+            {
+                foreach (var point in item)
+                {
+                    points.Add(new PointF(point.X, point.Y));
+                }
+            }
+
+            using (SolidBrush solidBrush = new SolidBrush(pallete.MainFillColor))
+            {
+                using (Pen pen = new Pen(pallete.MainDrawColor))
+                {
+                    graphics.FillPolygon(solidBrush, points.ToArray());
+                    graphics.DrawPolygon(pen, points.ToArray());
+                }
+            }
+        }
+
+        private static void DrawPoint(VectorTileFeature feature, Pallete pallete, Graphics graphics)
+        {
+
+        }
+
+        private static void DrawLineString(VectorTileFeature feature, Pallete pallete, Graphics graphics)
+        {
+            var props = feature.GetProperties();
+
+            // Draw name of street
+            if (props.ContainsKey("name"))
+            {
+                using (SolidBrush brush = new SolidBrush(pallete.getPropFillColor("name")))
+                {
+                    string text = (string)props["name"];
+                    foreach (var point in feature.Geometry<int>()[0])
+                    {
+                        graphics.DrawString(text, SystemFonts.DefaultFont, brush, new Point(point.X, point.Y));
+                    }
+                }
+            }
+        }
+    }
+}
