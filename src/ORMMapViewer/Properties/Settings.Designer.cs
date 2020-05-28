@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ORMMap.Properties
+namespace ORMMapViewer.Properties
 {
 
 
