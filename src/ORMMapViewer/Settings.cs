@@ -9,8 +9,6 @@ namespace ORMMap
         public const uint renderDistanceX = 2;
         public const uint renderDistanceY = 2;
         public const uint zoom = 16;
-
-        // Colors
-
+        public const int cacheOpacity = 100;
     }
 }

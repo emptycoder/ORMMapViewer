@@ -4,8 +4,8 @@ using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ORMMapViewer
 {
@@ -16,18 +16,18 @@ namespace ORMMapViewer
     {
         Vector2<uint> visionArea = Settings.startPosition;
         MercatorProjection mercatorProjection;
-        IData dataController;
+        Data dataController;
         //VectorTileObj[,] scene;
 
         // TODO: Add water to layers
-        private static Dictionary<string, Pallete> layersPallete = new Dictionary<string, Pallete>()
+        /*private static Dictionary<string, Pallete> layersPallete = new Dictionary<string, Pallete>()
         {
             { "landuse", new Pallete(Color.Yellow, Color.Yellow) },
             { "earth", new Pallete(Color.Green, Color.Green) },
             { "roads", new Pallete(Color.Gray, Color.Gray) },
             { "pois", new Pallete(Color.Red, Color.Red) },
             { "buildings", new Pallete(Color.Violet, Color.Violet) }
-        };
+        };*/
 
         public MainWindow()
         {
@@ -39,7 +39,7 @@ namespace ORMMapViewer
         private void InitializeScene()
         {
             //scene = new VectorTileObj[(Settings.renderDistanceX * 2) - 1, (Settings.renderDistanceY * 2) - 1];
-            dataController = new MockupData();
+            dataController = new MockupData(Environment.CurrentDirectory + "\\data");
             mercatorProjection = new MercatorProjection(dataController.GetTileSize(), Settings.zoom);
         }
 
@@ -51,21 +51,22 @@ namespace ORMMapViewer
                 mercatorProjection.Zoom))
             );
 
-            Image scene = new Bitmap((int)dataController.GetTileSize(), (int)dataController.GetTileSize());
-            using (Graphics graphics = Graphics.FromImage(scene))
+            var layerNames = tile.LayerNames();
+            DrawingGroup drawingGroup = new DrawingGroup();
+            for (int i = tile.LayerNames().Count - 1; i >= 0; i--)
             {
-                var layerNames = tile.LayerNames();
-                for (int i = tile.LayerNames().Count - 1; i >= 0; i--)
-                {
-                    VectorTileLayer layer = tile.GetLayer(layerNames[i]);
-                    Console.WriteLine(layerNames[i]);
-                    MVTDrawer.DrawLayer(layer, layersPallete[layerNames[i]], graphics);
-                }
+                Console.WriteLine(layerNames[i]);
+                VectorTileLayer layer = tile.GetLayer(layerNames[i]);
+                var geometryGroup = MVTDrawer.GetGeometryFromLayer(layer);
+                drawingGroup.Children.Add(new GeometryDrawing(
+                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    new Pen(new SolidColorBrush(Color.FromRgb(255, 255, 255)), 10),
+                    geometryGroup)
+                );
             }
 
-            // TODO: watch for canvas api
-            // sceneControl.BackgroundImage?.Dispose();
-            // sceneControl.BackgroundImage = scene;
+            DrawingImage geometryImage = new DrawingImage(drawingGroup);
+            sceneControl.Source = geometryImage;
         }
 
         private void ZoomMap(int zoom)

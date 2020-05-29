@@ -6,7 +6,7 @@ namespace ORMMap.Model.Entitites
 {
     public struct Pallete
     {
-        public readonly Color MainFillColor;
+        /*public readonly Color MainFillColor;
         public readonly Color MainDrawColor;
 
         private Dictionary<string, Color> propsFillColor;
@@ -81,6 +81,6 @@ namespace ORMMap.Model.Entitites
                 stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
             }
             return stringBuilder.ToString();
-        }
+        }*/
     }
 }
