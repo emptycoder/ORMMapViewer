@@ -1,14 +1,15 @@
 What is the ORMMap viewer?
 =====================
-ORM map viewer is a thesis that allow us to show ORM alghoritms on real map.
+ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on real map.
 
-## Technologies implemented:
+## Implemented:
 
+- [MVC](https://www.mvc-spec.org/spec/)
 - Wpf C#
 - [MVT map protocol](https://github.com/mapbox/vector-tile-spec/tree/master/2.1)
-- Mercantor projection
+- [Mercator projection](https://en.wikipedia.org/wiki/Mercator_projection)
 - [MathNet.Numerics for Matrix and Vectors](https://numerics.mathdotnet.com/api/)
-- Transportation problem
+- [Simplex alghoritm](https://en.wikipedia.org/wiki/Simplex_algorithm) for transportation problem
 
 ## News
 
