@@ -8,7 +8,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 - Wpf C#
 - [MVT map protocol](https://github.com/mapbox/vector-tile-spec/tree/master/2.1)
 - [Mercator projection](https://en.wikipedia.org/wiki/Mercator_projection)
-- [MathNet.Numerics for Matrix and Vectors](https://numerics.mathdotnet.com/api/)
+- [MathNet.Numerics](https://numerics.mathdotnet.com/api/) for Matrix and Vectors
 - [Simplex alghoritm](https://en.wikipedia.org/wiki/Simplex_algorithm) for transportation problem
 
 ## News
