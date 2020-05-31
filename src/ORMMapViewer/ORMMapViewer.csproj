@@ -126,6 +126,10 @@
       <Project>{f0967389-29c8-4d50-b397-9bb698f13ed6}</Project>
       <Name>Geometry</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MIConvexHull.NET Standard\MIConvexHull.NET Standard.csproj">
+      <Project>{40b3bee0-9049-432c-bb06-15fda2ee4dc5}</Project>
+      <Name>MIConvexHull.NET Standard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PbfReader\PbfReader.csproj">
       <Project>{4bce42ee-c33f-4fa4-bfdd-86f3d45c647c}</Project>
       <Name>PbfReader</Name>

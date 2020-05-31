@@ -46,7 +46,7 @@ namespace ORMMapViewer
         private void InitializeScene()
         {
             //scene = new VectorTileObj[(Settings.renderDistanceX * 2) - 1, (Settings.renderDistanceY * 2) - 1];
-            dataController = new TangramData(Environment.CurrentDirectory + "\\data");
+            dataController = new MockupData(Environment.CurrentDirectory + "\\data");
             mercatorProjection = new MercatorProjection(dataController.GetTileSize(), dataController.GetTileScale());
         }
 
@@ -71,7 +71,7 @@ namespace ORMMapViewer
                 }
             }
 
-            sceneControl.Source = ImageUtils.GetImageStream(scene);
+            map.ImageSource = ImageUtils.GetImageStream(scene);
         }
 
         private void ZoomMap(int zoom)

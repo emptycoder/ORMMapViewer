@@ -8,14 +8,9 @@ namespace ORMMap
         private double halfCircumferenceMeters = 20037508.342789244;
         private double circumferenceMeters;
 
-        private uint tileSize;
-        private uint tileScale;
-
         // 256 is the size of a tile in google image
         public MercatorProjection(uint tileSize, uint tileScale)
         {
-            this.tileSize = tileSize;
-            this.tileScale = tileScale;
             this.circumferenceMeters = halfCircumferenceMeters * 2;
             
             // this.radius = (this.circumference) / (2 * Math.PI);
@@ -45,7 +40,7 @@ namespace ORMMap
             return new Vector2<double>(x, y);
         }
 
-        public LatLng TileToLatLng(Vector2<uint> tile, uint zoom)
+        public LatLng TileToLatLng(Vector2<uint> tile, double zoom)
         {
             double x = tile.X * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
             double y = -(tile.Y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
@@ -53,7 +48,7 @@ namespace ORMMap
             return MetersToLatLng(new Vector2<double>(x, y));
         }
 
-        public Vector2<uint> LatLngToTile(LatLng latLng, uint zoom)
+        public Vector2<uint> LatLngToTile(LatLng latLng, double zoom)
         {
             Vector2<double> tile = LatLngToMeters(latLng);
             
@@ -61,12 +56,6 @@ namespace ORMMap
             double y = Math.Floor((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
 
             return new Vector2<uint>((uint)x, (uint)y);
-        }
-
-        private double GetUnitsPerMeter(uint zoom)
-        {
-            double metersPerPixel = this.circumferenceMeters / tileSize / Math.Pow(2, zoom);
-            return tileScale / (tileSize * metersPerPixel);
         }
     }
 }

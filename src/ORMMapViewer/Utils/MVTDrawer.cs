@@ -29,7 +29,7 @@ namespace ORMMap
             }
         }
 
-        private static Dictionary<GeomType, DrawDelegate> featureDrawDictionary = new Dictionary<GeomType, DrawDelegate>()
+        private static readonly Dictionary<GeomType, DrawDelegate> featureDrawDictionary = new Dictionary<GeomType, DrawDelegate>
         {
             { GeomType.POLYGON, DrawPolygon },
             { GeomType.LINESTRING, DrawLineString },
@@ -68,6 +68,8 @@ namespace ORMMap
             var props = feature.GetProperties();
             var geometry = feature.Geometry<int>()[0];
             Point[] points = geometry.Select((vector2) => new Point(vector2.X, vector2.Y)).ToArray();
+
+            Console.WriteLine(String.Join(",\n", points) + ",\n");
 
             // Draw name of street
             if (props.ContainsKey("name"))

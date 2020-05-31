@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PbfReader", "PbfReader\PbfR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VectorTileReader", "VectorTileReader\VectorTileReader.csproj", "{4656B308-1492-4A22-A73E-06BF6AA858F2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MIConvexHull.NET Standard", "MIConvexHull.NET Standard\MIConvexHull.NET Standard.csproj", "{40B3BEE0-9049-432C-BB06-15FDA2EE4DC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{4656B308-1492-4A22-A73E-06BF6AA858F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4656B308-1492-4A22-A73E-06BF6AA858F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4656B308-1492-4A22-A73E-06BF6AA858F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40B3BEE0-9049-432C-BB06-15FDA2EE4DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40B3BEE0-9049-432C-BB06-15FDA2EE4DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40B3BEE0-9049-432C-BB06-15FDA2EE4DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40B3BEE0-9049-432C-BB06-15FDA2EE4DC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

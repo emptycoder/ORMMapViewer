@@ -58,6 +58,14 @@ namespace ORMMap.VectorTile.Geometry
             Y = y;
         }
 
+        public Vector2<T> set(T x, T y)
+        {
+            X = x;
+            Y = y;
+
+            return this;
+        }
+
         public LatLng ToLngLat(ulong z, ulong x, ulong y, ulong extent, bool checkLatLngMax = false)
         {
 
