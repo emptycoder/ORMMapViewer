@@ -22,9 +22,9 @@ namespace ORMMap
                 {
                     featureDrawDictionary[feature.GeometryType](feature, pallete, graphics);
                 }
-                else
+                else if (feature.GeometryType == GeomType.UNKNOWN)
                 {
-                //    Console.WriteLine(feature.ToString());
+                   Console.WriteLine("Unknown feature: " + feature.ToString());
                 }
             }
         }
@@ -32,7 +32,8 @@ namespace ORMMap
         private static Dictionary<GeomType, DrawDelegate> featureDrawDictionary = new Dictionary<GeomType, DrawDelegate>()
         {
             { GeomType.POLYGON, DrawPolygon },
-            { GeomType.LINESTRING, DrawLineString }
+            { GeomType.LINESTRING, DrawLineString },
+            { GeomType.POINT, DrawPoint }
         };
 
         private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics)

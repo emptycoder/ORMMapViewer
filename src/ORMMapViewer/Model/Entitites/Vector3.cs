@@ -22,7 +22,7 @@ namespace ORMMap.Model.Entitites
             return Convert.ToBase64String(ToJsonBytes());
         }
 
-        public static Vector3<T> DecodeFromString(string str)
+        public static Vector3<T> DecodeFromJSON(string str)
         {
             string str1 = Encoding.ASCII.GetString(Convert.FromBase64String(str));
             return JsonConvert.DeserializeObject<Vector3<T>>(str1);

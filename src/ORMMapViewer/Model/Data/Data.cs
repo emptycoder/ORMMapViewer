@@ -11,8 +11,8 @@ namespace ORMMap.Model.Data
         public abstract string MethodName { get; }
         protected abstract string FileExtension { get; }
 
-        private Dictionary<Vector3<double>, string> diskCache;
-        private Dictionary<Vector3<double>, byte[]> memoryCache = new Dictionary<Vector3<double>, byte[]>(Settings.cacheOpacity);
+        private Dictionary<string, string> diskCache;
+        private Dictionary<string, byte[]> memoryCache = new Dictionary<string, byte[]>(Settings.cacheOpacity);
 
         protected readonly string pathToDataFolder;
 
@@ -23,7 +23,7 @@ namespace ORMMap.Model.Data
             DirectoryUtils.TryCreateFolder(this.pathToDataFolder);
             // Scan folder for cache files
             var pathes = Directory.GetFiles(this.pathToDataFolder, $"*{FileExtension}", SearchOption.AllDirectories);
-            diskCache = pathes.ToDictionary((path) => Vector3<double>.DecodeFromString(Path.GetFileNameWithoutExtension(path)), (path) => path);
+            diskCache = pathes.ToDictionary((path) => Vector3<double>.DecodeFromJSON(Path.GetFileNameWithoutExtension(path)).ToString(), (path) => path);
         }
 
         public abstract uint GetTileScale();
@@ -32,15 +32,16 @@ namespace ORMMap.Model.Data
 
         public byte[] GetData(Vector3<double> lonLatZoom)
         {
-            if (memoryCache.TryGetValue(lonLatZoom, out byte[] data))
+            if (memoryCache.TryGetValue(lonLatZoom.ToString(), out byte[] data))
             {
                 return data;
             }
 
-            if (diskCache.TryGetValue(lonLatZoom, out string path))
+            if (diskCache.TryGetValue(lonLatZoom.ToString(), out string path))
             {
                 data = File.ReadAllBytes(path);
                 CacheToMemory(lonLatZoom, data);
+                return data;
             }
 
             data = GetDataFromSource(lonLatZoom);
@@ -58,7 +59,7 @@ namespace ORMMap.Model.Data
                 memoryCache.Remove(memoryCache.Keys.First());
             }
 
-            memoryCache.Add(lonLatZoom, data);
+            memoryCache.Add(lonLatZoom.ToString(), data);
         }
 
         protected abstract byte[] GetDataFromSource(Vector3<double> lonLatZoom);
