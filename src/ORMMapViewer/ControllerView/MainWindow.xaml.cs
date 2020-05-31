@@ -18,7 +18,6 @@ namespace ORMMapViewer
     {
         LatLng nowCoordinations = Settings.startPosition;
         Data dataController;
-        //VectorTileObj[,] scene;
 
         private static Dictionary<string, Pallete> layersPallete = new Dictionary<string, Pallete>()
         {
@@ -42,7 +41,6 @@ namespace ORMMapViewer
 
         private void InitializeScene()
         {
-            //scene = new VectorTileObj[(Settings.renderDistanceX * 2) - 1, (Settings.renderDistanceY * 2) - 1];
             dataController = new TangramData(Environment.CurrentDirectory + "\\data");
         }
 
