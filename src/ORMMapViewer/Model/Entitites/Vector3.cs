@@ -4,11 +4,12 @@ using System.Text;
 
 namespace ORMMap.Model.Entitites
 {
-    public struct Vector3<T> where T : struct
+    public class Vector3<T> where T : struct
     {
-        public readonly T X;
-        public readonly T Y;
-        public readonly T Z;
+        public T X { get; set; }
+        public T Y { get; set; }
+        public T Z { get; set; }
+
         public Vector3(T x, T y, T z)
         {
             this.X = x;
@@ -18,12 +19,23 @@ namespace ORMMap.Model.Entitites
 
         public string EncodeToString()
         {
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(this)));
+            return Convert.ToBase64String(ToJsonBytes());
         }
 
         public static Vector3<T> DecodeFromString(string str)
         {
-            return (Vector3<T>)JsonConvert.DeserializeObject(Encoding.ASCII.GetString(Convert.FromBase64String(str)));
+            string str1 = Encoding.ASCII.GetString(Convert.FromBase64String(str));
+            return JsonConvert.DeserializeObject<Vector3<T>>(str1);
+        }
+
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        private byte[] ToJsonBytes()
+        {
+            return Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(this));
         }
 
         public override string ToString()

@@ -18,8 +18,8 @@ namespace ORMMap.VectorTile.Geometry
         /// <param name="bufferSize">Units (in internal tile coordinates) to go beyond the tile border. Pass '0' to clip exactly at the tile border</param>
         /// <param name="scale">Factor for scaling the geometries</param>
         /// <returns></returns>
-        public static List<List<Point2d<long>>> ClipGeometries(
-            List<List<Point2d<long>>> geoms
+        public static List<List<Vector2<long>>> ClipGeometries(
+            List<List<Vector2<long>>> geoms
             , GeomType geomType
             , long extent
             , uint bufferSize
@@ -27,7 +27,7 @@ namespace ORMMap.VectorTile.Geometry
             )
         {
 
-            List<List<Point2d<long>>> retVal = new List<List<Point2d<long>>>();
+            List<List<Vector2<long>>> retVal = new List<List<Vector2<long>>>();
 
             //points: simply remove them if one part of the coordinate pair is out of bounds:
             // <0 || >extent
@@ -35,7 +35,7 @@ namespace ORMMap.VectorTile.Geometry
             {
                 foreach (var geomPart in geoms)
                 {
-                    List<Point2d<long>> outGeom = new List<Point2d<long>>();
+                    List<Vector2<long>> outGeom = new List<Vector2<long>>();
                     foreach (var geom in geomPart)
                     {
                         if (
@@ -116,10 +116,10 @@ namespace ORMMap.VectorTile.Geometry
 
             if (succeeded)
             {
-                retVal = new List<List<Point2d<long>>>();
+                retVal = new List<List<Vector2<long>>>();
                 foreach (var part in solution)
                 {
-                    List<Point2d<long>> geompart = new List<Point2d<long>>();
+                    List<Vector2<long>> geompart = new List<Vector2<long>>();
                     // HACK:
                     // 1. clipper may or may not reverse order of vertices of LineStrings
                     // 2. clipper semms to drop the first vertex of a Polygon
@@ -127,7 +127,7 @@ namespace ORMMap.VectorTile.Geometry
                     // * Added a check for 2 and insert a copy of last vertex as first
                     foreach (var geom in part)
                     {
-                        geompart.Add(new Point2d<long>() { X = geom.X, Y = geom.Y });
+                        geompart.Add(new Vector2<long>() { X = geom.X, Y = geom.Y });
                     }
                     if (geomType == GeomType.POLYGON)
                     {

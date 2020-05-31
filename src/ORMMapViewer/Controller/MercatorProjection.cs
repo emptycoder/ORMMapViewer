@@ -1,63 +1,72 @@
-﻿using ORMMap.Model.Entitites;
+﻿using ORMMap.VectorTile.Geometry;
 using System;
 
 namespace ORMMap
 {
     class MercatorProjection
     {
-        public uint Zoom { get; }
-        private double circumference;
-        private double radius;
-        private Vector2<double> center;
+        private double halfCircumferenceMeters = 20037508.342789244;
+        private double circumferenceMeters;
+
+        private uint tileSize;
+        private uint tileScale;
 
         // 256 is the size of a tile in google image
-        public MercatorProjection(uint tileSize, uint zoom)
+        public MercatorProjection(uint tileSize, uint tileScale)
         {
-            this.Zoom = zoom;
-            this.circumference = tileSize * Math.Pow(2, zoom);
-            this.radius = (this.circumference) / (2 * Math.PI);
-            this.center = new Vector2<double>(this.circumference / 2, this.circumference / 2);
+            this.tileSize = tileSize;
+            this.tileScale = tileScale;
+            this.circumferenceMeters = halfCircumferenceMeters * 2;
+            
+            // this.radius = (this.circumference) / (2 * Math.PI);
+            // this.center = new Vector2<double>(this.circumference / 2, this.circumference / 2);
         }
 
-        public double getXFromLongitude(double longInDegrees)
+        private LatLng MetersToLatLng(Vector2<double> meters)
         {
-            double longInRadians = longInDegrees * Math.PI / 180;
-            double x = this.radius * longInRadians;
-            x = this.center.X + x;
+            meters.X /= halfCircumferenceMeters;
+            meters.Y /= halfCircumferenceMeters;
 
-            return x;
+            meters.Y = (2 * Math.Atan(Math.Exp(meters.Y * Math.PI)) - Math.PI / 2) / Math.PI;
+
+            meters.X *= 180;
+            meters.Y *= 180;
+
+            return new LatLng(meters.X, meters.Y);
         }
 
-        public double getLongitudeFromX(double xValue)
+        private Vector2<double> LatLngToMeters(LatLng latLng)
         {
-            xValue = xValue - this.center.X;
-            double longitude = xValue / this.radius;
-            longitude = longitude * 180 / Math.PI;
+            double y = Math.Log(Math.Tan(latLng.Lat * Math.PI / 360 + Math.PI / 4), Math.E) / Math.PI;
+            y *= halfCircumferenceMeters;
 
-            return longitude;
+            double x = halfCircumferenceMeters / 180;
+
+            return new Vector2<double>(x, y);
         }
 
-        public double getYFromLatitude(double latInDegrees)
+        public LatLng TileToLatLng(Vector2<uint> tile, uint zoom)
         {
-            double latInRadians = latInDegrees * Math.PI / 180;
-            double logVal = Math.Log(((1 + Math.Sin(latInRadians)) / (1 - Math.Sin(latInRadians))), Math.E);
+            double x = tile.X * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
+            double y = -(tile.Y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
 
-            double y = this.radius * 0.5 * logVal;
-            y = this.center.Y - y;
-
-            return y;
+            return MetersToLatLng(new Vector2<double>(x, y));
         }
-        public double getLatitudeFromY(double yValue)
+
+        public Vector2<uint> LatLngToTile(LatLng latLng, uint zoom)
         {
-            yValue = this.center.Y - yValue;
+            Vector2<double> tile = LatLngToMeters(latLng);
+            
+            double x = Math.Floor((tile.X + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
+            double y = Math.Floor((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
 
-            double InvLog = yValue / (this.radius * 0.5);
-            InvLog = Math.Pow(Math.E, InvLog);
+            return new Vector2<uint>((uint)x, (uint)y);
+        }
 
-            double latitude = Math.Asin((InvLog - 1) / (InvLog + 1));
-            latitude = latitude * 180 / Math.PI;
-
-            return latitude;
+        private double GetUnitsPerMeter(uint zoom)
+        {
+            double metersPerPixel = this.circumferenceMeters / tileSize / Math.Pow(2, zoom);
+            return tileScale / (tileSize * metersPerPixel);
         }
     }
 }

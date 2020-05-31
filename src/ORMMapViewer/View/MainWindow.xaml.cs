@@ -2,10 +2,14 @@
 using ORMMap.Model.Data;
 using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
+using ORMMap.VectorTile.Geometry;
+using ORMMapViewer.Utils;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
-using System.Windows.Media;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace ORMMapViewer
 {
@@ -14,20 +18,20 @@ namespace ORMMapViewer
     /// </summary>
     public partial class MainWindow : Window
     {
-        Vector2<uint> visionArea = Settings.startPosition;
+        LatLng nowCoordinations = Settings.startPosition;
         MercatorProjection mercatorProjection;
         Data dataController;
         //VectorTileObj[,] scene;
 
-        // TODO: Add water to layers
-        /*private static Dictionary<string, Pallete> layersPallete = new Dictionary<string, Pallete>()
+        private static Dictionary<string, Pallete> layersPallete = new Dictionary<string, Pallete>()
         {
-            { "landuse", new Pallete(Color.Yellow, Color.Yellow) },
-            { "earth", new Pallete(Color.Green, Color.Green) },
-            { "roads", new Pallete(Color.Gray, Color.Gray) },
-            { "pois", new Pallete(Color.Red, Color.Red) },
-            { "buildings", new Pallete(Color.Violet, Color.Violet) }
-        };*/
+            { "landuse", new Pallete(ColorUtils.GetColor("#7fdf7f"), ColorUtils.GetColor("#7fdf7f"), 1) },
+            { "earth", new Pallete(ColorUtils.GetColor("#2c2c2c"), ColorUtils.GetColor("#2c2c2c"), 1) },
+            { "water", new Pallete(ColorUtils.GetColor("#7676D0"), ColorUtils.GetColor("#8F8FE7"), 10) },
+            { "roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 20) },
+            { "pois", new Pallete(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 255, 255), 1) },
+            { "buildings", new Pallete(ColorUtils.GetColor("#7f7f7f"), ColorUtils.GetColor("#7f7f7f"), 1) }
+        };
 
         public MainWindow()
         {
@@ -39,34 +43,32 @@ namespace ORMMapViewer
         private void InitializeScene()
         {
             //scene = new VectorTileObj[(Settings.renderDistanceX * 2) - 1, (Settings.renderDistanceY * 2) - 1];
-            dataController = new MockupData(Environment.CurrentDirectory + "\\data");
-            mercatorProjection = new MercatorProjection(dataController.GetTileSize(), Settings.zoom);
+            dataController = new TangramData(Environment.CurrentDirectory + "\\data");
+            mercatorProjection = new MercatorProjection(dataController.GetTileSize(), dataController.GetTileScale());
         }
 
         private void UpdateScene()
         {
+            Vector2<uint> tileCoordinations = mercatorProjection.LatLngToTile(nowCoordinations, zoom);
             VectorTileObj tile = new VectorTileObj(dataController.GetData(new Vector3<double>(
-                mercatorProjection.getLongitudeFromX(visionArea.X),
-                mercatorProjection.getLatitudeFromY(visionArea.Y),
-                mercatorProjection.Zoom))
+                tileCoordinations.X,
+                tileCoordinations.Y,
+                zoom))
             );
 
-            var layerNames = tile.LayerNames();
-            DrawingGroup drawingGroup = new DrawingGroup();
-            for (int i = tile.LayerNames().Count - 1; i >= 0; i--)
+            Bitmap scene = new Bitmap((int)dataController.GetTileScale(), (int)dataController.GetTileScale());
+            using (Graphics graphics = Graphics.FromImage(scene))
             {
-                Console.WriteLine(layerNames[i]);
-                VectorTileLayer layer = tile.GetLayer(layerNames[i]);
-                var geometryGroup = MVTDrawer.GetGeometryFromLayer(layer);
-                drawingGroup.Children.Add(new GeometryDrawing(
-                    new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    new Pen(new SolidColorBrush(Color.FromRgb(255, 255, 255)), 10),
-                    geometryGroup)
-                );
+                var layerNames = tile.LayerNames();
+                for (int i = tile.LayerNames().Count - 1; i >= 0; i--)
+                {
+                    VectorTileLayer layer = tile.GetLayer(layerNames[i]);
+                    Console.WriteLine(layerNames[i]);
+                    MVTDrawer.DrawLayer(layer, layersPallete[layerNames[i]], graphics);
+                }
             }
 
-            DrawingImage geometryImage = new DrawingImage(drawingGroup);
-            sceneControl.Source = geometryImage;
+            sceneControl.Source = ImageUtils.GetImageStream(scene);
         }
 
         private void ZoomMap(int zoom)
@@ -76,6 +78,11 @@ namespace ORMMapViewer
             img?.Dispose();*/
 
             this.Title = $"ORMMap [Zoom: {zoom}]";
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateScene();
         }
     }
 }

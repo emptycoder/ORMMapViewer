@@ -5,14 +5,21 @@ namespace ORMMap.Model.Data
 {
     public class TangramData : Data
     {
+        public override string MethodName => "tangramData";
+
         protected override string FileExtension => ".mvt";
 
         const string apiUrl = "https://tile.nextzen.org/tilezen/vector/v1/512/all";
-        const string apiKey = "d161Q8KATMOhSOcVGNyQ8g&";
+        const string apiKey = "PkX5Y0U9RSK0j50FhRh_fQ";
 
         public TangramData(string pathToDataFolder) : base(pathToDataFolder) {}
 
         public override uint GetTileSize()
+        {
+            return 256;
+        }
+
+        public override uint GetTileScale()
         {
             return 4096;
         }

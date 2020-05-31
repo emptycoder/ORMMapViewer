@@ -27,6 +27,12 @@ namespace ORMMap.VectorTile.Geometry
         public double Lat { get; set; }
         public double Lng { get; set; }
 
+        public LatLng(double lat, double lng)
+        {
+            this.Lat = lat;
+            this.Lng = lng;
+        }
+
         public override string ToString()
         {
             return string.Format(
@@ -41,12 +47,12 @@ namespace ORMMap.VectorTile.Geometry
     /// <summary>
     /// Structure to hold a 2D point coordinate pair
     /// </summary>
-    public struct Point2d<T>
+    public struct Vector2<T>
     {
         public T X;
         public T Y;
 
-        public Point2d(T x, T y)
+        public Vector2(T x, T y)
         {
             X = x;
             Y = y;

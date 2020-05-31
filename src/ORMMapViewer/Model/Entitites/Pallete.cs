@@ -6,16 +6,18 @@ namespace ORMMap.Model.Entitites
 {
     public struct Pallete
     {
-        /*public readonly Color MainFillColor;
+        public readonly Color MainFillColor;
         public readonly Color MainDrawColor;
+        public readonly float Thickness;
 
         private Dictionary<string, Color> propsFillColor;
         private Dictionary<string, Color> propsDrawColor;
 
-        public Pallete(Color mainFillColor, Color mainDrawColor)
+        public Pallete(Color mainFillColor, Color mainDrawColor, float thickness)
         {
             this.MainFillColor = mainFillColor;
             this.MainDrawColor = mainDrawColor;
+            this.Thickness = thickness;
 
             this.propsFillColor = this.propsDrawColor = null;
         }
@@ -81,6 +83,6 @@ namespace ORMMap.Model.Entitites
                 stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
             }
             return stringBuilder.ToString();
-        }*/
+        }
     }
 }

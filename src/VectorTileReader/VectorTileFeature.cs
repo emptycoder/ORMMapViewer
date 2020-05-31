@@ -44,7 +44,7 @@ namespace ORMMap.VectorTile
         public List<uint> GeometryCommands { get; set; }
 
 
-        public List<List<Point2d<T>>> Geometry<T>(
+        public List<List<Vector2<T>>> Geometry<T>(
             uint? clipBuffer = null
             , float? scale = null
         )
@@ -56,14 +56,14 @@ namespace ORMMap.VectorTile
 
             // TODO: how to cache 'finalGeom' without making whole class generic???
             // and without using an object (boxing) ???
-            List<List<Point2d<T>>> finalGeom = _cachedGeometry as List<List<Point2d<T>>>;
+            List<List<Vector2<T>>> finalGeom = _cachedGeometry as List<List<Vector2<T>>>;
             if (null != finalGeom && scale == _previousScale)
             {
                 return finalGeom;
             }
 
             //decode commands and coordinates
-            List<List<Point2d<long>>> geom = DecodeGeometry.GetGeometry(
+            List<List<Vector2<long>>> geom = DecodeGeometry.GetGeometry(
                 _layer.Extent
                 , GeometryType
                 , GeometryCommands
@@ -82,12 +82,12 @@ namespace ORMMap.VectorTile
                 else
                 {
                     // process every ring of a polygon in a separate loop
-                    List<List<Point2d<long>>> newGeom = new List<List<Point2d<long>>>();
+                    List<List<Vector2<long>>> newGeom = new List<List<Vector2<long>>>();
                     int geomCount = geom.Count;
                     for (int i = 0; i < geomCount; i++)
                     {
-                        List<Point2d<long>> part = geom[i];
-                        List<List<Point2d<long>>> tmp = new List<List<Point2d<long>>>();
+                        List<Vector2<long>> part = geom[i];
+                        List<List<Vector2<long>>> tmp = new List<List<Vector2<long>>>();
                         // flip order of inner rings to look like outer rings
                         bool isInner = signedPolygonArea(part) >= 0;
                         if (isInner) { part.Reverse(); }
@@ -122,7 +122,7 @@ namespace ORMMap.VectorTile
         }
 
 
-        private float signedPolygonArea(List<Point2d<long>> vertices)
+        private float signedPolygonArea(List<Vector2<long>> vertices)
         {
             int num_points = vertices.Count - 1;
             float area = 0;

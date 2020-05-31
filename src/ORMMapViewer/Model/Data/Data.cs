@@ -8,6 +8,7 @@ namespace ORMMap.Model.Data
 {
     public abstract class Data
     {
+        public abstract string MethodName { get; }
         protected abstract string FileExtension { get; }
 
         private Dictionary<Vector3<double>, string> diskCache;
@@ -17,13 +18,15 @@ namespace ORMMap.Model.Data
 
         public Data(string pathToDataFolder)
         {
-            this.pathToDataFolder = pathToDataFolder;
+            this.pathToDataFolder = pathToDataFolder + "//" + MethodName;
             // Check for folder existing
-            DirectoryUtils.TryCreateFolder(pathToDataFolder);
+            DirectoryUtils.TryCreateFolder(this.pathToDataFolder);
             // Scan folder for cache files
-            var pathes = Directory.GetFiles(pathToDataFolder, $"*{FileExtension}", SearchOption.AllDirectories);
+            var pathes = Directory.GetFiles(this.pathToDataFolder, $"*{FileExtension}", SearchOption.AllDirectories);
             diskCache = pathes.ToDictionary((path) => Vector3<double>.DecodeFromString(Path.GetFileNameWithoutExtension(path)), (path) => path);
         }
+
+        public abstract uint GetTileScale();
 
         public abstract uint GetTileSize();
 

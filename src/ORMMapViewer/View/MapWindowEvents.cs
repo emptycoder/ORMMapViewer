@@ -1,9 +1,10 @@
-﻿using System.Windows;
+﻿using ORMMap;
+using System.Windows;
 
 namespace ORMMapViewer
 {
     public partial class MainWindow : Window
     {
-        int zoom = 1;
+        uint zoom = Settings.zoom;
     }
 }

@@ -23,7 +23,7 @@ namespace ORMMap.VectorTile.Geometry
 		/// <param name="geometryCommands">VT geometry commands, see spec</param>
 		/// <param name="scale">factor for scaling internal tile coordinates</param>
 		/// <returns>List<List<Point2d<long>>>> of decoded geometries (in internal tile coordinates)</returns>
-		public static List<List<Point2d<long>>> GetGeometry(
+		public static List<List<Vector2<long>>> GetGeometry(
 			ulong extent
 			, GeomType geomType
 			, List<uint> geometryCommands
@@ -31,8 +31,8 @@ namespace ORMMap.VectorTile.Geometry
 		)
 		{
 
-			List<List<Point2d<long>>> geomOut = new List<List<Point2d<long>>>();
-			List<Point2d<long>> geomTmp = new List<Point2d<long>>();
+			List<List<Vector2<long>>> geomOut = new List<List<Vector2<long>>>();
+			List<Vector2<long>> geomTmp = new List<Vector2<long>>();
 			long cursorX = 0;
 			long cursorY = 0;
 
@@ -48,7 +48,7 @@ namespace ORMMap.VectorTile.Geometry
 				{
 					for (int j = 0; j < cmdCount; j++)
 					{
-						Point2d<long> delta = zigzagDecode(geometryCommands[i + 1], geometryCommands[i + 2]);
+						Vector2<long> delta = zigzagDecode(geometryCommands[i + 1], geometryCommands[i + 2]);
 						cursorX += delta.X;
 						cursorY += delta.Y;
 						i += 2;
@@ -56,11 +56,11 @@ namespace ORMMap.VectorTile.Geometry
 						if (cmd == Commands.MoveTo && geomTmp.Count > 0)
 						{
 							geomOut.Add(geomTmp);
-							geomTmp = new List<Point2d<long>>();
+							geomTmp = new List<Vector2<long>>();
 						}
 
 						//Point2d pntTmp = new Point2d(cursorX, cursorY);
-						Point2d<long> pntTmp = new Point2d<long>()
+						Vector2<long> pntTmp = new Vector2<long>()
 						{
 							X = cursorX,
 							Y = cursorY
@@ -89,20 +89,20 @@ namespace ORMMap.VectorTile.Geometry
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <typeparam name="T">Type of <see cref="Point2d{T}"/> to be returned. Currently supported: int, long and float. </typeparam>
+		/// <typeparam name="T">Type of <see cref="Vector2{T}"/> to be returned. Currently supported: int, long and float. </typeparam>
 		/// <param name="inGeom">Geometry in internal tile coordinates.</param>
 		/// <param name="scale">Scale factor.</param>
 		/// <returns></returns>
-		public static List<List<Point2d<T>>> Scale<T>(
-			List<List<Point2d<long>>> inGeom
+		public static List<List<Vector2<T>>> Scale<T>(
+			List<List<Vector2<long>>> inGeom
 			, float scale = 1.0f
 		)
 		{
 
-			List<List<Point2d<T>>> outGeom = new List<List<Point2d<T>>>();
+			List<List<Vector2<T>>> outGeom = new List<List<Vector2<T>>>();
 			foreach (var inPart in inGeom)
 			{
-				List<Point2d<T>> outPart = new List<Point2d<T>>();
+				List<Vector2<T>> outPart = new List<Vector2<T>>();
 				foreach (var inVertex in inPart)
 				{
 					float fX = ((float)inVertex.X) * scale;
@@ -117,19 +117,19 @@ namespace ORMMap.VectorTile.Geometry
 					{
 						int x = Convert.ToInt32(fX);
 						int y = Convert.ToInt32(fY);
-						outPart.Add(new Point2d<T>((T)(object)x, (T)(object)y));
+						outPart.Add(new Vector2<T>((T)(object)x, (T)(object)y));
 					}
 					else if (typeof(T) == typeof(long))
 					{
 						long x = Convert.ToInt64(fX);
 						long y = Convert.ToInt64(fY);
-						outPart.Add(new Point2d<T>((T)(object)x, (T)(object)y));
+						outPart.Add(new Vector2<T>((T)(object)x, (T)(object)y));
 					}
 					else if (typeof(T) == typeof(float))
 					{
 						float x = Convert.ToSingle(fX);
 						float y = Convert.ToSingle(fY);
-						outPart.Add(new Point2d<T>((T)(object)x, (T)(object)y));
+						outPart.Add(new Vector2<T>((T)(object)x, (T)(object)y));
 					}
 				}
 				outGeom.Add(outPart);
@@ -138,7 +138,7 @@ namespace ORMMap.VectorTile.Geometry
 			return outGeom;
 		}
 
-		private static Point2d<long> zigzagDecode(long x, long y)
+		private static Vector2<long> zigzagDecode(long x, long y)
 		{
 
 			//TODO: verify speed improvements using
@@ -149,7 +149,7 @@ namespace ORMMap.VectorTile.Geometry
 			//    ((x >> 1) ^ (-(x & 1))),
 			//    ((y >> 1) ^ (-(y & 1)))
 			//);
-			return new Point2d<long>()
+			return new Vector2<long>()
 			{
 				X = ((x >> 1) ^ (-(x & 1))),
 				Y = ((y >> 1) ^ (-(y & 1)))

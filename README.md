@@ -5,7 +5,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 ## Implemented:
 
 - [MVC](https://www.mvc-spec.org/spec/)
-- Wpf C#
+- WPF C#
 - [MVT map protocol](https://github.com/mapbox/vector-tile-spec/tree/master/2.1)
 - [Mercator projection](https://en.wikipedia.org/wiki/Mercator_projection)
 - [MathNet.Numerics](https://numerics.mathdotnet.com/api/) for Matrix and Vectors
@@ -17,7 +17,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 - MVT parser + mercantor projection
 
 **v0.11(Unstable) - 05/28/2020**
-- Migrate to wpf
+- Migrate to WPF
 
 ## About:
 ORMMap viewer developing under the [MIT license](LICENSE).

@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
@@ -63,7 +64,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\DirectoryUtils.cs" />
+    <Compile Include="Utils\ImageUtils.cs" />
     <Compile Include="View\MapWindowEvents.cs" />
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -78,7 +81,6 @@
     <Compile Include="Model\Data\MockupData.cs" />
     <Compile Include="Model\Data\TangramData.cs" />
     <Compile Include="Model\Entitites\Pallete.cs" />
-    <Compile Include="Model\Entitites\Vector2.cs" />
     <Compile Include="Model\Entitites\Vector3.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utils\MVTDrawer.cs" />

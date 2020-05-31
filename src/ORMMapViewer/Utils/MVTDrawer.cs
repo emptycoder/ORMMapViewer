@@ -1,33 +1,32 @@
-﻿using ORMMap.VectorTile;
+﻿using ORMMap.Model.Entitites;
+using ORMMap.VectorTile;
 using ORMMap.VectorTile.Geometry;
+using System;
 using System.Collections.Generic;
-using System.Windows.Media;
+using System.Drawing;
+using System.Linq;
 
 namespace ORMMap
 {
     public static class MVTDrawer
     {
-        private delegate GeometryGroup DrawDelegate(VectorTileFeature feature);
+        private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics);
 
-        public static GeometryGroup GetGeometryFromLayer(VectorTileLayer layer)
+        public static void DrawLayer(VectorTileLayer layer, Pallete pallete, Graphics graphics)
         {
-            GeometryGroup geometryGroup = new GeometryGroup();
-
             int featureCount = layer.FeatureCount();
             for (int i = 0; i < featureCount; i++)
             {
                 VectorTileFeature feature = layer.GetFeature(i);
                 if (feature.GeometryType == GeomType.POLYGON || feature.GeometryType == GeomType.LINESTRING)
                 {
-                    // geometryGroup.Children.Add(featureDrawDictionary[feature.GeometryType](feature));
+                    featureDrawDictionary[feature.GeometryType](feature, pallete, graphics);
                 }
                 else
                 {
-                    // Console.WriteLine(feature.ToString());
+                //    Console.WriteLine(feature.ToString());
                 }
             }
-
-            return geometryGroup;
         }
 
         private static Dictionary<GeomType, DrawDelegate> featureDrawDictionary = new Dictionary<GeomType, DrawDelegate>()
@@ -36,9 +35,9 @@ namespace ORMMap
             { GeomType.LINESTRING, DrawLineString }
         };
 
-        private static GeometryGroup DrawPolygon(VectorTileFeature feature)
+        private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics)
         {
-            /*List<PointF> points = new List<PointF>();
+            List<PointF> points = new List<PointF>();
             var list = feature.Geometry<int>();
             foreach (var item in list)
             {
@@ -52,23 +51,22 @@ namespace ORMMap
             {
                 using (Pen pen = new Pen(pallete.MainDrawColor))
                 {
-                    new 
                     graphics.FillPolygon(solidBrush, points.ToArray());
                     graphics.DrawPolygon(pen, points.ToArray());
                 }
-            }*/
-
-            return null;
+            }
         }
 
-        private static GeometryGroup DrawPoint(VectorTileFeature feature)
+        private static void DrawPoint(VectorTileFeature feature, Pallete pallete, Graphics graphics)
         {
-            return null;
+
         }
 
-        private static GeometryGroup DrawLineString(VectorTileFeature feature)
+        private static void DrawLineString(VectorTileFeature feature, Pallete pallete, Graphics graphics)
         {
-            /*var props = feature.GetProperties();
+            var props = feature.GetProperties();
+            var geometry = feature.Geometry<int>()[0];
+            Point[] points = geometry.Select((vector2) => new Point(vector2.X, vector2.Y)).ToArray();
 
             // Draw name of street
             if (props.ContainsKey("name"))
@@ -76,14 +74,17 @@ namespace ORMMap
                 using (SolidBrush brush = new SolidBrush(pallete.getPropFillColor("name")))
                 {
                     string text = (string)props["name"];
-                    foreach (var point in feature.Geometry<int>()[0])
+                    foreach (var point in geometry)
                     {
                         graphics.DrawString(text, SystemFonts.DefaultFont, brush, new Point(point.X, point.Y));
                     }
                 }
-            }*/
+            }
 
-            return null;
+            using (Pen pen = new Pen(pallete.MainDrawColor, pallete.Thickness))
+            {
+                graphics.DrawLines(pen, points);
+            }
         }
     }
 }
