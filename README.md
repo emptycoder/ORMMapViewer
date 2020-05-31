@@ -10,6 +10,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 - [Mercator projection](https://en.wikipedia.org/wiki/Mercator_projection)
 - [MathNet.Numerics](https://numerics.mathdotnet.com/api/) for Matrix and Vectors
 - [Simplex alghoritm](https://en.wikipedia.org/wiki/Simplex_algorithm) for transportation problem
+- [MIConvexHull](https://github.com/DesignEngrLab/MIConvexHull) for delaunay triangulation
 
 ## News
 
