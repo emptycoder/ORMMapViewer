@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ORMMapViewer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280" Loaded="Window_Loaded" PreviewMouseWheel="Window_PreviewMouseWheel" MouseDown="Window_MouseDown" MouseMove="Window_MouseMove" MouseUp="Window_MouseUp">
+        Title="MainWindow" Height="720" Width="1280" Loaded="Window_Loaded" MouseDown="Window_MouseDown" MouseMove="Window_MouseMove" MouseUp="Window_MouseUp" MouseWheel="Window_MouseWheel">
     <Grid>
         <Viewport3D>
             <Viewport3D.Camera>
-                <PerspectiveCamera x:Name="camera" Position="2048,2048,48000" LookDirection="0,-.0001,-1"  UpDirection="0,0,1" />
+                <PerspectiveCamera x:Name="camera" Position="2048,2048,48000" LookDirection="0,-.001,-1"  UpDirection="0,0,1" />
             </Viewport3D.Camera>
             <ModelVisual3D>
                 <ModelVisual3D.Content>

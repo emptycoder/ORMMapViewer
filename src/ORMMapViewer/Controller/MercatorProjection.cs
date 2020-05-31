@@ -57,5 +57,59 @@ namespace ORMMap
 
             return new Vector2<uint>((uint)x, (uint)y);
         }
+
+        public double getLongitudeFromX(double xValue, double zoom)
+        {
+            double circumference = 4096 * Math.Pow(2, zoom);
+            double radius = (circumference) / (2 * Math.PI);
+            Vector2<double> center = new Vector2<double>(circumference / 2, circumference / 2);
+            xValue -= center.X;
+            double longitude = xValue / radius;
+            longitude = longitude * 180 / Math.PI;
+
+            return longitude;
+        }
+
+        public double getLatitudeFromY(double yValue, double zoom)
+        {
+            double circumference = 4096 * Math.Pow(2, zoom);
+            double radius = (circumference) / (2 * Math.PI);
+            Vector2<double> center = new Vector2<double>(circumference / 2, circumference / 2);
+            yValue = center.Y - yValue;
+
+            double InvLog = yValue / (radius * 0.5);
+            InvLog = Math.Pow(Math.E, InvLog);
+
+            double latitude = Math.Asin((InvLog - 1) / (InvLog + 1));
+            latitude = latitude * 180 / Math.PI;
+
+            return latitude;
+        }
+
+        public double getXFromLongitude(double longInDegrees, double zoom)
+        {
+            double circumference = 4096 * Math.Pow(2, zoom);
+            double radius = (circumference) / (2 * Math.PI);
+            Vector2<double> center = new Vector2<double>(circumference / 2, circumference / 2);
+            double longInRadians = longInDegrees * Math.PI / 180;
+            double x = radius * longInRadians;
+            x = center.X + x;
+
+            return x;
+        }
+
+        public double getYFromLatitude(double latInDegrees, double zoom)
+        {
+            double circumference = 4096 * Math.Pow(2, zoom);
+            double radius = (circumference) / (2 * Math.PI);
+            Vector2<double> center = new Vector2<double>(circumference / 2, circumference / 2);
+            double latInRadians = latInDegrees * Math.PI / 180;
+            double logVal = Math.Log(((1 + Math.Sin(latInRadians)) / (1 - Math.Sin(latInRadians))), Math.E);
+
+            double y = radius * 0.5 * logVal;
+            y = center.Y - y;
+
+            return y;
+        }
     }
 }

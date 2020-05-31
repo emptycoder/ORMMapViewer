@@ -31,9 +31,9 @@ namespace ORMMapViewer
             { "places", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1) },
             { "transit", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1) },
             { "boundaries", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1) },
-            { "roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 20) },
             { "pois", new Pallete(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 255, 255), 1) },
-            { "buildings", new Pallete(ColorUtils.GetColor("#7f7f7f"), ColorUtils.GetColor("#7f7f7f"), 1) }
+            { "buildings", new Pallete(ColorUtils.GetColor("#7f7f7f"), ColorUtils.GetColor("#7f7f7f"), 1) },
+            { "roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 20) }
         };
 
         public MainWindow()
@@ -46,8 +46,14 @@ namespace ORMMapViewer
         private void InitializeScene()
         {
             //scene = new VectorTileObj[(Settings.renderDistanceX * 2) - 1, (Settings.renderDistanceY * 2) - 1];
-            dataController = new MockupData(Environment.CurrentDirectory + "\\data");
+            dataController = new TangramData(Environment.CurrentDirectory + "\\data");
             mercatorProjection = new MercatorProjection(dataController.GetTileSize(), dataController.GetTileScale());
+            var X = mercatorProjection.getXFromLongitude(nowCoordinations.Lng, zoom);
+            var Y = mercatorProjection.getYFromLatitude(nowCoordinations.Lat, zoom);
+
+            var latitude = mercatorProjection.getLatitudeFromY(X + 10, zoom);
+            var longitude = mercatorProjection.getLongitudeFromX(Y + 10, zoom);
+            Console.WriteLine(latitude + ", " + longitude);
         }
 
         private void UpdateScene()
@@ -65,7 +71,7 @@ namespace ORMMapViewer
                 var layers = tile.LayerNames();
                 foreach (string layerName in layersPallete.Keys)
                 {
-                    if (layers.Contains(layerName))
+                    if (layers.Contains(layerName) && layerName != "buildings")
                     {
                         VectorTileLayer layer = tile.GetLayer(layerName);
                         Console.WriteLine(layerName);
@@ -75,15 +81,6 @@ namespace ORMMapViewer
             }
 
             map.ImageSource = ImageUtils.GetImageStream(scene);
-        }
-
-        private void ZoomMap(int zoom)
-        {
-            /* Image img = sceneControl.BackgroundImage;
-            sceneControl.BackgroundImage = new Bitmap(img, img.Width * zoom, img.Height * zoom);
-            img?.Dispose();*/
-
-            this.Title = $"ORMMap [Zoom: {zoom}]";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
