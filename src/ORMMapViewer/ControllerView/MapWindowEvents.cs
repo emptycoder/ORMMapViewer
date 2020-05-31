@@ -17,10 +17,10 @@ namespace ORMMapViewer
         {
             zoom += e.Delta / (50 * zoom);
             zoom = Math.Min(Math.Max(zoom, 1), 20);
-            camera.Position = new Point3D(camera.Position.X, camera.Position.Y, 5041.23 * (21 - zoom));
+            camera.Position = new Point3D(camera.Position.X, camera.Position.Y, 3692.3 * (21 - zoom));
             this.Title = $"ORMMap [Zoom: {zoom}]";
 
-            //UpdateScene();
+            // UpdateScene();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

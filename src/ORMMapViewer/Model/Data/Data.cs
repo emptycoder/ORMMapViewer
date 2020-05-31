@@ -1,4 +1,5 @@
 ﻿using ORMMap.Model.Entitites;
+using ORMMap.VectorTile;
 using ORMMapViewer.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ namespace ORMMap.Model.Data
         protected abstract string FileExtension { get; }
 
         private Dictionary<string, string> diskCache;
-        private Dictionary<string, byte[]> memoryCache = new Dictionary<string, byte[]>(Settings.cacheOpacity);
+        private Dictionary<string, VectorTileObj> memoryCache = new Dictionary<string, VectorTileObj>(Settings.cacheOpacity);
 
         protected readonly string pathToDataFolder;
 
@@ -32,31 +33,32 @@ namespace ORMMap.Model.Data
 
         public abstract double ConvertToMapZoom(double zoom);
 
-        public byte[] GetData(Vector3<double> lonLatZoom)
+        public VectorTileObj GetData(Vector3<double> lonLatZoom)
         {
             lonLatZoom.Z = ConvertToMapZoom(lonLatZoom.Z);
 
-            if (memoryCache.TryGetValue(lonLatZoom.ToString(), out byte[] data))
+            if (memoryCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
             {
                 return data;
             }
 
             if (diskCache.TryGetValue(lonLatZoom.ToString(), out string path))
             {
-                data = File.ReadAllBytes(path);
+                data = new VectorTileObj(File.ReadAllBytes(path));
                 CacheToMemory(lonLatZoom, data);
                 return data;
             }
 
-            data = GetDataFromSource(lonLatZoom);
+            byte[] byteData = GetDataFromSource(lonLatZoom);
+            data = new VectorTileObj(byteData);
             CacheToMemory(lonLatZoom, data);
             // Save to disk
-            File.WriteAllBytes($"{pathToDataFolder}\\{lonLatZoom.EncodeToString()}{FileExtension}", data);
+            File.WriteAllBytes($"{pathToDataFolder}\\{lonLatZoom.EncodeToString()}{FileExtension}", byteData);
 
             return data;
         }
 
-        private void CacheToMemory(Vector3<double> lonLatZoom, byte[] data)
+        private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)
         {
             if (memoryCache.Count == Settings.cacheOpacity)
             {

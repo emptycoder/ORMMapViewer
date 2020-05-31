@@ -64,6 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ControllerView\TransportationProblem.cs" />
     <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\DirectoryUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />

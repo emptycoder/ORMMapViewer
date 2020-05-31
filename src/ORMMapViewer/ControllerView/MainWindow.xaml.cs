@@ -8,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace ORMMapViewer
 {
@@ -51,11 +49,11 @@ namespace ORMMapViewer
         private void UpdateScene()
         {
             Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, zoom);
-            VectorTileObj tile = new VectorTileObj(dataController.GetData(new Vector3<double>(
+            VectorTileObj tile = dataController.GetData(new Vector3<double>(
                 tileCoordinations.X,
                 tileCoordinations.Y,
-                zoom))
-            );
+                zoom
+            ));
 
             Bitmap scene = new Bitmap((int)dataController.GetTileScale(), (int)dataController.GetTileScale());
             using (Graphics graphics = Graphics.FromImage(scene))
