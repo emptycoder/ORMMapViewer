@@ -35,7 +35,7 @@ namespace ORMMap
             double y = Math.Log(Math.Tan(latLng.Lat * Math.PI / 360 + Math.PI / 4), Math.E) / Math.PI;
             y *= halfCircumferenceMeters;
 
-            double x = halfCircumferenceMeters / 180;
+            double x = latLng.Lng * halfCircumferenceMeters / 180;
 
             return new Vector2<double>(x, y);
         }
