@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <AssemblyVersion>1.1.19.1018</AssemblyVersion>
     <FileVersion>1.1.19.1018</FileVersion>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>DesignEngineeringLab.pfx</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>MIConvexHull</Product>
