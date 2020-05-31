@@ -1,9 +1,12 @@
 ﻿using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
+using ORMMap.VectorTile.Geometry;
+using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace ORMMap.Model.Data
 {
@@ -14,6 +17,8 @@ namespace ORMMap.Model.Data
 
         private Dictionary<string, string> diskCache;
         private Dictionary<string, VectorTileObj> memoryCache = new Dictionary<string, VectorTileObj>(Settings.memoryCacheOpacity);
+
+        private Dictionary<string, Graph> roadsCache = new Dictionary<string, Graph>();
 
         protected readonly string pathToDataFolder;
 
@@ -46,16 +51,51 @@ namespace ORMMap.Model.Data
             {
                 data = new VectorTileObj(File.ReadAllBytes(path));
                 CacheToMemory(lonLatZoom, data);
+                CacheRoads(lonLatZoom, data);
                 return data;
             }
 
             byte[] byteData = GetDataFromSource(lonLatZoom);
             data = new VectorTileObj(byteData);
             CacheToMemory(lonLatZoom, data);
+            CacheRoads(lonLatZoom, data);
             // Save to disk
             File.WriteAllBytes($"{pathToDataFolder}\\{lonLatZoom.EncodeToString()}{FileExtension}", byteData);
 
             return data;
+        }
+
+        private void CacheRoads(Vector3<double> lonLatZoom, VectorTileObj data)
+        {
+            if (!data.LayerNames().Contains("roads"))
+            {
+                return;
+            }
+            var layer = data.GetLayer("roads");
+
+            Graph graph = new Graph();
+
+            for (int i = 0; i < layer.FeatureCount(); i++)
+            {
+                VectorTileFeature feature = layer.GetFeature(i);
+                var geometry = feature.Geometry<int>()[0];
+
+                Node node1 = new Node(geometry[0].X, geometry[0].Y);
+                Node node2 = new Node(geometry[1].X, geometry[1].Y);
+
+                node1.relatives.Add(node2, new LengthWeight(node1, node2));
+                node2.relatives.Add(node1, new LengthWeight(node2, node1));
+
+                graph.AddNode(node1);
+                graph.AddNode(node2);
+            }
+
+            foreach (Node node in graph.nodes)
+            {
+                node.UpdateRelatives();
+            }
+
+            roadsCache.Add(lonLatZoom.ToString(), graph);
         }
 
         private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)

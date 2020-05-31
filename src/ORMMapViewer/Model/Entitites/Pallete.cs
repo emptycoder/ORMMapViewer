@@ -50,7 +50,7 @@ namespace ORMMap.Model.Entitites
             return this;
         }
 
-        public Color getPropDrawColor(string prop)
+        public Color GetPropDrawColor(string prop)
         {
             if (propsDrawColor != null && propsDrawColor.TryGetValue(prop, out Color color))
             {
@@ -60,7 +60,7 @@ namespace ORMMap.Model.Entitites
             return MainDrawColor;
         }
 
-        public Color getPropFillColor(string prop)
+        public Color GetPropFillColor(string prop)
         {
             if (propsFillColor != null && propsFillColor.TryGetValue(prop, out Color color))
             {

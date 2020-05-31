@@ -58,7 +58,7 @@ namespace ORMMap.VectorTile.Geometry
             Y = y;
         }
 
-        public Vector2<T> set(T x, T y)
+        public Vector2<T> Set(T x, T y)
         {
             X = x;
             Y = y;

@@ -76,7 +76,7 @@ namespace ORMMap
             // Draw name of street
             if (props.ContainsKey("name"))
             {
-                using (SolidBrush brush = new SolidBrush(pallete.getPropFillColor("name")))
+                using (SolidBrush brush = new SolidBrush(pallete.GetPropFillColor("name")))
                 {
                     string text = (string)props["name"];
                     foreach (var point in geometry)

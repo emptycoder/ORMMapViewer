@@ -28,7 +28,7 @@ namespace ORMMapViewer
             if (!mouseDown)
             {
                 Point pos = e.GetPosition(this);
-                oldPos.set((int)pos.X, (int)pos.Y);
+                oldPos.Set((int)pos.X, (int)pos.Y);
                 mouseDown = true;
             }
         }
@@ -41,7 +41,7 @@ namespace ORMMapViewer
             
             Point pos = e.GetPosition(this);
             camera.Position = new Point3D(camera.Position.X - (pos.X - oldPos.X)*(200/zoom), camera.Position.Y + (pos.Y - oldPos.Y)*(200/zoom), camera.Position.Z);
-            oldPos.set((int) pos.X, (int) pos.Y);
+            oldPos.Set((int) pos.X, (int) pos.Y);
         }
     }
 }
