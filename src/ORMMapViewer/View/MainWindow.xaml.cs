@@ -19,7 +19,6 @@ namespace ORMMapViewer
     public partial class MainWindow : Window
     {
         LatLng nowCoordinations = Settings.startPosition;
-        MercatorProjection mercatorProjection;
         Data dataController;
         //VectorTileObj[,] scene;
 
@@ -47,18 +46,11 @@ namespace ORMMapViewer
         {
             //scene = new VectorTileObj[(Settings.renderDistanceX * 2) - 1, (Settings.renderDistanceY * 2) - 1];
             dataController = new TangramData(Environment.CurrentDirectory + "\\data");
-            mercatorProjection = new MercatorProjection(dataController.GetTileSize(), dataController.GetTileScale());
-            var X = mercatorProjection.getXFromLongitude(nowCoordinations.Lng, zoom);
-            var Y = mercatorProjection.getYFromLatitude(nowCoordinations.Lat, zoom);
-
-            var latitude = mercatorProjection.getLatitudeFromY(X + 10, zoom);
-            var longitude = mercatorProjection.getLongitudeFromX(Y + 10, zoom);
-            Console.WriteLine(latitude + ", " + longitude);
         }
 
         private void UpdateScene()
         {
-            Vector2<uint> tileCoordinations = mercatorProjection.LatLngToTile(nowCoordinations, zoom);
+            Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, zoom);
             VectorTileObj tile = new VectorTileObj(dataController.GetData(new Vector3<double>(
                 tileCoordinations.X,
                 tileCoordinations.Y,
@@ -71,7 +63,7 @@ namespace ORMMapViewer
                 var layers = tile.LayerNames();
                 foreach (string layerName in layersPallete.Keys)
                 {
-                    if (layers.Contains(layerName) && layerName != "buildings")
+                    if (layers.Contains(layerName))
                     {
                         VectorTileLayer layer = tile.GetLayer(layerName);
                         Console.WriteLine(layerName);

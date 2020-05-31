@@ -24,7 +24,7 @@ namespace ORMMap
                 }
                 else if (feature.GeometryType == GeomType.UNKNOWN)
                 {
-                   Console.WriteLine("Unknown feature: " + feature.ToString());
+                    Console.WriteLine("Unknown feature: " + feature.ToString());
                 }
             }
         }
@@ -38,22 +38,24 @@ namespace ORMMap
 
         private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics)
         {
-            List<PointF> points = new List<PointF>();
-            var list = feature.Geometry<int>();
-            foreach (var item in list)
-            {
-                foreach (var point in item)
-                {
-                    points.Add(new PointF(point.X, point.Y));
-                }
-            }
-
             using (SolidBrush solidBrush = new SolidBrush(pallete.MainFillColor))
             {
                 using (Pen pen = new Pen(pallete.MainDrawColor))
                 {
-                    graphics.FillPolygon(solidBrush, points.ToArray());
-                    graphics.DrawPolygon(pen, points.ToArray());
+                    List<PointF> points = new List<PointF>();
+                    var list = feature.Geometry<int>();
+                    foreach (var item in list)
+                    {
+                        points.Clear();
+
+                        foreach (var point in item)
+                        {
+                            points.Add(new PointF(point.X, point.Y));
+                        }
+
+                        graphics.FillPolygon(solidBrush, points.ToArray());
+                        graphics.DrawPolygon(pen, points.ToArray());
+                    }
                 }
             }
         }

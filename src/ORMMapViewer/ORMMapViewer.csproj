@@ -76,7 +76,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controller\MercatorProjection.cs" />
+    <Compile Include="Utils\MercatorProjection.cs" />
     <Compile Include="Model\Data\Data.cs" />
     <Compile Include="Model\Data\MockupData.cs" />
     <Compile Include="Model\Data\TangramData.cs" />
@@ -138,6 +138,9 @@
       <Project>{4656b308-1492-4a22-a73e-06bf6aa858f2}</Project>
       <Name>VectorTileReader</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controller\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
