@@ -67,8 +67,8 @@
     <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\DirectoryUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
-    <Compile Include="View\MapWindowEvents.cs" />
-    <Page Include="View\MainWindow.xaml">
+    <Compile Include="ControllerView\MapWindowEvents.cs" />
+    <Page Include="ControllerView\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -84,7 +84,7 @@
     <Compile Include="Model\Entitites\Vector3.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utils\MVTDrawer.cs" />
-    <Compile Include="View\MainWindow.xaml.cs">
+    <Compile Include="ControllerView\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -139,8 +139,6 @@
       <Name>VectorTileReader</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controller\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

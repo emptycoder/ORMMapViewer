@@ -30,8 +30,12 @@ namespace ORMMap.Model.Data
 
         public abstract uint GetTileSize();
 
+        public abstract double ConvertToMapZoom(double zoom);
+
         public byte[] GetData(Vector3<double> lonLatZoom)
         {
+            lonLatZoom.Z = ConvertToMapZoom(lonLatZoom.Z);
+
             if (memoryCache.TryGetValue(lonLatZoom.ToString(), out byte[] data))
             {
                 return data;

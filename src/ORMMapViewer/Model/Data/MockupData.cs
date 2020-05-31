@@ -21,6 +21,11 @@ namespace ORMMap.Model.Data
             return 4096;
         }
 
+        public override double ConvertToMapZoom(double zoom)
+        {
+            return 13;
+        }
+
         protected override byte[] GetDataFromSource(Vector3<double> lonLatZoom)
         {
             Console.WriteLine(lonLatZoom.ToString());

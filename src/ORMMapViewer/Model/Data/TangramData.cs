@@ -1,6 +1,6 @@
 ﻿using ORMMap.Model.Entitites;
+using System;
 using System.Net;
-using System.Text;
 
 namespace ORMMap.Model.Data
 {
@@ -23,6 +23,12 @@ namespace ORMMap.Model.Data
         public override uint GetTileScale()
         {
             return 4096;
+        }
+
+        // mapZoomLevels from 1 to 16 inclusive
+        public override double ConvertToMapZoom(double zoom)
+        {
+            return Math.Floor(zoom);
         }
 
         // {z}/{x}/{y}
