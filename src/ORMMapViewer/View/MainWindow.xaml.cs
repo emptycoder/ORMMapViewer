@@ -28,12 +28,12 @@ namespace ORMMapViewer
             { "landuse", new Pallete(ColorUtils.GetColor("#7fdf7f"), ColorUtils.GetColor("#7fdf7f"), 1) },
             { "earth", new Pallete(ColorUtils.GetColor("#2c2c2c"), ColorUtils.GetColor("#2c2c2c"), 1) },
             { "water", new Pallete(ColorUtils.GetColor("#7676D0"), ColorUtils.GetColor("#8F8FE7"), 10) },
-            { "roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 20) },
-            { "pois", new Pallete(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 255, 255), 1) },
-            { "buildings", new Pallete(ColorUtils.GetColor("#7f7f7f"), ColorUtils.GetColor("#7f7f7f"), 1) },
             { "places", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1) },
             { "transit", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1) },
-            { "boundaries", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1) }
+            { "boundaries", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1) },
+            { "roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 20) },
+            { "pois", new Pallete(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 255, 255), 1) },
+            { "buildings", new Pallete(ColorUtils.GetColor("#7f7f7f"), ColorUtils.GetColor("#7f7f7f"), 1) }
         };
 
         public MainWindow()
@@ -62,12 +62,15 @@ namespace ORMMapViewer
             Bitmap scene = new Bitmap((int)dataController.GetTileScale(), (int)dataController.GetTileScale());
             using (Graphics graphics = Graphics.FromImage(scene))
             {
-                var layerNames = tile.LayerNames();
-                for (int i = tile.LayerNames().Count - 1; i >= 0; i--)
+                var layers = tile.LayerNames();
+                foreach (string layerName in layersPallete.Keys)
                 {
-                    VectorTileLayer layer = tile.GetLayer(layerNames[i]);
-                    Console.WriteLine(layerNames[i]);
-                    MVTDrawer.DrawLayer(layer, layersPallete[layerNames[i]], graphics);
+                    if (layers.Contains(layerName))
+                    {
+                        VectorTileLayer layer = tile.GetLayer(layerName);
+                        Console.WriteLine(layerName);
+                        MVTDrawer.DrawLayer(layer, layersPallete[layerName], graphics);
+                    }
                 }
             }
 
