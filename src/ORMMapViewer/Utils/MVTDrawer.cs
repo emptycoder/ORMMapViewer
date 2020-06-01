@@ -69,14 +69,14 @@ namespace ORMMap
 			graphics.DrawLines(pallete.GetMainDrawPen(), points);
 
 			// Draw name of street
-			if (props.ContainsKey("name"))
+			/*if (props.ContainsKey("name"))
 			{
 				var text = (string)props["name"];
 				foreach (Vector2<int> point in geometry)
 				{
-					graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), new Point(point.X, point.Y));
+					graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
 				}
-			}
+			}*/
 		}
 
 		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)
@@ -88,7 +88,8 @@ namespace ORMMap
 			{
 				foreach (Node node in roads)
 				{
-					graphics.DrawString(index++.ToString(), font, brush, new Point(node.pos.X, node.pos.Y));
+					graphics.DrawString(index++.ToString(), font, brush, node.pos.X, node.pos.Y);
+					graphics.FillEllipse(Brushes.Red, node.pos.X, node.pos.Y, 20, 20);
 				}
 			}
 		}
@@ -99,6 +100,11 @@ namespace ORMMap
 			using (Pen pen = new Pen(Color.Red, 7))
 			{
 				graphics.DrawLines(pen, points);
+
+				foreach (var point in points)
+				{
+					graphics.DrawEllipse(pen, point.X, point.Y, 4, 4);
+				}
 			}
 		}
 
