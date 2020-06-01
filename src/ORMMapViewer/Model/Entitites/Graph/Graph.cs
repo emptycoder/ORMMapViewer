@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ORMMapViewer.Model.Entitites
 {
@@ -19,12 +20,19 @@ namespace ORMMapViewer.Model.Entitites
 			int index = nodes.IndexOf(newNode);
 			if (index == -1)
 			{
+				newNode.id = nodes.Count;
 				nodes.Add(newNode);
 			}
 			else
 			{
-				nodes[index].TakeRelatives(newNode);
-				nodes[index].UpdateRelatives();
+				newNode.id = -2;
+				nodes[index].TakeNeighbours(newNode);
+				newNode.SetRemoved();
+				foreach (Node node in nodes)
+				{
+					node.neighbours.Remove(newNode);
+				}
+				// nodes[index].UpdateRelatives();
 			}
 		}
 	}

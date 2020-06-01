@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ORMMap.Model.Entitites;
@@ -98,19 +99,23 @@ namespace ORMMap.Model.Data
 				VectorTileFeature feature = layer.GetFeature(i);
 				List<Vector2<int>> geometry = feature.Geometry<int>()[0];
 
-				Node node1 = new Node(geometry[0].X, geometry[0].Y);
-				Node node2 = new Node(geometry[1].X, geometry[1].Y);
-
-				node1.relatives.Add(node2, new LengthWeight(node1, node2));
-				node2.relatives.Add(node1, new LengthWeight(node2, node1));
-
-				graph.AddNode(node1);
-				graph.AddNode(node2);
+				Node last = null;
+				for (int k = 0; k < geometry.Count; k++)
+				{
+					Node current = new Node(geometry[k].X, geometry[k].Y);
+					if (last != null)
+					{
+						current.AddNeighbour(last);
+						last.AddNeighbour(current);
+					}
+					graph.AddNode(current);
+					last = current;
+				}
 			}
 
 			foreach (Node node in graph.nodes)
 			{
-				node.UpdateRelatives();
+				node.UpdateNeighbours();
 			}
 
 			roadsCache.Add(lonLatZoom.ToString(), graph);

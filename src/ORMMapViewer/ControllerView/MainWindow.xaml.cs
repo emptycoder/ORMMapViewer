@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows;
 using ORMMap;
 using ORMMap.Model.Data;
@@ -51,7 +52,7 @@ namespace ORMMapViewer
 		{
 			double cZoom = dataController.ConvertToMapZoom(zoom);
 			Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
-			var lonLatZoom = new Vector3<double>(
+			Vector3<double> lonLatZoom = new Vector3<double>(
 				tileCoordinations.X,
 				tileCoordinations.Y,
 				cZoom
@@ -73,9 +74,16 @@ namespace ORMMapViewer
 				}
 
 				Graph graph = dataController.GetRoads(lonLatZoom);
-				// LinkedList<Node> list = AStarPathSearch.FindPath();
-				// Console.WriteLine(list.Count);
-				// MVTDrawer.DrawGraphRoads(list, graphics);
+				LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[301], graph.nodes[294]);
+				if (list?.Count > 0)
+				{
+					MVTDrawer.DrawGraphRoads(list, graphics);
+				}
+
+				Console.WriteLine(294 + @") " + string.Join(", ", graph.nodes[294].neighbours.Keys.Select(node => "Node #" + node.id)));
+				Console.WriteLine(295 + @") " + string.Join(", ", graph.nodes[295].neighbours.Keys.Select(node => "Node #" + node.id)));
+				Console.WriteLine(301 + @") " + string.Join(", ", graph.nodes[301].neighbours.Keys.Select(node => "Node #" + node.id)));
+
 				MVTDrawer.DrawNodeIndices(graph.nodes, graphics);
 			}
 

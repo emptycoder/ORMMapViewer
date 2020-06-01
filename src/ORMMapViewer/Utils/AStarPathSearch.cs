@@ -43,7 +43,7 @@ namespace ORMMapViewer.Utils
 					return path;
 				}
 
-				foreach (KeyValuePair<Node, Weight> pair in current.relatives)
+				foreach (KeyValuePair<Node, Weight> pair in current.neighbours)
 				{
 					if (!pair.Key.Equals(current))
 					{

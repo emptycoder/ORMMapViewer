@@ -71,7 +71,7 @@ namespace ORMMap
 			List<Vector2<int>> geometry = feature.Geometry<int>()[0];
 			Point[] points = geometry.Select(vector2 => new Point(vector2.X, vector2.Y)).ToArray();
 
-			Console.WriteLine(string.Join(",\n", points) + ",\n");
+			// Console.WriteLine(string.Join(",\n", points) + ",\n");
 
 			using (Pen pen = new Pen(pallete.MainDrawColor, pallete.Thickness))
 			{
@@ -95,6 +95,7 @@ namespace ORMMap
 		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)
 		{
 			int index = 0;
+			// Console.WriteLine(string.Join(",\n", roads.Select((node, key) => key + ") " + node.pos)));
 
 			using (SolidBrush brush = new SolidBrush(Color.Chartreuse))
 			{

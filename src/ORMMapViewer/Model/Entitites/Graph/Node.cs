@@ -1,19 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ORMMap.VectorTile.Geometry;
 
 namespace ORMMapViewer.Model.Entitites
 {
 	public class Node
 	{
-		private const int maxDistance = 2;
+		private const int maxDistance = 1;
+		public readonly Dictionary<Node, Weight> neighbours = new Dictionary<Node, Weight>();
+		public int id = -1;
 		public Vector2<int> pos;
-		public Dictionary<Node, Weight> relatives = new Dictionary<Node, Weight>();
 
 		public Node(int x, int y)
 		{
 			pos = new Vector2<int>(x, y);
+		}
+
+		public Node AddNeighbour(Node node)
+		{
+			if (!neighbours.ContainsKey(node))
+			{
+				neighbours.Add(node, new LengthWeight(this, node));
+			}
+
+			return this;
 		}
 
 		public override bool Equals(object obj)
@@ -31,31 +41,36 @@ namespace ORMMapViewer.Model.Entitites
 			return hashCode;
 		}
 
-		public void TakeRelatives(Node other)
+		public void TakeNeighbours(Node other)
 		{
-			foreach (Node otherNode in other.relatives.Keys)
+			foreach (Node node in other.neighbours.Keys)
 			{
-				foreach (Node thisNode in relatives.Keys)
+				if (!neighbours.ContainsKey(node))
 				{
-					if (otherNode.Equals(thisNode))
-					{
-						thisNode.relatives = thisNode.relatives.Concat(
-								otherNode.relatives.Where(x => !thisNode.relatives.ContainsKey(x.Key)))
-							.ToDictionary(x => x.Key, x => x.Value);
-					}
+					node.AddNeighbour(this);
+					AddNeighbour(node);
 				}
 			}
 		}
 
-		public void UpdateRelatives()
+		public void UpdateNeighbours()
 		{
-			foreach (Node node in relatives.Keys)
+			foreach (Node node in neighbours.Keys)
 			{
-				if (!node.relatives.ContainsKey(this))
+				if (!node.neighbours.ContainsKey(this))
 				{
-					node.relatives.Add(this, new LengthWeight(this, node));
+					node.AddNeighbour(this);
 				}
 			}
+		}
+
+		public void SetRemoved()
+		{
+			foreach (Node node in neighbours.Keys)
+			{
+				node.neighbours.Remove(this);
+			}
+			neighbours.Clear();
 		}
 	}
 }
