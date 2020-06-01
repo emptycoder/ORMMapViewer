@@ -1,35 +1,38 @@
-﻿using ORMMap.Model.Entitites;
-using System;
+﻿using System;
+using ORMMap.Model.Entitites;
+using ORMMapViewer.Properties;
 
 namespace ORMMap.Model.Data
 {
-    public class MockupData : Data
-    {
-        public override string MethodName => "mockupData";
+	public class MockupData : Data
+	{
+		public MockupData(string pathToDataFolder) : base(pathToDataFolder)
+		{
+		}
 
-        protected override string FileExtension => ".mvt";
+		public override string MethodName => "mockupData";
 
-        public MockupData(string pathToDataFolder) : base(pathToDataFolder) { }
+		protected override string FileExtension => ".mvt";
 
-        public override uint GetTileSize()
-        {
-            return 256;
-        }
+		public override uint GetTileSize()
+		{
+			return 256;
+		}
 
-        public override uint GetTileScale()
-        {
-            return 4096;
-        }
+		public override uint GetTileScale()
+		{
+			return 4096;
+		}
 
-        public override double ConvertToMapZoom(double zoom)
-        {
-            return 13;
-        }
+		public override double ConvertToMapZoom(double zoom)
+		{
+			return 13;
+		}
 
-        protected override byte[] GetDataFromSource(Vector3<double> lonLatZoom)
-        {
-            Console.WriteLine(lonLatZoom.ToString());
-            return ORMMapViewer.Properties.Resources.example;
-        }
-    }
+		protected override byte[] GetDataFromSource(Vector3<double> lonLatZoom)
+		{
+			Console.WriteLine(lonLatZoom.ToString());
+			return Resources.example;
+		}
+	}
 }

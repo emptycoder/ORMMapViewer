@@ -26,212 +26,214 @@
 
 namespace MIConvexHull
 {
-    /// <summary>
-    /// For deferred face addition.
-    /// </summary>
-    internal sealed class DeferredFace
-    {
-        /// <summary>
-        /// The faces.
-        /// </summary>
-        public ConvexFaceInternal Face, Pivot, OldFace;
+	/// <summary>
+	///     For deferred face addition.
+	/// </summary>
+	internal sealed class DeferredFace
+	{
+		/// <summary>
+		///     The faces.
+		/// </summary>
+		public ConvexFaceInternal Face, Pivot, OldFace;
 
-        /// <summary>
-        /// The indices.
-        /// </summary>
-        public int FaceIndex, PivotIndex;
-    }
+		/// <summary>
+		///     The indices.
+		/// </summary>
+		public int FaceIndex, PivotIndex;
+	}
 
-    /// <summary>
-    /// A helper class used to connect faces.
-    /// </summary>
-    internal sealed class FaceConnector
-    {
-        /// <summary>
-        /// The edge to be connected.
-        /// </summary>
-        public int EdgeIndex;
+	/// <summary>
+	///     A helper class used to connect faces.
+	/// </summary>
+	internal sealed class FaceConnector
+	{
+		/// <summary>
+		///     The edge to be connected.
+		/// </summary>
+		public int EdgeIndex;
 
-        /// <summary>
-        /// The face.
-        /// </summary>
-        public ConvexFaceInternal Face;
+		/// <summary>
+		///     The face.
+		/// </summary>
+		public ConvexFaceInternal Face;
 
-        /// <summary>
-        /// The hash code computed from indices.
-        /// </summary>
-        public uint HashCode;
+		/// <summary>
+		///     The hash code computed from indices.
+		/// </summary>
+		public uint HashCode;
 
-        /// <summary>
-        /// Next node in the list.
-        /// </summary>
-        public FaceConnector Next;
+		/// <summary>
+		///     Next node in the list.
+		/// </summary>
+		public FaceConnector Next;
 
-        /// <summary>
-        /// Prev node in the list.
-        /// </summary>
-        public FaceConnector Previous;
+		/// <summary>
+		///     Prev node in the list.
+		/// </summary>
+		public FaceConnector Previous;
 
-        /// <summary>
-        /// The vertex indices.
-        /// </summary>
-        public int[] Vertices;
+		/// <summary>
+		///     The vertex indices.
+		/// </summary>
+		public int[] Vertices;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="dimension">The dimension.</param>
-        public FaceConnector(int dimension)
-        {
-            Vertices = new int[dimension - 1];
-        }
+		/// <summary>
+		///     Ctor.
+		/// </summary>
+		/// <param name="dimension">The dimension.</param>
+		public FaceConnector(int dimension)
+		{
+			Vertices = new int[dimension - 1];
+		}
 
-        /// <summary>
-        /// Updates the connector.
-        /// </summary>
-        /// <param name="face">The face.</param>
-        /// <param name="edgeIndex">Index of the edge.</param>
-        /// <param name="dim">The dim.</param>
-        public void Update(ConvexFaceInternal face, int edgeIndex, int dim)
-        {
-            Face = face;
-            EdgeIndex = edgeIndex;
+		/// <summary>
+		///     Updates the connector.
+		/// </summary>
+		/// <param name="face">The face.</param>
+		/// <param name="edgeIndex">Index of the edge.</param>
+		/// <param name="dim">The dim.</param>
+		public void Update(ConvexFaceInternal face, int edgeIndex, int dim)
+		{
+			Face = face;
+			EdgeIndex = edgeIndex;
 
-            uint hashCode = 23;
+			uint hashCode = 23;
 
-            unchecked
-            {
-                var vs = face.Vertices;
-                int i, c = 0;
-                for (i = 0; i < edgeIndex; i++)
-                {
-                    Vertices[c++] = vs[i];
-                    hashCode += 31 * hashCode + (uint)vs[i];
-                }
-                for (i = edgeIndex + 1; i < vs.Length; i++)
-                {
-                    Vertices[c++] = vs[i];
-                    hashCode += 31 * hashCode + (uint)vs[i];
-                }
-            }
+			unchecked
+			{
+				var vs = face.Vertices;
+				int i, c = 0;
+				for (i = 0; i < edgeIndex; i++)
+				{
+					Vertices[c++] = vs[i];
+					hashCode += 31 * hashCode + (uint) vs[i];
+				}
 
-            HashCode = hashCode;
-        }
+				for (i = edgeIndex + 1; i < vs.Length; i++)
+				{
+					Vertices[c++] = vs[i];
+					hashCode += 31 * hashCode + (uint) vs[i];
+				}
+			}
 
-        /// <summary>
-        /// Can two faces be connected.
-        /// </summary>
-        /// <param name="a">a.</param>
-        /// <param name="b">The b.</param>
-        /// <param name="dim">The dim.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-        public static bool AreConnectable(FaceConnector a, FaceConnector b, int dim)
-        {
-            if (a.HashCode != b.HashCode) return false;
+			HashCode = hashCode;
+		}
 
-            var av = a.Vertices;
-            var bv = b.Vertices;
-            for (var i = 0; i < av.Length; i++)
-            {
-                if (av[i] != bv[i]) return false;
-            }
+		/// <summary>
+		///     Can two faces be connected.
+		/// </summary>
+		/// <param name="a">a.</param>
+		/// <param name="b">The b.</param>
+		/// <param name="dim">The dim.</param>
+		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+		public static bool AreConnectable(FaceConnector a, FaceConnector b, int dim)
+		{
+			if (a.HashCode != b.HashCode) return false;
 
-            return true;
-        }
+			var av = a.Vertices;
+			var bv = b.Vertices;
+			for (var i = 0; i < av.Length; i++)
+			{
+				if (av[i] != bv[i])
+					return false;
+			}
 
-        /// <summary>
-        /// Connect two faces.
-        /// </summary>
-        /// <param name="a">a.</param>
-        /// <param name="b">The b.</param>
-        public static void Connect(FaceConnector a, FaceConnector b)
-        {
-            a.Face.AdjacentFaces[a.EdgeIndex] = b.Face.Index;
-            b.Face.AdjacentFaces[b.EdgeIndex] = a.Face.Index;
-        }
-    }
+			return true;
+		}
 
-    /// <summary>
-    /// This internal class manages the faces of the convex hull. It is a
-    /// separate class from the desired user class.
-    /// </summary>
-    internal sealed class ConvexFaceInternal
-    {
-        /// <summary>
-        /// Gets or sets the adjacent face data.
-        /// </summary>
-        public int[] AdjacentFaces;
+		/// <summary>
+		///     Connect two faces.
+		/// </summary>
+		/// <param name="a">a.</param>
+		/// <param name="b">The b.</param>
+		public static void Connect(FaceConnector a, FaceConnector b)
+		{
+			a.Face.AdjacentFaces[a.EdgeIndex] = b.Face.Index;
+			b.Face.AdjacentFaces[b.EdgeIndex] = a.Face.Index;
+		}
+	}
 
-        /// <summary>
-        /// The furthest vertex.
-        /// </summary>
-        public int FurthestVertex;
+	/// <summary>
+	///     This internal class manages the faces of the convex hull. It is a
+	///     separate class from the desired user class.
+	/// </summary>
+	internal sealed class ConvexFaceInternal
+	{
+		/// <summary>
+		///     Gets or sets the adjacent face data.
+		/// </summary>
+		public int[] AdjacentFaces;
 
-        /// <summary>
-        /// Index of the face inside the pool.
-        /// </summary>
-        public int Index;
+		/// <summary>
+		///     The furthest vertex.
+		/// </summary>
+		public int FurthestVertex;
 
-        /// <summary>
-        /// Is it present in the list.
-        /// </summary>
-        public bool InList;
+		/// <summary>
+		///     Index of the face inside the pool.
+		/// </summary>
+		public int Index;
 
-        /// <summary>
-        /// Is the normal flipped?
-        /// </summary>
-        public bool IsNormalFlipped;
+		/// <summary>
+		///     Is it present in the list.
+		/// </summary>
+		public bool InList;
 
-        /// <summary>
-        /// Next node in the list.
-        /// </summary>
-        public ConvexFaceInternal Next;
+		/// <summary>
+		///     Is the normal flipped?
+		/// </summary>
+		public bool IsNormalFlipped;
 
-        /// <summary>
-        /// Gets or sets the normal vector.
-        /// </summary>
-        public double[] Normal;
+		/// <summary>
+		///     Next node in the list.
+		/// </summary>
+		public ConvexFaceInternal Next;
 
-        /// <summary>
-        /// Face plane constant element.
-        /// </summary>
-        public double Offset;
+		/// <summary>
+		///     Gets or sets the normal vector.
+		/// </summary>
+		public double[] Normal;
 
-        //public int UnprocessedIndex;
+		/// <summary>
+		///     Face plane constant element.
+		/// </summary>
+		public double Offset;
 
-        /// <summary>
-        /// Prev node in the list.
-        /// </summary>
-        public ConvexFaceInternal Previous;
+		//public int UnprocessedIndex;
 
-        /// <summary>
-        /// Used to traverse affected faces and create the Delaunay representation.
-        /// </summary>
-        public int Tag;
+		/// <summary>
+		///     Prev node in the list.
+		/// </summary>
+		public ConvexFaceInternal Previous;
 
-        /// <summary>
-        /// Gets or sets the vertices.
-        /// </summary>
-        public int[] Vertices;
+		/// <summary>
+		///     Used to traverse affected faces and create the Delaunay representation.
+		/// </summary>
+		public int Tag;
 
-        /// <summary>
-        /// Gets or sets the vertices beyond.
-        /// </summary>
-        public IndexBuffer VerticesBeyond;
+		/// <summary>
+		///     Gets or sets the vertices.
+		/// </summary>
+		public int[] Vertices;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConvexFaceInternal" /> class.
-        /// </summary>
-        /// <param name="dimension">The dimension.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="beyondList">The beyond list.</param>
-        public ConvexFaceInternal(int dimension, int index, IndexBuffer beyondList)
-        {
-            Index = index;
-            AdjacentFaces = new int[dimension];
-            VerticesBeyond = beyondList;
-            Normal = new double[dimension];
-            Vertices = new int[dimension];
-        }
-    }
+		/// <summary>
+		///     Gets or sets the vertices beyond.
+		/// </summary>
+		public IndexBuffer VerticesBeyond;
+
+		/// <summary>
+		///     Initializes a new instance of the <see cref="ConvexFaceInternal" /> class.
+		/// </summary>
+		/// <param name="dimension">The dimension.</param>
+		/// <param name="index">The index.</param>
+		/// <param name="beyondList">The beyond list.</param>
+		public ConvexFaceInternal(int dimension, int index, IndexBuffer beyondList)
+		{
+			Index = index;
+			AdjacentFaces = new int[dimension];
+			VerticesBeyond = beyondList;
+			Normal = new double[dimension];
+			Vertices = new int[dimension];
+		}
+	}
 }

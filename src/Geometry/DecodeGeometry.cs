@@ -1,22 +1,21 @@
-﻿using ORMMap.VectorTile.Contants;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ORMMap.VectorTile.Contants;
 
 namespace ORMMap.VectorTile.Geometry
 {
 	public static class DecodeGeometry
 	{
-
 		/// <summary>
-		/// <para>returns a list of lists.</para>
-		/// <para>If the root list contains one child list it is a single part feature</para>
-		/// <para>and the child list contains the coordinate pairs.</para>
-		/// <para>e.g. single part point:</para>
-		/// <para> Parent list with one child list, child list contains one Pont2D</para>
-		/// <para>If the root list contains several child lists, it is a multipart feature</para>
-		/// <para>e.g. multipart or donut polygon:</para>
-		/// <para> Parent list contains number of list equal to the number of parts.</para>
-		/// <para> Each child list contains the corrdinates of this part.</para>
+		///     <para>returns a list of lists.</para>
+		///     <para>If the root list contains one child list it is a single part feature</para>
+		///     <para>and the child list contains the coordinate pairs.</para>
+		///     <para>e.g. single part point:</para>
+		///     <para> Parent list with one child list, child list contains one Pont2D</para>
+		///     <para>If the root list contains several child lists, it is a multipart feature</para>
+		///     <para>e.g. multipart or donut polygon:</para>
+		///     <para> Parent list contains number of list equal to the number of parts.</para>
+		///     <para> Each child list contains the corrdinates of this part.</para>
 		/// </summary>
 		/// <param name="extent">Tile extent</param>
 		/// <param name="geomType">Geometry type</param>
@@ -30,25 +29,23 @@ namespace ORMMap.VectorTile.Geometry
 			, float scale = 1.0f
 		)
 		{
-
-			List<List<Vector2<long>>> geomOut = new List<List<Vector2<long>>>();
-			List<Vector2<long>> geomTmp = new List<Vector2<long>>();
+			var geomOut = new List<List<Vector2<long>>>();
+			var geomTmp = new List<Vector2<long>>();
 			long cursorX = 0;
 			long cursorY = 0;
 
-			int geomCmdCnt = geometryCommands.Count;
-			for (int i = 0; i < geomCmdCnt; i++)
+			var geomCmdCnt = geometryCommands.Count;
+			for (var i = 0; i < geomCmdCnt; i++)
 			{
-
-				uint g = geometryCommands[i];
-				Commands cmd = (Commands)(g & 0x7);
-				uint cmdCount = g >> 3;
+				var g = geometryCommands[i];
+				var cmd = (Commands) (g & 0x7);
+				var cmdCount = g >> 3;
 
 				if (cmd == Commands.MoveTo || cmd == Commands.LineTo)
 				{
-					for (int j = 0; j < cmdCount; j++)
+					for (var j = 0; j < cmdCount; j++)
 					{
-						Vector2<long> delta = zigzagDecode(geometryCommands[i + 1], geometryCommands[i + 2]);
+						var delta = zigzagDecode(geometryCommands[i + 1], geometryCommands[i + 2]);
 						cursorX += delta.X;
 						cursorY += delta.Y;
 						i += 2;
@@ -60,7 +57,7 @@ namespace ORMMap.VectorTile.Geometry
 						}
 
 						//Point2d pntTmp = new Point2d(cursorX, cursorY);
-						Vector2<long> pntTmp = new Vector2<long>()
+						var pntTmp = new Vector2<long>
 						{
 							X = cursorX,
 							Y = cursorY
@@ -68,28 +65,21 @@ namespace ORMMap.VectorTile.Geometry
 						geomTmp.Add(pntTmp);
 					}
 				}
+
 				if (cmd == Commands.ClosePath)
-				{
 					if (geomType == GeomType.POLYGON && geomTmp.Count > 0)
-					{
 						geomTmp.Add(geomTmp[0]);
-					}
-				}
 			}
 
-			if (geomTmp.Count > 0)
-			{
-				geomOut.Add(geomTmp);
-			}
+			if (geomTmp.Count > 0) geomOut.Add(geomTmp);
 
 			return geomOut;
 		}
 
 
 		/// <summary>
-		/// 
 		/// </summary>
-		/// <typeparam name="T">Type of <see cref="Vector2{T}"/> to be returned. Currently supported: int, long and float. </typeparam>
+		/// <typeparam name="T">Type of <see cref="Vector2{T}" /> to be returned. Currently supported: int, long and float. </typeparam>
 		/// <param name="inGeom">Geometry in internal tile coordinates.</param>
 		/// <param name="scale">Scale factor.</param>
 		/// <returns></returns>
@@ -98,15 +88,14 @@ namespace ORMMap.VectorTile.Geometry
 			, float scale = 1.0f
 		)
 		{
-
-			List<List<Vector2<T>>> outGeom = new List<List<Vector2<T>>>();
+			var outGeom = new List<List<Vector2<T>>>();
 			foreach (var inPart in inGeom)
 			{
-				List<Vector2<T>> outPart = new List<Vector2<T>>();
+				var outPart = new List<Vector2<T>>();
 				foreach (var inVertex in inPart)
 				{
-					float fX = ((float)inVertex.X) * scale;
-					float fY = ((float)inVertex.Y) * scale;
+					var fX = inVertex.X * scale;
+					var fY = inVertex.Y * scale;
 					// TODO: find a better solution to make this work
 					// scaled value has to be converted to target type beforehand
 					// casting to T only works via intermediate cast to object
@@ -115,23 +104,24 @@ namespace ORMMap.VectorTile.Geometry
 					// doesn't work  : T x = (T)x; 
 					if (typeof(T) == typeof(int))
 					{
-						int x = Convert.ToInt32(fX);
-						int y = Convert.ToInt32(fY);
-						outPart.Add(new Vector2<T>((T)(object)x, (T)(object)y));
+						var x = Convert.ToInt32(fX);
+						var y = Convert.ToInt32(fY);
+						outPart.Add(new Vector2<T>((T) (object) x, (T) (object) y));
 					}
 					else if (typeof(T) == typeof(long))
 					{
-						long x = Convert.ToInt64(fX);
-						long y = Convert.ToInt64(fY);
-						outPart.Add(new Vector2<T>((T)(object)x, (T)(object)y));
+						var x = Convert.ToInt64(fX);
+						var y = Convert.ToInt64(fY);
+						outPart.Add(new Vector2<T>((T) (object) x, (T) (object) y));
 					}
 					else if (typeof(T) == typeof(float))
 					{
-						float x = Convert.ToSingle(fX);
-						float y = Convert.ToSingle(fY);
-						outPart.Add(new Vector2<T>((T)(object)x, (T)(object)y));
+						var x = Convert.ToSingle(fX);
+						var y = Convert.ToSingle(fY);
+						outPart.Add(new Vector2<T>((T) (object) x, (T) (object) y));
 					}
 				}
+
 				outGeom.Add(outPart);
 			}
 
@@ -140,7 +130,6 @@ namespace ORMMap.VectorTile.Geometry
 
 		private static Vector2<long> zigzagDecode(long x, long y)
 		{
-
 			//TODO: verify speed improvements using
 			// new Point2d(){X=x, Y=y} instead of
 			// new Point3d(x, y);
@@ -149,13 +138,11 @@ namespace ORMMap.VectorTile.Geometry
 			//    ((x >> 1) ^ (-(x & 1))),
 			//    ((y >> 1) ^ (-(y & 1)))
 			//);
-			return new Vector2<long>()
+			return new Vector2<long>
 			{
-				X = ((x >> 1) ^ (-(x & 1))),
-				Y = ((y >> 1) ^ (-(y & 1)))
+				X = (x >> 1) ^ -(x & 1),
+				Y = (y >> 1) ^ -(y & 1)
 			};
 		}
-
-
 	}
 }

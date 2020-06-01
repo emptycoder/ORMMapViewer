@@ -2,17 +2,14 @@
 
 namespace ORMMapViewer.Utils
 {
-    public static class DirectoryUtils
-    {
-        public static bool TryCreateFolder(string path)
-        {
-            if (Directory.Exists(path))
-            {
-                return false;
-            }
+	public static class DirectoryUtils
+	{
+		public static bool TryCreateFolder(string path)
+		{
+			if (Directory.Exists(path)) return false;
 
-            Directory.CreateDirectory(path);
-            return true;
-        }
-    }
+			Directory.CreateDirectory(path);
+			return true;
+		}
+	}
 }

@@ -1,13 +1,13 @@
-﻿using ORMMap.VectorTile.Geometry;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ORMMap.VectorTile.Geometry;
 
 namespace ORMMap.VectorTile.ExtensionMethods
 {
 	public static class VectorTileFeatureExtensions
 	{
 		/// <summary>
-		/// >Geometry in LatLng coordinates instead of internal tile coordinates
+		///     >Geometry in LatLng coordinates instead of internal tile coordinates
 		/// </summary>
 		/// <param name="feature"></param>
 		/// <param name="zoom">Zoom level of the tile</param>
@@ -20,10 +20,9 @@ namespace ORMMap.VectorTile.ExtensionMethods
 			, ulong tileColumn
 			, ulong tileRow
 			, uint? clipBuffer = null
-			)
+		)
 		{
-
-			List<List<LatLng>> geometryAsWgs84 = new List<List<LatLng>>();
+			var geometryAsWgs84 = new List<List<LatLng>>();
 			foreach (var part in feature.Geometry<long>(clipBuffer, 1.0f))
 			{
 				geometryAsWgs84.Add(

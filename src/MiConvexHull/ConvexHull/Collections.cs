@@ -28,277 +28,247 @@ using System;
 
 namespace MIConvexHull
 {
-    /// <summary>
-    /// A more lightweight alternative to List of T.
-    /// On clear, only resets the count and does not clear the references
-    /// =&gt; this works because of the ObjectManager.
-    /// Includes a stack functionality.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    internal class SimpleList<T>
-    {
-        /// <summary>
-        /// The capacity
-        /// </summary>
-        private int capacity;
+	/// <summary>
+	///     A more lightweight alternative to List of T.
+	///     On clear, only resets the count and does not clear the references
+	///     =&gt; this works because of the ObjectManager.
+	///     Includes a stack functionality.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	internal class SimpleList<T>
+	{
+		/// <summary>
+		///     The capacity
+		/// </summary>
+		private int capacity;
 
-        /// <summary>
-        /// The count
-        /// </summary>
-        public int Count;
-        /// <summary>
-        /// The items
-        /// </summary>
-        private T[] items;
+		/// <summary>
+		///     The count
+		/// </summary>
+		public int Count;
 
-        /// <summary>
-        /// Get the i-th element.
-        /// </summary>
-        /// <param name="i">The i.</param>
-        /// <returns>T.</returns>
-        public T this[int i]
-        {
-            get { return items[i]; }
-            set { items[i] = value; }
-        }
+		/// <summary>
+		///     The items
+		/// </summary>
+		private T[] items;
 
-        /// <summary>
-        /// Size matters.
-        /// </summary>
-        private void EnsureCapacity()
-        {
-            if (capacity == 0)
-            {
-                capacity = 32;
-                items = new T[32];
-            }
-            else
-            {
-                var newItems = new T[capacity * 2];
-                Array.Copy(items, newItems, capacity);
-                capacity = 2 * capacity;
-                items = newItems;
-            }
-        }
+		/// <summary>
+		///     Get the i-th element.
+		/// </summary>
+		/// <param name="i">The i.</param>
+		/// <returns>T.</returns>
+		public T this[int i]
+		{
+			get => items[i];
+			set => items[i] = value;
+		}
 
-        /// <summary>
-        /// Adds a vertex to the buffer.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public void Add(T item)
-        {
-            if (Count + 1 > capacity) EnsureCapacity();
-            items[Count++] = item;
-        }
+		/// <summary>
+		///     Size matters.
+		/// </summary>
+		private void EnsureCapacity()
+		{
+			if (capacity == 0)
+			{
+				capacity = 32;
+				items = new T[32];
+			}
+			else
+			{
+				var newItems = new T[capacity * 2];
+				Array.Copy(items, newItems, capacity);
+				capacity = 2 * capacity;
+				items = newItems;
+			}
+		}
 
-        /// <summary>
-        /// Pushes the value to the back of the list.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public void Push(T item)
-        {
-            if (Count + 1 > capacity) EnsureCapacity();
-            items[Count++] = item;
-        }
+		/// <summary>
+		///     Adds a vertex to the buffer.
+		/// </summary>
+		/// <param name="item">The item.</param>
+		public void Add(T item)
+		{
+			if (Count + 1 > capacity) EnsureCapacity();
+			items[Count++] = item;
+		}
 
-        /// <summary>
-        /// Pops the last value from the list.
-        /// </summary>
-        /// <returns>T.</returns>
-        public T Pop()
-        {
-            return items[--Count];
-        }
+		/// <summary>
+		///     Pushes the value to the back of the list.
+		/// </summary>
+		/// <param name="item">The item.</param>
+		public void Push(T item)
+		{
+			if (Count + 1 > capacity) EnsureCapacity();
+			items[Count++] = item;
+		}
 
-        /// <summary>
-        /// Sets the Count to 0, otherwise does nothing.
-        /// </summary>
-        public void Clear()
-        {
-            Count = 0;
-        }
-    }
+		/// <summary>
+		///     Pops the last value from the list.
+		/// </summary>
+		/// <returns>T.</returns>
+		public T Pop()
+		{
+			return items[--Count];
+		}
+
+		/// <summary>
+		///     Sets the Count to 0, otherwise does nothing.
+		/// </summary>
+		public void Clear()
+		{
+			Count = 0;
+		}
+	}
 
 
-    /// <summary>
-    /// Class IndexBuffer.
-    /// A fancy name for a list of integers.
-    /// </summary>
-    internal class IndexBuffer : SimpleList<int>
-    {
-    }
+	/// <summary>
+	///     Class IndexBuffer.
+	///     A fancy name for a list of integers.
+	/// </summary>
+	internal class IndexBuffer : SimpleList<int>
+	{
+	}
 
-    /// <summary>
-    /// A priority based linked list.
-    /// </summary>
-    internal sealed class FaceList
-    {
-        /// <summary>
-        /// The last
-        /// </summary>
-        private ConvexFaceInternal last;
+	/// <summary>
+	///     A priority based linked list.
+	/// </summary>
+	internal sealed class FaceList
+	{
+		/// <summary>
+		///     The last
+		/// </summary>
+		private ConvexFaceInternal last;
 
-        /// <summary>
-        /// Get the first element.
-        /// </summary>
-        /// <value>The first.</value>
-        public ConvexFaceInternal First { get; private set; }
+		/// <summary>
+		///     Get the first element.
+		/// </summary>
+		/// <value>The first.</value>
+		public ConvexFaceInternal First { get; private set; }
 
-        /// <summary>
-        /// Adds the element to the beginning.
-        /// </summary>
-        /// <param name="face">The face.</param>
-        private void AddFirst(ConvexFaceInternal face)
-        {
-            face.InList = true;
-            First.Previous = face;
-            face.Next = First;
-            First = face;
-        }
+		/// <summary>
+		///     Adds the element to the beginning.
+		/// </summary>
+		/// <param name="face">The face.</param>
+		private void AddFirst(ConvexFaceInternal face)
+		{
+			face.InList = true;
+			First.Previous = face;
+			face.Next = First;
+			First = face;
+		}
 
-        /// <summary>
-        /// Adds a face to the list.
-        /// </summary>
-        /// <param name="face">The face.</param>
-        public void Add(ConvexFaceInternal face)
-        {
-            if (face.InList)
-            {
-                if (First.VerticesBeyond.Count < face.VerticesBeyond.Count)
-                {
-                    Remove(face);
-                    AddFirst(face);
-                }
-                return;
-            }
+		/// <summary>
+		///     Adds a face to the list.
+		/// </summary>
+		/// <param name="face">The face.</param>
+		public void Add(ConvexFaceInternal face)
+		{
+			if (face.InList)
+			{
+				if (First.VerticesBeyond.Count < face.VerticesBeyond.Count)
+				{
+					Remove(face);
+					AddFirst(face);
+				}
 
-            face.InList = true;
+				return;
+			}
 
-            if (First != null && First.VerticesBeyond.Count < face.VerticesBeyond.Count)
-            {
-                First.Previous = face;
-                face.Next = First;
-                First = face;
-            }
-            else
-            {
-                if (last != null)
-                {
-                    last.Next = face;
-                }
-                face.Previous = last;
-                last = face;
-                if (First == null)
-                {
-                    First = face;
-                }
-            }
-        }
+			face.InList = true;
 
-        /// <summary>
-        /// Removes the element from the list.
-        /// </summary>
-        /// <param name="face">The face.</param>
-        public void Remove(ConvexFaceInternal face)
-        {
-            if (!face.InList) return;
+			if (First != null && First.VerticesBeyond.Count < face.VerticesBeyond.Count)
+			{
+				First.Previous = face;
+				face.Next = First;
+				First = face;
+			}
+			else
+			{
+				if (last != null) last.Next = face;
+				face.Previous = last;
+				last = face;
+				if (First == null) First = face;
+			}
+		}
 
-            face.InList = false;
+		/// <summary>
+		///     Removes the element from the list.
+		/// </summary>
+		/// <param name="face">The face.</param>
+		public void Remove(ConvexFaceInternal face)
+		{
+			if (!face.InList) return;
 
-            if (face.Previous != null)
-            {
-                face.Previous.Next = face.Next;
-            }
-            else if ( /*first == face*/ face.Previous == null)
-            {
-                First = face.Next;
-            }
+			face.InList = false;
 
-            if (face.Next != null)
-            {
-                face.Next.Previous = face.Previous;
-            }
-            else if ( /*last == face*/ face.Next == null)
-            {
-                last = face.Previous;
-            }
+			if (face.Previous != null)
+				face.Previous.Next = face.Next;
+			else if ( /*first == face*/ face.Previous == null) First = face.Next;
 
-            face.Next = null;
-            face.Previous = null;
-        }
-    }
+			if (face.Next != null)
+				face.Next.Previous = face.Previous;
+			else if ( /*last == face*/ face.Next == null) last = face.Previous;
 
-    /// <summary>
-    /// Connector list.
-    /// </summary>
-    internal sealed class ConnectorList
-    {
-        /// <summary>
-        /// The last
-        /// </summary>
-        private FaceConnector last;
+			face.Next = null;
+			face.Previous = null;
+		}
+	}
 
-        /// <summary>
-        /// Get the first element.
-        /// </summary>
-        /// <value>The first.</value>
-        public FaceConnector First { get; private set; }
+	/// <summary>
+	///     Connector list.
+	/// </summary>
+	internal sealed class ConnectorList
+	{
+		/// <summary>
+		///     The last
+		/// </summary>
+		private FaceConnector last;
 
-        /// <summary>
-        /// Adds the element to the beginning.
-        /// </summary>
-        /// <param name="connector">The connector.</param>
-        private void AddFirst(FaceConnector connector)
-        {
-            First.Previous = connector;
-            connector.Next = First;
-            First = connector;
-        }
+		/// <summary>
+		///     Get the first element.
+		/// </summary>
+		/// <value>The first.</value>
+		public FaceConnector First { get; private set; }
 
-        /// <summary>
-        /// Adds a face to the list.
-        /// </summary>
-        /// <param name="element">The element.</param>
-        public void Add(FaceConnector element)
-        {
-            if (last != null)
-            {
-                last.Next = element;
-            }
-            element.Previous = last;
-            last = element;
-            if (First == null)
-            {
-                First = element;
-            }
-        }
+		/// <summary>
+		///     Adds the element to the beginning.
+		/// </summary>
+		/// <param name="connector">The connector.</param>
+		private void AddFirst(FaceConnector connector)
+		{
+			First.Previous = connector;
+			connector.Next = First;
+			First = connector;
+		}
 
-        /// <summary>
-        /// Removes the element from the list.
-        /// </summary>
-        /// <param name="connector">The connector.</param>
-        public void Remove(FaceConnector connector)
-        {
-            if (connector.Previous != null)
-            {
-                connector.Previous.Next = connector.Next;
-            }
-            else if ( /*first == face*/ connector.Previous == null)
-            {
-                First = connector.Next;
-            }
+		/// <summary>
+		///     Adds a face to the list.
+		/// </summary>
+		/// <param name="element">The element.</param>
+		public void Add(FaceConnector element)
+		{
+			if (last != null) last.Next = element;
+			element.Previous = last;
+			last = element;
+			if (First == null) First = element;
+		}
 
-            if (connector.Next != null)
-            {
-                connector.Next.Previous = connector.Previous;
-            }
-            else if ( /*last == face*/ connector.Next == null)
-            {
-                last = connector.Previous;
-            }
+		/// <summary>
+		///     Removes the element from the list.
+		/// </summary>
+		/// <param name="connector">The connector.</param>
+		public void Remove(FaceConnector connector)
+		{
+			if (connector.Previous != null)
+				connector.Previous.Next = connector.Next;
+			else if ( /*first == face*/ connector.Previous == null) First = connector.Next;
 
-            connector.Next = null;
-            connector.Previous = null;
-        }
-    }
+			if (connector.Next != null)
+				connector.Next.Previous = connector.Previous;
+			else if ( /*last == face*/ connector.Next == null) last = connector.Previous;
+
+			connector.Next = null;
+			connector.Previous = null;
+		}
+	}
 }

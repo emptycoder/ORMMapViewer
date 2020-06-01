@@ -24,37 +24,40 @@
  *  
  *****************************************************************************/
 
+using System;
+
 namespace MIConvexHull
 {
-    internal static class Constants
-    {
-        /// <summary>
-        /// The default plane distance tolerance
-        /// </summary>
-        internal const double DefaultPlaneDistanceTolerance = 1e-10;
-        /// <summary>
-        /// The starting delta dot product in simplex
-        /// </summary>
-        internal const double StartingDeltaDotProductInSimplex = 0.5;
-        /// <summary>
-        /// The connector table size
-        /// </summary>
-        internal const int ConnectorTableSize = 2017;
+	internal static class Constants
+	{
+		/// <summary>
+		///     The default plane distance tolerance
+		/// </summary>
+		internal const double DefaultPlaneDistanceTolerance = 1e-10;
+
+		/// <summary>
+		///     The starting delta dot product in simplex
+		/// </summary>
+		internal const double StartingDeltaDotProductInSimplex = 0.5;
+
+		/// <summary>
+		///     The connector table size
+		/// </summary>
+		internal const int ConnectorTableSize = 2017;
 
 
-        internal const double DefaultEqualityTolerance = 1e-15;
-        internal const double FractionalNegligibleVolume = 1e-8;
+		internal const double DefaultEqualityTolerance = 1e-15;
+		internal const double FractionalNegligibleVolume = 1e-8;
 
-        /// <summary>
-        /// Determines whether the specified x is negligible (|x| lte 1e-15).
-        /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="optionalTolerance">An optional tolerance.</param>
-        /// <returns><c>true</c> if the specified x is negligible; otherwise, <c>false</c>.</returns>
-        internal static bool IsNegligible(this double x, double optionalTolerance = DefaultEqualityTolerance)
-        {
-            return (System.Math.Abs(x) <= optionalTolerance);
-        }
-
-    }
+		/// <summary>
+		///     Determines whether the specified x is negligible (|x| lte 1e-15).
+		/// </summary>
+		/// <param name="x">The x.</param>
+		/// <param name="optionalTolerance">An optional tolerance.</param>
+		/// <returns><c>true</c> if the specified x is negligible; otherwise, <c>false</c>.</returns>
+		internal static bool IsNegligible(this double x, double optionalTolerance = DefaultEqualityTolerance)
+		{
+			return Math.Abs(x) <= optionalTolerance;
+		}
+	}
 }
