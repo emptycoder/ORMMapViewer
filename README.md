@@ -1,4 +1,4 @@
-What is the ORMMap viewer?
+What is the ORM map viewer?
 =====================
 ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on real map.
 
@@ -12,7 +12,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 - [Simplex alghoritm](https://en.wikipedia.org/wiki/Simplex_algorithm) for transportation problem
 - [MIConvexHull](https://github.com/DesignEngrLab/MIConvexHull) for delaunay triangulation
 
-## News
+## News:
 
 **v0.1(Unstable) - 05/25/2020**
 - MVT parser + mercantor projection
@@ -20,6 +20,9 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 **v0.11(Unstable) - 05/28/2020**
 - Migrate to WPF
 
+**v0.12(Unstable) - 06/01/2020**
+- Working map tile with zoom, cache level for data
+
 ## About:
-ORMMap viewer developing under the [MIT license](LICENSE).
+ORM map viewer developing under the [MIT license](LICENSE).
 
