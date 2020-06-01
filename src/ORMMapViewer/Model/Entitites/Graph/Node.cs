@@ -38,8 +38,9 @@ namespace ORMMapViewer.Model.Entitites
 				foreach (var thisNode in relatives.Keys)
 				{
 					if (otherNode.Equals(thisNode))
-						thisNode.relatives.Concat(
-							otherNode.relatives.Where(x => !thisNode.relatives.ContainsKey(x.Key)));
+						thisNode.relatives = thisNode.relatives.Concat(
+							otherNode.relatives.Where(x => !thisNode.relatives.ContainsKey(x.Key)))
+							.ToDictionary(x=>x.Key, x=>x.Value);
 				}
 			}
 		}
