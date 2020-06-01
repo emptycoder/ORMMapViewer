@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TransportationProblem
 {
-    public class Class1
+    public class Simplex
     {
     }
 }

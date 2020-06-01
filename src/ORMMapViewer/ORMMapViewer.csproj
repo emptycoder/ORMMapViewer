@@ -35,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MathNet.Numerics, Version=4.11.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.4.11.0\lib\net461\MathNet.Numerics.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -64,8 +61,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ControllerView\TransportationProblem\BasisFinder.cs" />
-    <Compile Include="ControllerView\TransportationProblem\Simplex.cs" />
     <Compile Include="Model\Entitites\Graph\Graph.cs" />
     <Compile Include="Model\Entitites\Graph\LengthWeight.cs" />
     <Compile Include="Model\Entitites\Graph\Node.cs" />
@@ -132,13 +127,17 @@
       <Project>{f0967389-29c8-4d50-b397-9bb698f13ed6}</Project>
       <Name>Geometry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MIConvexHull.NET Standard\MIConvexHull.NET Standard.csproj">
-      <Project>{c6b348ee-8b9b-4604-b61d-9689b83747ac}</Project>
-      <Name>MIConvexHull.NET Standard</Name>
+    <ProjectReference Include="..\MiConvexHull\MiConvexHull.csproj">
+      <Project>{be059da0-40cf-4cf8-81cd-c3a12f0dd4d9}</Project>
+      <Name>MiConvexHull</Name>
     </ProjectReference>
     <ProjectReference Include="..\PbfReader\PbfReader.csproj">
       <Project>{4bce42ee-c33f-4fa4-bfdd-86f3d45c647c}</Project>
       <Name>PbfReader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TransportationProblem\TransportationProblem.csproj">
+      <Project>{527d847c-c54d-4ad3-9eb3-32249d462c13}</Project>
+      <Name>TransportationProblem</Name>
     </ProjectReference>
     <ProjectReference Include="..\VectorTileReader\VectorTileReader.csproj">
       <Project>{4656b308-1492-4a22-a73e-06bf6aa858f2}</Project>
