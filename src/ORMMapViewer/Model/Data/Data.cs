@@ -66,6 +66,11 @@ namespace ORMMap.Model.Data
 			return data;
 		}
 
+		public Graph GetRoads(Vector3<double> lonLatZoom)
+		{
+			return roadsCache[lonLatZoom.ToString()];
+		}
+
 		private void CacheRoads(Vector3<double> lonLatZoom, VectorTileObj data)
 		{
 			if (roadsCache.ContainsKey(lonLatZoom.ToString())) return;

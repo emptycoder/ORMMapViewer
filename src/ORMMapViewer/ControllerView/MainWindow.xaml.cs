@@ -6,6 +6,7 @@ using ORMMap;
 using ORMMap.Model.Data;
 using ORMMap.Model.Entitites;
 using ORMMap.VectorTile.Geometry;
+using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
 
 namespace ORMMapViewer
@@ -48,11 +49,12 @@ namespace ORMMapViewer
 		{
 			var cZoom = dataController.ConvertToMapZoom(zoom);
 			var tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
-			var tile = dataController.GetData(new Vector3<double>(
+			Vector3<double> lonLatZoom = new Vector3<double>(
 				tileCoordinations.X,
 				tileCoordinations.Y,
 				cZoom
-			));
+			);
+			var tile = dataController.GetData(lonLatZoom);
 
 			var scene = new Bitmap((int) dataController.GetTileScale(), (int) dataController.GetTileScale());
 			using (var graphics = Graphics.FromImage(scene))
@@ -67,6 +69,9 @@ namespace ORMMapViewer
 						MVTDrawer.DrawLayer(layer, layersPallete[layerName], graphics);
 					}
 				}
+
+				Graph graph = dataController.GetRoads(lonLatZoom);
+				MVTDrawer.DrawGraphRoads(graph.nodes, graphics);
 			}
 
 			map.ImageSource = ImageUtils.GetImageStream(scene);

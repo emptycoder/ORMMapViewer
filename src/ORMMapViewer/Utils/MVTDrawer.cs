@@ -5,11 +5,14 @@ using System.Linq;
 using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
 using ORMMap.VectorTile.Geometry;
+using ORMMapViewer.Model.Entitites;
 
 namespace ORMMap
 {
 	public static class MVTDrawer
 	{
+		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics);
+
 		private static readonly Dictionary<GeomType, DrawDelegate> featureDrawDictionary =
 			new Dictionary<GeomType, DrawDelegate>
 			{
@@ -81,6 +84,13 @@ namespace ORMMap
 			using (var pen = new Pen(pallete.MainDrawColor, pallete.Thickness)) graphics.DrawLines(pen, points);
 		}
 
-		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics);
+		public static void DrawGraphRoads(List<Node> roads, Graphics graphics)
+		{
+			var points = roads.Select((node) => new Point(node.pos.X, node.pos.Y)).ToArray();
+			using (Pen pen = new Pen(Color.Red, 7))
+			{
+				graphics.DrawLines(pen, points);
+			}
+		}
 	}
 }
