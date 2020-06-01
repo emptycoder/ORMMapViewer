@@ -23,18 +23,18 @@ namespace ORMMap
 
 		private static Vector2<double> LatLngToMeters(LatLng latLng)
 		{
-			var y = Math.Log(Math.Tan(latLng.Lat * Math.PI / 360 + Math.PI / 4), Math.E) / Math.PI;
+			double y = Math.Log(Math.Tan(latLng.Lat * Math.PI / 360 + Math.PI / 4), Math.E) / Math.PI;
 			y *= halfCircumferenceMeters;
 
-			var x = latLng.Lng * halfCircumferenceMeters / 180;
+			double x = latLng.Lng * halfCircumferenceMeters / 180;
 
 			return new Vector2<double>(x, y);
 		}
 
 		public static LatLng TileToLatLng(Vector2<uint> tile, double zoom)
 		{
-			var x = tile.X * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
-			var y = -(tile.Y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
+			double x = tile.X * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
+			double y = -(tile.Y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
 
 			return MetersToLatLng(new Vector2<double>(x, y));
 		}
@@ -43,8 +43,8 @@ namespace ORMMap
 		{
 			Vector2<double> tile = LatLngToMeters(latLng);
 
-			var x = Math.Floor((tile.X + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
-			var y = Math.Floor((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
+			double x = Math.Floor((tile.X + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
+			double y = Math.Floor((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
 
 			return new Vector2<uint>((uint) x, (uint) y);
 		}

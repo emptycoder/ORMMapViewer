@@ -47,7 +47,7 @@ namespace ORMMap.VectorTile
 
 		private void layers(byte[] data)
 		{
-			var tileReader = new PbfReader(data);
+			PbfReader tileReader = new PbfReader(data);
 			while (tileReader.NextByte())
 			{
 				if (_Validate)
@@ -62,12 +62,12 @@ namespace ORMMap.VectorTile
 				{
 					string name = null;
 					byte[] layerMessage = tileReader.View();
-					var layerView = new PbfReader(layerMessage);
+					PbfReader layerView = new PbfReader(layerMessage);
 					while (layerView.NextByte())
 					{
 						if (layerView.Tag == (int) LayerType.Name)
 						{
-							var strLen = (ulong) layerView.Varint();
+							ulong strLen = (ulong) layerView.Varint();
 							name = layerView.GetString(strLen);
 						}
 						else
@@ -126,11 +126,11 @@ namespace ORMMap.VectorTile
 
 		private VectorTileLayer getLayer(byte[] data)
 		{
-			var layer = new VectorTileLayer(data);
-			var layerReader = new PbfReader(layer.Data);
+			VectorTileLayer layer = new VectorTileLayer(data);
+			PbfReader layerReader = new PbfReader(layer.Data);
 			while (layerReader.NextByte())
 			{
-				var layerType = layerReader.Tag;
+				int layerType = layerReader.Tag;
 				if (_Validate)
 				{
 					if (!ConstantsAsDictionary.LayerType.ContainsKey(layerType))
@@ -142,11 +142,11 @@ namespace ORMMap.VectorTile
 				switch ((LayerType) layerType)
 				{
 					case LayerType.Version:
-						var version = (ulong) layerReader.Varint();
+						ulong version = (ulong) layerReader.Varint();
 						layer.Version = version;
 						break;
 					case LayerType.Name:
-						var strLength = (ulong) layerReader.Varint();
+						ulong strLength = (ulong) layerReader.Varint();
 						layer.Name = layerReader.GetString(strLength);
 						break;
 					case LayerType.Extent:
@@ -154,43 +154,43 @@ namespace ORMMap.VectorTile
 						break;
 					case LayerType.Keys:
 						byte[] keyBuffer = layerReader.View();
-						var key = Encoding.UTF8.GetString(keyBuffer, 0, keyBuffer.Length);
+						string key = Encoding.UTF8.GetString(keyBuffer, 0, keyBuffer.Length);
 						layer.Keys.Add(key);
 						break;
 					case LayerType.Values:
 						byte[] valueBuffer = layerReader.View();
-						var valReader = new PbfReader(valueBuffer);
+						PbfReader valReader = new PbfReader(valueBuffer);
 						while (valReader.NextByte())
 						{
 							switch ((ValueType) valReader.Tag)
 							{
 								case ValueType.String:
 									byte[] stringBuffer = valReader.View();
-									var value = Encoding.UTF8.GetString(stringBuffer, 0, stringBuffer.Length);
+									string value = Encoding.UTF8.GetString(stringBuffer, 0, stringBuffer.Length);
 									layer.Values.Add(value);
 									break;
 								case ValueType.Float:
-									var snglVal = valReader.GetFloat();
+									float snglVal = valReader.GetFloat();
 									layer.Values.Add(snglVal);
 									break;
 								case ValueType.Double:
-									var dblVal = valReader.GetDouble();
+									double dblVal = valReader.GetDouble();
 									layer.Values.Add(dblVal);
 									break;
 								case ValueType.Int:
-									var i64 = valReader.Varint();
+									long i64 = valReader.Varint();
 									layer.Values.Add(i64);
 									break;
 								case ValueType.UInt:
-									var u64 = valReader.Varint();
+									long u64 = valReader.Varint();
 									layer.Values.Add(u64);
 									break;
 								case ValueType.SInt:
-									var s64 = valReader.Varint();
+									long s64 = valReader.Varint();
 									layer.Values.Add(s64);
 									break;
 								case ValueType.Bool:
-									var b = valReader.Varint();
+									long b = valReader.Varint();
 									layer.Values.Add(b == 1);
 									break;
 								default:
@@ -277,12 +277,12 @@ namespace ORMMap.VectorTile
 			, float scale = 1.0f
 		)
 		{
-			var featureReader = new PbfReader(data);
-			var feat = new VectorTileFeature(layer, clipBuffer, scale);
-			var geomTypeSet = false;
+			PbfReader featureReader = new PbfReader(data);
+			VectorTileFeature feat = new VectorTileFeature(layer, clipBuffer, scale);
+			bool geomTypeSet = false;
 			while (featureReader.NextByte())
 			{
-				var featureType = featureReader.Tag;
+				int featureType = featureReader.Tag;
 				if (validate)
 				{
 					if (!ConstantsAsDictionary.FeatureType.ContainsKey(featureType))
@@ -302,7 +302,7 @@ namespace ORMMap.VectorTile
 						feat.Tags = tags;
 						break;
 					case FeatureType.Type:
-						var geomType = (int) featureReader.Varint();
+						int geomType = (int) featureReader.Varint();
 						if (validate)
 						{
 							if (!ConstantsAsDictionary.GeomType.ContainsKey(geomType))
@@ -350,8 +350,8 @@ namespace ORMMap.VectorTile
 
 				if (feat.Tags.Count > 0)
 				{
-					var maxKeyIndex = feat.Tags.Where((key, idx) => idx % 2 == 0).Max();
-					var maxValueIndex = feat.Tags.Where((key, idx) => (idx + 1) % 2 == 0).Max();
+					int maxKeyIndex = feat.Tags.Where((key, idx) => idx % 2 == 0).Max();
+					int maxValueIndex = feat.Tags.Where((key, idx) => (idx + 1) % 2 == 0).Max();
 
 					if (maxKeyIndex >= layer.Keys.Count)
 					{

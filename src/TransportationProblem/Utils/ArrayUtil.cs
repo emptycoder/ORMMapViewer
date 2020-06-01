@@ -21,7 +21,7 @@ namespace TransportationProblem.Utils
 				throw new ArgumentOutOfRangeException("count");
 			}
 
-			for (var i = start; i < start + count; i++)
+			for (int i = start; i < start + count; i++)
 			{
 				array[i] = value;
 			}
@@ -34,7 +34,7 @@ namespace TransportationProblem.Utils
 				throw new ArgumentNullException("array");
 			}
 
-			for (var i = 0; i < array.Length; i++)
+			for (int i = 0; i < array.Length; i++)
 			{
 				array[i] = value;
 			}
@@ -42,10 +42,10 @@ namespace TransportationProblem.Utils
 
 		public static int GetMinIndex(this double[] array)
 		{
-			var minValue = array[0];
-			var minIndex = 0;
+			double minValue = array[0];
+			int minIndex = 0;
 
-			for (var i = 1; i < array.Length; i++)
+			for (int i = 1; i < array.Length; i++)
 			{
 				if (array[i] < minValue)
 				{

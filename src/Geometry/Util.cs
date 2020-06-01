@@ -29,7 +29,7 @@ namespace ORMMap.VectorTile.Geometry
 			, float scale
 		)
 		{
-			List<List<Vector2<long>>> retVal = new List<List<Vector2<long>>>();
+			var retVal = new List<List<Vector2<long>>>();
 
 			//points: simply remove them if one part of the coordinate pair is out of bounds:
 			// <0 || >extent
@@ -37,7 +37,7 @@ namespace ORMMap.VectorTile.Geometry
 			{
 				foreach (List<Vector2<long>> geomPart in geoms)
 				{
-					List<Vector2<long>> outGeom = new List<Vector2<long>>();
+					var outGeom = new List<Vector2<long>>();
 					foreach (Vector2<long> geom in geomPart)
 					{
 						if (
@@ -63,16 +63,16 @@ namespace ORMMap.VectorTile.Geometry
 			}
 
 			//use clipper for lines and polygons
-			var closed = true;
+			bool closed = true;
 			if (geomType == GeomType.LINESTRING)
 			{
 				closed = false;
 			}
 
 
-			Polygons subjects = new Polygons();
-			Polygons clip = new Polygons(1);
-			Polygons solution = new Polygons();
+			var subjects = new Polygons();
+			var clip = new Polygons(1);
+			var solution = new Polygons();
 
 			clip.Add(new Polygon(4));
 			clip[0].Add(new InternalClipper.IntPoint(0L - bufferSize, 0L - bufferSize));
@@ -82,7 +82,7 @@ namespace ORMMap.VectorTile.Geometry
 
 			foreach (List<Vector2<long>> geompart in geoms)
 			{
-				Polygon part = new Polygon();
+				var part = new Polygon();
 
 				foreach (Vector2<long> geom in geompart)
 				{
@@ -92,14 +92,14 @@ namespace ORMMap.VectorTile.Geometry
 				subjects.Add(part);
 			}
 
-			var c = new InternalClipper.Clipper();
+			InternalClipper.Clipper c = new InternalClipper.Clipper();
 			c.AddPaths(subjects, InternalClipper.PolyType.ptSubject, closed);
 			c.AddPaths(clip, InternalClipper.PolyType.ptClip, true);
 
-			var succeeded = false;
+			bool succeeded = false;
 			if (geomType == GeomType.LINESTRING)
 			{
-				var lineSolution = new InternalClipper.PolyTree();
+				InternalClipper.PolyTree lineSolution = new InternalClipper.PolyTree();
 				succeeded = c.Execute(
 					InternalClipper.ClipType.ctIntersection
 					, lineSolution
@@ -126,13 +126,13 @@ namespace ORMMap.VectorTile.Geometry
 				retVal = new List<List<Vector2<long>>>();
 				foreach (Polygon part in solution)
 				{
-					List<Vector2<long>> geompart = new List<Vector2<long>>();
+					var geompart = new List<Vector2<long>>();
 					// HACK:
 					// 1. clipper may or may not reverse order of vertices of LineStrings
 					// 2. clipper semms to drop the first vertex of a Polygon
 					// * We don't care about 1.
 					// * Added a check for 2 and insert a copy of last vertex as first
-					foreach (var geom in part)
+					foreach (InternalClipper.IntPoint geom in part)
 					{
 						geompart.Add(new Vector2<long> {X = geom.X, Y = geom.Y});
 					}

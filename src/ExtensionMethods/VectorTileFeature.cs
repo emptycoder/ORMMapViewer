@@ -22,7 +22,7 @@ namespace ORMMap.VectorTile.ExtensionMethods
 			, uint? clipBuffer = null
 		)
 		{
-			List<List<LatLng>> geometryAsWgs84 = new List<List<LatLng>>();
+			var geometryAsWgs84 = new List<List<LatLng>>();
 			foreach (List<Vector2<long>> part in feature.Geometry<long>(clipBuffer, 1.0f))
 			{
 				geometryAsWgs84.Add(

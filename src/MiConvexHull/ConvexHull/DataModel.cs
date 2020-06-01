@@ -135,7 +135,7 @@ namespace MIConvexHull
 
 			int[] av = a.Vertices;
 			int[] bv = b.Vertices;
-			for (var i = 0; i < av.Length; i++)
+			for (int i = 0; i < av.Length; i++)
 			{
 				if (av[i] != bv[i])
 				{

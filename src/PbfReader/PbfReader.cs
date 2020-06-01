@@ -55,11 +55,11 @@ namespace ORMMap.VectorTile
 		{
 			// convert to base 128 varint
 			// https://developers.google.com/protocol-buffers/docs/encoding
-			var shift = 0;
+			int shift = 0;
 			long result = 0;
 			while (shift < 64)
 			{
-				var b = _buffer[_pos];
+				byte b = _buffer[_pos];
 				result |= (long) (b & 0x7F) << shift;
 				_pos++;
 				if ((b & 0x80) == 0)
@@ -93,10 +93,10 @@ namespace ORMMap.VectorTile
 				throw new Exception("not of type string, bytes or message");
 			}
 
-			var skipBytes = (ulong) Varint();
+			ulong skipBytes = (ulong) Varint();
 			SkipBytes(skipBytes);
 
-			byte[] buf = new byte[skipBytes];
+			var buf = new byte[skipBytes];
 			Array.Copy(_buffer, (int) _pos - (int) skipBytes, buf, 0, (int) skipBytes);
 
 			return buf;
@@ -109,9 +109,9 @@ namespace ORMMap.VectorTile
 		/// <returns>List of decoded `uint`s</returns>
 		public List<uint> GetPackedUnit32()
 		{
-			List<uint> values = new List<uint>(200);
-			var sizeInByte = (ulong) Varint();
-			var end = _pos + sizeInByte;
+			var values = new List<uint>(200);
+			ulong sizeInByte = (ulong) Varint();
+			ulong end = _pos + sizeInByte;
 			while (_pos < end)
 			{
 				values.Add((uint) Varint());
@@ -123,9 +123,9 @@ namespace ORMMap.VectorTile
 
 		public List<int> GetPackedSInt32()
 		{
-			List<int> values = new List<int>(200);
-			var sizeInByte = (ulong) Varint();
-			var end = _pos + sizeInByte;
+			var values = new List<int>(200);
+			ulong sizeInByte = (ulong) Varint();
+			ulong end = _pos + sizeInByte;
 			while (_pos < end)
 			{
 				values.Add(decodeZigZag32((int) Varint()));
@@ -137,9 +137,9 @@ namespace ORMMap.VectorTile
 
 		public List<long> GetPackedSInt64()
 		{
-			List<long> values = new List<long>(200);
-			var sizeInByte = (ulong) Varint();
-			var end = _pos + sizeInByte;
+			var values = new List<long>(200);
+			ulong sizeInByte = (ulong) Varint();
+			ulong end = _pos + sizeInByte;
 			while (_pos < end)
 			{
 				values.Add(decodeZigZag64(Varint()));
@@ -167,10 +167,10 @@ namespace ORMMap.VectorTile
 		/// <returns>Decoded double</returns>
 		public double GetDouble()
 		{
-			byte[] buf = new byte[8];
+			var buf = new byte[8];
 			Array.Copy(_buffer, (int) _pos, buf, 0, 8);
 			_pos += 8;
-			var dblVal = BitConverter.ToDouble(buf, 0);
+			double dblVal = BitConverter.ToDouble(buf, 0);
 			return dblVal;
 		}
 
@@ -181,10 +181,10 @@ namespace ORMMap.VectorTile
 		/// <returns>Decoded float</returns>
 		public float GetFloat()
 		{
-			byte[] buf = new byte[4];
+			var buf = new byte[4];
 			Array.Copy(_buffer, (int) _pos, buf, 0, 4);
 			_pos += 4;
-			var snglVal = BitConverter.ToSingle(buf, 0);
+			float snglVal = BitConverter.ToSingle(buf, 0);
 			return snglVal;
 		}
 
@@ -196,7 +196,7 @@ namespace ORMMap.VectorTile
 		/// <returns>Decoded string</returns>
 		public string GetString(ulong length)
 		{
-			byte[] buf = new byte[length];
+			var buf = new byte[length];
 			Array.Copy(_buffer, (int) _pos, buf, 0, (int) length);
 			_pos += length;
 			return Encoding.UTF8.GetString(buf, 0, buf.Length);
@@ -261,7 +261,7 @@ namespace ORMMap.VectorTile
 		{
 			if (_pos + skip > _length)
 			{
-				var msg = string.Format(NumberFormatInfo.InvariantInfo, "[SkipBytes()] skip:{0} pos:{1} len:{2}", skip,
+				string msg = string.Format(NumberFormatInfo.InvariantInfo, "[SkipBytes()] skip:{0} pos:{1} len:{2}", skip,
 					_pos, _length);
 				throw new Exception(msg);
 			}

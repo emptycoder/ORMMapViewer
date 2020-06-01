@@ -37,7 +37,7 @@ namespace ORMMap.Model.Data
 		// 16/19376/24637
 		protected override byte[] GetDataFromSource(Vector3<double> lonLatZoom)
 		{
-			var webClient = new WebClient();
+			WebClient webClient = new WebClient();
 			return webClient.DownloadData(
 				$"{apiUrl}/{lonLatZoom.Z}/{lonLatZoom.X}/{lonLatZoom.Y}{FileExtension}?api_key={apiKey}");
 		}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
 using ORMMap;
@@ -26,7 +27,7 @@ namespace ORMMapViewer
 		{
 			if (!mouseDown)
 			{
-				var pos = e.GetPosition(this);
+				Point pos = e.GetPosition(this);
 				oldPos.Set((int) pos.X, (int) pos.Y);
 				mouseDown = true;
 			}
@@ -44,7 +45,7 @@ namespace ORMMapViewer
 				return;
 			}
 
-			var pos = e.GetPosition(this);
+			Point pos = e.GetPosition(this);
 			camera.Position = new Point3D(camera.Position.X - (pos.X - oldPos.X) * (200 / zoom),
 				camera.Position.Y + (pos.Y - oldPos.Y) * (200 / zoom), camera.Position.Z);
 			oldPos.Set((int) pos.X, (int) pos.Y);

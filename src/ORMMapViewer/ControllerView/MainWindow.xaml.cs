@@ -6,7 +6,9 @@ using System.Windows;
 using ORMMap;
 using ORMMap.Model.Data;
 using ORMMap.Model.Entitites;
+using ORMMap.VectorTile;
 using ORMMap.VectorTile.Geometry;
+using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
 
 namespace ORMMapViewer
@@ -47,30 +49,30 @@ namespace ORMMapViewer
 
 		private void UpdateScene()
 		{
-			var cZoom = dataController.ConvertToMapZoom(zoom);
+			double cZoom = dataController.ConvertToMapZoom(zoom);
 			Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
-			Vector3<double> lonLatZoom = new Vector3<double>(
+			var lonLatZoom = new Vector3<double>(
 				tileCoordinations.X,
 				tileCoordinations.Y,
 				cZoom
 			);
-			var tile = dataController.GetData(lonLatZoom);
+			VectorTileObj tile = dataController.GetData(lonLatZoom);
 
-			var scene = new Bitmap((int) dataController.GetTileScale(), (int) dataController.GetTileScale());
-			using (var graphics = Graphics.FromImage(scene))
+			Bitmap scene = new Bitmap((int) dataController.GetTileScale(), (int) dataController.GetTileScale());
+			using (Graphics graphics = Graphics.FromImage(scene))
 			{
 				ReadOnlyCollection<string> layers = tile.LayerNames();
-				foreach (var layerName in layersPallete.Keys)
+				foreach (string layerName in layersPallete.Keys)
 				{
 					if (layers.Contains(layerName))
 					{
-						var layer = tile.GetLayer(layerName);
+						VectorTileLayer layer = tile.GetLayer(layerName);
 						Console.WriteLine(layerName);
 						MVTDrawer.DrawLayer(layer, layersPallete[layerName], graphics);
 					}
 				}
 
-				var graph = dataController.GetRoads(lonLatZoom);
+				Graph graph = dataController.GetRoads(lonLatZoom);
 				// LinkedList<Node> list = AStarPathSearch.FindPath();
 				// Console.WriteLine(list.Count);
 				// MVTDrawer.DrawGraphRoads(list, graphics);

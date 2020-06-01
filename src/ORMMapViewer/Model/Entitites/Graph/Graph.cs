@@ -8,7 +8,7 @@ namespace ORMMapViewer.Model.Entitites
 
 		public void AddNodesToList(List<Node> newNodes)
 		{
-			foreach (var node in newNodes)
+			foreach (Node node in newNodes)
 			{
 				AddNode(node);
 			}
@@ -16,7 +16,7 @@ namespace ORMMapViewer.Model.Entitites
 
 		public void AddNode(Node newNode)
 		{
-			var index = nodes.IndexOf(newNode);
+			int index = nodes.IndexOf(newNode);
 			if (index == -1)
 			{
 				nodes.Add(newNode);

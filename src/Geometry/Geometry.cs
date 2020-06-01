@@ -65,15 +65,15 @@ namespace ORMMap.VectorTile.Geometry
 
 		public LatLng ToLngLat(ulong z, ulong x, ulong y, ulong extent, bool checkLatLngMax = false)
 		{
-			var size = extent * Math.Pow(2, z);
-			var x0 = extent * (double) x;
-			var y0 = extent * (double) y;
+			double size = extent * Math.Pow(2, z);
+			double x0 = extent * (double) x;
+			double y0 = extent * (double) y;
 
-			var dblY = Convert.ToDouble(Y);
-			var dblX = Convert.ToDouble(X);
-			var y2 = 180d - (dblY + y0) * 360d / size;
-			var lng = (dblX + x0) * 360d / size - 180d;
-			var lat = 360d / Math.PI * Math.Atan(Math.Exp(y2 * Math.PI / 180d)) - 90d;
+			double dblY = Convert.ToDouble(Y);
+			double dblX = Convert.ToDouble(X);
+			double y2 = 180d - (dblY + y0) * 360d / size;
+			double lng = (dblX + x0) * 360d / size - 180d;
+			double lat = 360d / Math.PI * Math.Atan(Math.Exp(y2 * Math.PI / 180d)) - 90d;
 
 			if (checkLatLngMax)
 			{
@@ -88,7 +88,7 @@ namespace ORMMap.VectorTile.Geometry
 				}
 			}
 
-			var latLng = new LatLng
+			LatLng latLng = new LatLng
 			{
 				Lat = lat,
 				Lng = lng

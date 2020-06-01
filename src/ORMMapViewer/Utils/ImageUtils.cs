@@ -11,9 +11,9 @@ namespace ORMMapViewer.Utils
 	{
 		public static BitmapSource GetImageStream(Image myImage)
 		{
-			var bitmap = new Bitmap(myImage);
-			var bmpPt = bitmap.GetHbitmap();
-			var bitmapSource =
+			Bitmap bitmap = new Bitmap(myImage);
+			IntPtr bmpPt = bitmap.GetHbitmap();
+			BitmapSource bitmapSource =
 				Imaging.CreateBitmapSourceFromHBitmap(
 					bmpPt,
 					IntPtr.Zero,

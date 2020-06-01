@@ -23,10 +23,10 @@ namespace ORMMap
 
 		public static void DrawLayer(VectorTileLayer layer, Pallete pallete, Graphics graphics)
 		{
-			var featureCount = layer.FeatureCount();
-			for (var i = 0; i < featureCount; i++)
+			int featureCount = layer.FeatureCount();
+			for (int i = 0; i < featureCount; i++)
 			{
-				var feature = layer.GetFeature(i);
+				VectorTileFeature feature = layer.GetFeature(i);
 				if (feature.GeometryType == GeomType.UNKNOWN)
 				{
 					Console.WriteLine("Unknown feature: " + feature);
@@ -39,11 +39,11 @@ namespace ORMMap
 
 		private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics)
 		{
-			using (var solidBrush = new SolidBrush(pallete.MainFillColor))
+			using (SolidBrush solidBrush = new SolidBrush(pallete.MainFillColor))
 			{
-				using (var pen = new Pen(pallete.MainDrawColor))
+				using (Pen pen = new Pen(pallete.MainDrawColor))
 				{
-					List<PointF> points = new List<PointF>();
+					var points = new List<PointF>();
 					List<List<Vector2<int>>> list = feature.Geometry<int>();
 					foreach (List<Vector2<int>> item in list)
 					{
@@ -73,32 +73,32 @@ namespace ORMMap
 
 			Console.WriteLine(string.Join(",\n", points) + ",\n");
 
-			using (var pen = new Pen(pallete.MainDrawColor, pallete.Thickness))
+			using (Pen pen = new Pen(pallete.MainDrawColor, pallete.Thickness))
 			{
 				graphics.DrawLines(pen, points);
 			}
 
 			// Draw name of street
-			if (props.ContainsKey("name"))
-			{
-				using (var brush = new SolidBrush(pallete.GetPropFillColor("name")))
-				{
-					var text = (string) props["name"];
-					foreach (Vector2<int> point in geometry)
-					{
-						graphics.DrawString(text, font, brush, new Point(point.X, point.Y));
-					}
-				}
-			}
+			// if (props.ContainsKey("name"))
+			// {
+			// 	using (var brush = new SolidBrush(pallete.GetPropFillColor("name")))
+			// 	{
+			// 		var text = (string) props["name"];
+			// 		foreach (Vector2<int> point in geometry)
+			// 		{
+			// 			graphics.DrawString(text, font, brush, new Point(point.X, point.Y));
+			// 		}
+			// 	}
+			// }
 		}
 
 		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)
 		{
-			var index = 0;
+			int index = 0;
 
-			using (var brush = new SolidBrush(Color.Chartreuse))
+			using (SolidBrush brush = new SolidBrush(Color.Chartreuse))
 			{
-				foreach (var node in roads)
+				foreach (Node node in roads)
 				{
 					graphics.DrawString(index++.ToString(), font, brush, new Point(node.pos.X, node.pos.Y));
 				}
@@ -108,7 +108,7 @@ namespace ORMMap
 		public static void DrawGraphRoads(LinkedList<Node> roads, Graphics graphics)
 		{
 			Point[] points = roads.Select(node => new Point(node.pos.X, node.pos.Y)).ToArray();
-			using (var pen = new Pen(Color.Red, 7))
+			using (Pen pen = new Pen(Color.Red, 7))
 			{
 				graphics.DrawLines(pen, points);
 			}

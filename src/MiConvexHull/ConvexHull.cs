@@ -170,11 +170,11 @@ namespace MIConvexHull
 
 			try
 			{
-				var ch = new ConvexHullAlgorithm(data.Cast<IVertex>().ToArray(), false, tolerance);
+				ConvexHullAlgorithm ch = new ConvexHullAlgorithm(data.Cast<IVertex>().ToArray(), false, tolerance);
 				// todo: can this cast be avoided by changing ConvexHullAlgorithm to use TVertex?
 				ch.GetConvexHull();
 
-				ConvexHull<TVertex, TFace> convexHull = new ConvexHull<TVertex, TFace>
+				var convexHull = new ConvexHull<TVertex, TFace>
 				{
 					Points = ch.GetHullVertices(data),
 					Faces = ch.GetConvexFaces<TVertex, TFace>()

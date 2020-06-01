@@ -34,19 +34,19 @@ namespace ORMMap.VectorTile.ExtensionMethods
 
 			// escaping '{' '}' -> @"{{" "}}"
 			//escaping '"' -> @""""
-			var templateFeatureCollection = @"{{""type"":""FeatureCollection"",""features"":[{0}]}}";
-			var templateFeature =
+			string templateFeatureCollection = @"{{""type"":""FeatureCollection"",""features"":[{0}]}}";
+			string templateFeature =
 				@"{{""type"":""Feature"",""geometry"":{{""type"":""{0}"",""coordinates"":[{1}]}},""properties"":{2}}}";
 
-			List<string> geojsonFeatures = new List<string>();
+			var geojsonFeatures = new List<string>();
 
-			foreach (var layerName in tile.LayerNames())
+			foreach (string layerName in tile.LayerNames())
 			{
-				var layer = tile.GetLayer(layerName);
+				VectorTileLayer layer = tile.GetLayer(layerName);
 
-				for (var i = 0; i < layer.FeatureCount(); i++)
+				for (int i = 0; i < layer.FeatureCount(); i++)
 				{
-					var feat = layer.GetFeature(i, clipBuffer);
+					VectorTileFeature feat = layer.GetFeature(i, clipBuffer);
 
 					if (feat.GeometryType == GeomType.UNKNOWN)
 					{
@@ -54,17 +54,17 @@ namespace ORMMap.VectorTile.ExtensionMethods
 					}
 
 					//resolve properties
-					List<string> keyValue = new List<string>();
-					var tagCnt = feat.Tags.Count;
-					for (var j = 0; j < tagCnt; j += 2)
+					var keyValue = new List<string>();
+					int tagCnt = feat.Tags.Count;
+					for (int j = 0; j < tagCnt; j += 2)
 					{
-						var key = layer.Keys[feat.Tags[j]];
-						var val = layer.Values[feat.Tags[j + 1]];
+						string key = layer.Keys[feat.Tags[j]];
+						object val = layer.Values[feat.Tags[j + 1]];
 						keyValue.Add(string.Format(NumberFormatInfo.InvariantInfo, @"""{0}"":""{1}""", key, val));
 					}
 
 					//build geojson properties object from resolved properties
-					var geojsonProps = string.Format(
+					string geojsonProps = string.Format(
 						NumberFormatInfo.InvariantInfo
 						, @"{{""id"":{0},""lyr"":""{1}""{2}{3}}}"
 						, feat.Id
@@ -74,8 +74,8 @@ namespace ORMMap.VectorTile.ExtensionMethods
 					);
 
 					//work through geometries
-					var geojsonCoords = "";
-					var geomType = feat.GeometryType.Description();
+					string geojsonCoords = "";
+					string geomType = feat.GeometryType.Description();
 
 					//multipart
 					List<List<LatLng>> geomWgs84 = feat.GeometryAsWgs84(zoom, tileColumn, tileRow);
@@ -96,7 +96,7 @@ namespace ORMMap.VectorTile.ExtensionMethods
 								break;
 							case GeomType.LINESTRING:
 								geomType = "MultiLineString";
-								List<string> parts = new List<string>();
+								var parts = new List<string>();
 								foreach (List<LatLng> part in geomWgs84)
 								{
 									parts.Add("[" + string.Join(
@@ -109,7 +109,7 @@ namespace ORMMap.VectorTile.ExtensionMethods
 								break;
 							case GeomType.POLYGON:
 								geomType = "MultiPolygon";
-								List<string> partsMP = new List<string>();
+								var partsMP = new List<string>();
 								foreach (List<LatLng> part in geomWgs84)
 								{
 									partsMP.Add("[" + string.Join(
@@ -168,7 +168,7 @@ namespace ORMMap.VectorTile.ExtensionMethods
 				}
 			}
 
-			var geoJsonFeatColl = string.Format(
+			string geoJsonFeatColl = string.Format(
 				NumberFormatInfo.InvariantInfo
 				, templateFeatureCollection
 				, string.Join(",", geojsonFeatures.ToArray())

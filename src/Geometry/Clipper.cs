@@ -152,7 +152,7 @@ namespace ORMMap.VectorTile.Geometry
 				{
 					get
 					{
-						var result = m_AllPolys.Count;
+						int result = m_AllPolys.Count;
 						//with negative offsets, ignore the hidden outer polygon ...
 						if (result > 0 && m_Childs[0] != m_AllPolys[0])
 						{
@@ -168,8 +168,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				public void Clear()
 				{
-					var polyCnt = m_AllPolys.Count;
-					for (var i = 0; i < polyCnt; i++)
+					int polyCnt = m_AllPolys.Count;
+					for (int i = 0; i < polyCnt; i++)
 					{
 						m_AllPolys[i] = null;
 					}
@@ -212,8 +212,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				private bool IsHoleNode()
 				{
-					var result = true;
-					var node = m_Parent;
+					bool result = true;
+					PolyNode node = m_Parent;
 					while (node != null)
 					{
 						result = !result;
@@ -225,7 +225,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal void AddChild(PolyNode Child)
 				{
-					var cnt = m_Childs.Count;
+					int cnt = m_Childs.Count;
 					m_Childs.Add(Child);
 					Child.m_Parent = this;
 					Child.m_Index = cnt;
@@ -328,7 +328,7 @@ namespace ORMMap.VectorTile.Geometry
 						return false;
 					}
 
-					var i128 = (Int128) obj;
+					Int128 i128 = (Int128) obj;
 					return i128.hi == hi && i128.lo == lo;
 				}
 
@@ -406,7 +406,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				public static Int128 Int128Mul(long lhs, long rhs)
 				{
-					var negate = lhs < 0 != rhs < 0;
+					bool negate = lhs < 0 != rhs < 0;
 					if (lhs < 0)
 					{
 						lhs = -lhs;
@@ -417,15 +417,15 @@ namespace ORMMap.VectorTile.Geometry
 						rhs = -rhs;
 					}
 
-					var int1Hi = (ulong) lhs >> 32;
-					var int1Lo = (ulong) lhs & 0xFFFFFFFF;
-					var int2Hi = (ulong) rhs >> 32;
-					var int2Lo = (ulong) rhs & 0xFFFFFFFF;
+					ulong int1Hi = (ulong) lhs >> 32;
+					ulong int1Lo = (ulong) lhs & 0xFFFFFFFF;
+					ulong int2Hi = (ulong) rhs >> 32;
+					ulong int2Lo = (ulong) rhs & 0xFFFFFFFF;
 
 					//nb: see comments in clipper.pas
-					var a = int1Hi * int2Hi;
-					var b = int1Lo * int2Lo;
-					var c = int1Hi * int2Lo + int1Lo * int2Hi;
+					ulong a = int1Hi * int2Hi;
+					ulong b = int1Lo * int2Lo;
+					ulong c = int1Hi * int2Lo + int1Lo * int2Hi;
 
 					ulong lo;
 					long hi;
@@ -441,7 +441,7 @@ namespace ORMMap.VectorTile.Geometry
 						hi++;
 					}
 
-					var result = new Int128(hi, lo);
+					Int128 result = new Int128(hi, lo);
 					return negate ? -result : result;
 				}
 			}
@@ -514,7 +514,7 @@ namespace ORMMap.VectorTile.Geometry
 
 					if (obj is IntPoint)
 					{
-						var a = (IntPoint) obj;
+						IntPoint a = (IntPoint) obj;
 						return X == a.X && Y == a.Y;
 					}
 
@@ -597,7 +597,7 @@ namespace ORMMap.VectorTile.Geometry
 			{
 				public int Compare(IntersectNode node1, IntersectNode node2)
 				{
-					var i = node2.Pt.Y - node1.Pt.Y;
+					long i = node2.Pt.Y - node1.Pt.Y;
 					if (i > 0)
 					{
 						return 1;
@@ -697,7 +697,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				public void Swap(ref long val1, ref long val2)
 				{
-					var tmp = val1;
+					long tmp = val1;
 					val1 = val2;
 					val2 = tmp;
 				}
@@ -711,7 +711,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal bool PointIsVertex(IntPoint pt, OutPt pp)
 				{
-					var pp2 = pp;
+					OutPt pp2 = pp;
 					do
 					{
 						if (pp2.Pt == pt)
@@ -750,7 +750,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal bool PointOnPolygon(IntPoint pt, OutPt pp, bool UseFullRange)
 				{
-					var pp2 = pp;
+					OutPt pp2 = pp;
 					while (true)
 					{
 						if (PointOnLineSegment(pt, pp2.Pt, pp2.Next.Pt, UseFullRange))
@@ -822,11 +822,11 @@ namespace ORMMap.VectorTile.Geometry
 				public virtual void Clear()
 				{
 					DisposeLocalMinimaList();
-					var edgesCnt = m_edges.Count;
-					for (var i = 0; i < edgesCnt; ++i)
+					int edgesCnt = m_edges.Count;
+					for (int i = 0; i < edgesCnt; ++i)
 					{
-						var edgesIcount = m_edges[i].Count;
-						for (var j = 0; j < edgesIcount; ++j)
+						int edgesIcount = m_edges[i].Count;
+						for (int j = 0; j < edgesIcount; ++j)
 						{
 							m_edges[i][j] = null;
 						}
@@ -844,7 +844,7 @@ namespace ORMMap.VectorTile.Geometry
 				{
 					while (m_MinimaList != null)
 					{
-						var tmpLm = m_MinimaList.Next;
+						LocalMinima tmpLm = m_MinimaList.Next;
 						m_MinimaList = null;
 						m_MinimaList = tmpLm;
 					}
@@ -999,7 +999,7 @@ namespace ORMMap.VectorTile.Geometry
 								E = Result.Prev;
 							}
 
-							var locMin = new LocalMinima();
+							LocalMinima locMin = new LocalMinima();
 							locMin.Next = null;
 							locMin.Y = E.Bot.Y;
 							locMin.LeftBound = null;
@@ -1140,7 +1140,7 @@ namespace ORMMap.VectorTile.Geometry
         throw new ClipperException("AddPath: Open paths have been disabled.");
 #endif
 
-					var highI = pg.Count - 1;
+					int highI = pg.Count - 1;
 					if (Closed)
 					{
 						while (highI > 0 && pg[highI] == pg[0])
@@ -1160,13 +1160,13 @@ namespace ORMMap.VectorTile.Geometry
 					}
 
 					//create a new edge array ...
-					List<TEdge> edges = new List<TEdge>(highI + 1);
-					for (var i = 0; i <= highI; i++)
+					var edges = new List<TEdge>(highI + 1);
+					for (int i = 0; i <= highI; i++)
 					{
 						edges.Add(new TEdge());
 					}
 
-					var IsFlat = true;
+					bool IsFlat = true;
 
 					//1. Basic (first) edge initialization ...
 					edges[1].Curr = pg[1];
@@ -1174,13 +1174,13 @@ namespace ORMMap.VectorTile.Geometry
 					RangeTest(pg[highI], ref m_UseFullRange);
 					InitEdge(edges[0], edges[1], edges[highI], pg[0]);
 					InitEdge(edges[highI], edges[0], edges[highI - 1], pg[highI]);
-					for (var i = highI - 1; i >= 1; --i)
+					for (int i = highI - 1; i >= 1; --i)
 					{
 						RangeTest(pg[i], ref m_UseFullRange);
 						InitEdge(edges[i], edges[i + 1], edges[i - 1], pg[i]);
 					}
 
-					var eStart = edges[0];
+					TEdge eStart = edges[0];
 
 					//2. Remove duplicate vertices, and (when closed) collinear edges ...
 					TEdge E = eStart, eLoopStop = eStart;
@@ -1271,7 +1271,7 @@ namespace ORMMap.VectorTile.Geometry
 						}
 
 						E.Prev.OutIdx = Skip;
-						var locMin = new LocalMinima();
+						LocalMinima locMin = new LocalMinima();
 						locMin.Next = null;
 						locMin.Y = E.Bot.Y;
 						locMin.LeftBound = null;
@@ -1325,7 +1325,7 @@ namespace ORMMap.VectorTile.Geometry
 
 						//E and E.Prev now share a local minima (left aligned if horizontal).
 						//Compare their slopes to find which starts which bound ...
-						var locMin = new LocalMinima();
+						LocalMinima locMin = new LocalMinima();
 						locMin.Next = null;
 						locMin.Y = E.Bot.Y;
 						if (E.Dx < E.Prev.Dx)
@@ -1365,7 +1365,7 @@ namespace ORMMap.VectorTile.Geometry
 							E = ProcessBound(E, leftBoundIsForward);
 						}
 
-						var E2 = ProcessBound(locMin.RightBound, !leftBoundIsForward);
+						TEdge E2 = ProcessBound(locMin.RightBound, !leftBoundIsForward);
 						if (E2.OutIdx == Skip)
 						{
 							E2 = ProcessBound(E2, !leftBoundIsForward);
@@ -1393,9 +1393,9 @@ namespace ORMMap.VectorTile.Geometry
 
 				public bool AddPaths(Paths ppg, PolyType polyType, bool closed)
 				{
-					var result = false;
-					var ppgCnt = ppg.Count;
-					for (var i = 0; i < ppgCnt; ++i)
+					bool result = false;
+					int ppgCnt = ppg.Count;
+					for (int i = 0; i < ppgCnt; ++i)
 					{
 						if (AddPath(ppg[i], polyType, closed))
 						{
@@ -1428,7 +1428,7 @@ namespace ORMMap.VectorTile.Geometry
 					//removes e from double_linked_list (but without removing from memory)
 					e.Prev.Next = e.Next;
 					e.Next.Prev = e.Prev;
-					var result = e.Next;
+					TEdge result = e.Next;
 					e.Prev = null; //flag as removed (see ClipperBase.Clear)
 					return result;
 				}
@@ -1462,7 +1462,7 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var tmpLm = m_MinimaList;
+						LocalMinima tmpLm = m_MinimaList;
 						while (tmpLm.Next != null && newLm.Y < tmpLm.Next.Y)
 						{
 							tmpLm = tmpLm.Next;
@@ -1509,11 +1509,11 @@ namespace ORMMap.VectorTile.Geometry
 
 					//reset all edges ...
 					m_Scanbeam = null;
-					var lm = m_MinimaList;
+					LocalMinima lm = m_MinimaList;
 					while (lm != null)
 					{
 						InsertScanbeam(lm.Y);
-						var e = lm.LeftBound;
+						TEdge e = lm.LeftBound;
 						if (e != null)
 						{
 							e.Curr = e.Bot;
@@ -1547,15 +1547,15 @@ namespace ORMMap.VectorTile.Geometry
 						return new IntRect(0, 0, 0, 0);
 					}
 
-					var result = new IntRect();
+					IntRect result = new IntRect();
 					result.left = paths[i][0].X;
 					result.right = result.left;
 					result.top = paths[i][0].Y;
 					result.bottom = result.top;
 					for (; i < cnt; i++)
 					{
-						var pathsIcnt = paths[i].Count;
-						for (var j = 0; j < pathsIcnt; j++)
+						int pathsIcnt = paths[i].Count;
+						for (int j = 0; j < pathsIcnt; j++)
 						{
 							if (paths[i][j].X < result.left)
 							{
@@ -1592,14 +1592,14 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else if (Y > m_Scanbeam.Y)
 					{
-						var newSb = new Scanbeam();
+						Scanbeam newSb = new Scanbeam();
 						newSb.Y = Y;
 						newSb.Next = m_Scanbeam;
 						m_Scanbeam = newSb;
 					}
 					else
 					{
-						var sb2 = m_Scanbeam;
+						Scanbeam sb2 = m_Scanbeam;
 						while (sb2.Next != null && Y <= sb2.Next.Y)
 						{
 							sb2 = sb2.Next;
@@ -1610,7 +1610,7 @@ namespace ORMMap.VectorTile.Geometry
 							return; //ie ignores duplicates
 						}
 
-						var newSb = new Scanbeam();
+						Scanbeam newSb = new Scanbeam();
 						newSb.Y = Y;
 						newSb.Next = sb2.Next;
 						sb2.Next = newSb;
@@ -1640,7 +1640,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal OutRec CreateOutRec()
 				{
-					var result = new OutRec();
+					OutRec result = new OutRec();
 					result.Idx = Unassigned;
 					result.IsHole = false;
 					result.IsOpen = false;
@@ -1656,7 +1656,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal void DisposeOutRec(int index)
 				{
-					var outRec = m_PolyOuts[index];
+					OutRec outRec = m_PolyOuts[index];
 					outRec.Pts = null;
 					outRec = null;
 					m_PolyOuts[index] = null;
@@ -1670,8 +1670,8 @@ namespace ORMMap.VectorTile.Geometry
 						throw new ClipperException("UpdateEdgeIntoAEL: invalid call");
 					}
 
-					var AelPrev = e.PrevInAEL;
-					var AelNext = e.NextInAEL;
+					TEdge AelPrev = e.PrevInAEL;
+					TEdge AelNext = e.NextInAEL;
 					e.NextInLML.OutIdx = e.OutIdx;
 					if (AelPrev != null)
 					{
@@ -1713,13 +1713,13 @@ namespace ORMMap.VectorTile.Geometry
 
 					if (edge1.NextInAEL == edge2)
 					{
-						var next = edge2.NextInAEL;
+						TEdge next = edge2.NextInAEL;
 						if (next != null)
 						{
 							next.PrevInAEL = edge1;
 						}
 
-						var prev = edge1.PrevInAEL;
+						TEdge prev = edge1.PrevInAEL;
 						if (prev != null)
 						{
 							prev.NextInAEL = edge2;
@@ -1732,13 +1732,13 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else if (edge2.NextInAEL == edge1)
 					{
-						var next = edge1.NextInAEL;
+						TEdge next = edge1.NextInAEL;
 						if (next != null)
 						{
 							next.PrevInAEL = edge2;
 						}
 
-						var prev = edge2.PrevInAEL;
+						TEdge prev = edge2.PrevInAEL;
 						if (prev != null)
 						{
 							prev.NextInAEL = edge1;
@@ -1751,8 +1751,8 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var next = edge1.NextInAEL;
-						var prev = edge1.PrevInAEL;
+						TEdge next = edge1.NextInAEL;
+						TEdge prev = edge1.PrevInAEL;
 						edge1.NextInAEL = edge2.NextInAEL;
 						if (edge1.NextInAEL != null)
 						{
@@ -1791,8 +1791,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal void DeleteFromAEL(TEdge e)
 				{
-					var AelPrev = e.PrevInAEL;
-					var AelNext = e.NextInAEL;
+					TEdge AelPrev = e.PrevInAEL;
+					TEdge AelNext = e.NextInAEL;
 					if (AelPrev == null && AelNext == null && e != m_ActiveEdges)
 					{
 						return; //already deleted
@@ -1867,7 +1867,7 @@ namespace ORMMap.VectorTile.Geometry
 				private void InsertMaxima(long X)
 				{
 					//double-linked list: sorted ascending, ignoring dups.
-					var newMax = new Maxima();
+					Maxima newMax = new Maxima();
 					newMax.X = X;
 					if (m_Maxima == null)
 					{
@@ -1883,7 +1883,7 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var m = m_Maxima;
+						Maxima m = m_Maxima;
 						while (m.Next != null && X >= m.Next.X)
 						{
 							m = m.Next;
@@ -2011,7 +2011,7 @@ namespace ORMMap.VectorTile.Geometry
 						return;
 					}
 
-					var orfl = outRec.FirstLeft;
+					OutRec orfl = outRec.FirstLeft;
 					while (orfl != null && (orfl.IsHole == outRec.IsHole || orfl.Pts == null))
 					{
 						orfl = orfl.FirstLeft;
@@ -2051,7 +2051,7 @@ namespace ORMMap.VectorTile.Geometry
 						}
 
 						//fix orientations ...
-						foreach (var outRec in m_PolyOuts)
+						foreach (OutRec outRec in m_PolyOuts)
 						{
 							if (outRec.Pts == null || outRec.IsOpen)
 							{
@@ -2066,7 +2066,7 @@ namespace ORMMap.VectorTile.Geometry
 
 						JoinCommonEdges();
 
-						foreach (var outRec in m_PolyOuts)
+						foreach (OutRec outRec in m_PolyOuts)
 						{
 							if (outRec.Pts == null)
 							{
@@ -2101,8 +2101,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void DisposeAllPolyPts()
 				{
-					var polyCnt = m_PolyOuts.Count;
-					for (var i = 0; i < polyCnt; ++i)
+					int polyCnt = m_PolyOuts.Count;
+					for (int i = 0; i < polyCnt; ++i)
 					{
 						DisposeOutRec(i);
 					}
@@ -2113,7 +2113,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void AddJoin(OutPt Op1, OutPt Op2, IntPoint OffPt)
 				{
-					var j = new Join();
+					Join j = new Join();
 					j.OutPt1 = Op1;
 					j.OutPt2 = Op2;
 					j.OffPt = OffPt;
@@ -2123,7 +2123,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void AddGhostJoin(OutPt Op, IntPoint OffPt)
 				{
-					var j = new Join();
+					Join j = new Join();
 					j.OutPt1 = Op;
 					j.OffPt = OffPt;
 					m_GhostJoins.Add(j);
@@ -2148,8 +2148,8 @@ namespace ORMMap.VectorTile.Geometry
 					LocalMinima lm;
 					while (PopLocalMinima(botY, out lm))
 					{
-						var lb = lm.LeftBound;
-						var rb = lm.RightBound;
+						TEdge lb = lm.LeftBound;
+						TEdge rb = lm.RightBound;
 
 						OutPt Op1 = null;
 						if (lb == null)
@@ -2213,12 +2213,12 @@ namespace ORMMap.VectorTile.Geometry
 						if (Op1 != null && IsHorizontal(rb) &&
 						    m_GhostJoins.Count > 0 && rb.WindDelta != 0)
 						{
-							var ghostCnt = m_GhostJoins.Count;
-							for (var i = 0; i < ghostCnt; i++)
+							int ghostCnt = m_GhostJoins.Count;
+							for (int i = 0; i < ghostCnt; i++)
 							{
 								//if the horizontal Rb and a 'ghost' horizontal overlap, then convert
 								//the 'ghost' join to a real join ready for later ...
-								var j = m_GhostJoins[i];
+								Join j = m_GhostJoins[i];
 								if (HorzSegmentsOverlap(j.OutPt1.Pt.X, j.OffPt.X, rb.Bot.X, rb.Top.X))
 								{
 									AddJoin(j.OutPt1, Op1, j.OffPt);
@@ -2232,7 +2232,7 @@ namespace ORMMap.VectorTile.Geometry
 						    SlopesEqual(lb.PrevInAEL.Curr, lb.PrevInAEL.Top, lb.Curr, lb.Top, m_UseFullRange) &&
 						    lb.WindDelta != 0 && lb.PrevInAEL.WindDelta != 0)
 						{
-							var Op2 = AddOutPt(lb.PrevInAEL, lb.Bot);
+							OutPt Op2 = AddOutPt(lb.PrevInAEL, lb.Bot);
 							AddJoin(Op1, Op2, lb.Top);
 						}
 
@@ -2242,11 +2242,11 @@ namespace ORMMap.VectorTile.Geometry
 							    SlopesEqual(rb.PrevInAEL.Curr, rb.PrevInAEL.Top, rb.Curr, rb.Top, m_UseFullRange) &&
 							    rb.WindDelta != 0 && rb.PrevInAEL.WindDelta != 0)
 							{
-								var Op2 = AddOutPt(rb.PrevInAEL, rb.Bot);
+								OutPt Op2 = AddOutPt(rb.PrevInAEL, rb.Bot);
 								AddJoin(Op1, Op2, rb.Top);
 							}
 
-							var e = lb.NextInAEL;
+							TEdge e = lb.NextInAEL;
 							if (e != null)
 							{
 								while (e != rb)
@@ -2464,7 +2464,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void SetWindingCount(TEdge edge)
 				{
-					var e = edge.PrevInAEL;
+					TEdge e = edge.PrevInAEL;
 					//find the edge of the same polytype that immediately preceeds 'edge' in AEL
 					while (e != null && (e.PolyTyp != edge.PolyTyp || e.WindDelta == 0))
 					{
@@ -2499,8 +2499,8 @@ namespace ORMMap.VectorTile.Geometry
 						if (edge.WindDelta == 0)
 						{
 							//are we inside a subj polygon ...
-							var Inside = true;
-							var e2 = e.PrevInAEL;
+							bool Inside = true;
+							TEdge e2 = e.PrevInAEL;
 							while (e2 != null)
 							{
 								if (e2.PolyTyp == e.PolyTyp && e2.WindDelta != 0)
@@ -2628,7 +2628,7 @@ namespace ORMMap.VectorTile.Geometry
 						return false;
 					}
 
-					var oldE = e;
+					TEdge oldE = e;
 					m_SortedEdges = e.NextInSEL;
 					if (m_SortedEdges != null)
 					{
@@ -2643,7 +2643,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void CopyAELToSEL()
 				{
-					var e = m_ActiveEdges;
+					TEdge e = m_ActiveEdges;
 					m_SortedEdges = e;
 					while (e != null)
 					{
@@ -2668,13 +2668,13 @@ namespace ORMMap.VectorTile.Geometry
 
 					if (edge1.NextInSEL == edge2)
 					{
-						var next = edge2.NextInSEL;
+						TEdge next = edge2.NextInSEL;
 						if (next != null)
 						{
 							next.PrevInSEL = edge1;
 						}
 
-						var prev = edge1.PrevInSEL;
+						TEdge prev = edge1.PrevInSEL;
 						if (prev != null)
 						{
 							prev.NextInSEL = edge2;
@@ -2687,13 +2687,13 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else if (edge2.NextInSEL == edge1)
 					{
-						var next = edge1.NextInSEL;
+						TEdge next = edge1.NextInSEL;
 						if (next != null)
 						{
 							next.PrevInSEL = edge2;
 						}
 
-						var prev = edge2.PrevInSEL;
+						TEdge prev = edge2.PrevInSEL;
 						if (prev != null)
 						{
 							prev.NextInSEL = edge1;
@@ -2706,8 +2706,8 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var next = edge1.NextInSEL;
-						var prev = edge1.PrevInSEL;
+						TEdge next = edge1.NextInSEL;
+						TEdge prev = edge1.PrevInSEL;
 						edge1.NextInSEL = edge2.NextInSEL;
 						if (edge1.NextInSEL != null)
 						{
@@ -2808,13 +2808,13 @@ namespace ORMMap.VectorTile.Geometry
 
 					if (prevE != null && prevE.OutIdx >= 0)
 					{
-						var xPrev = TopX(prevE, pt.Y);
-						var xE = TopX(e, pt.Y);
+						long xPrev = TopX(prevE, pt.Y);
+						long xE = TopX(e, pt.Y);
 						if (xPrev == xE && e.WindDelta != 0 && prevE.WindDelta != 0 &&
 						    SlopesEqual(new IntPoint(xPrev, pt.Y), prevE.Top, new IntPoint(xE, pt.Y), e.Top,
 							    m_UseFullRange))
 						{
-							var outPt = AddOutPt(prevE, pt);
+							OutPt outPt = AddOutPt(prevE, pt);
 							AddJoin(result, outPt, e.Top);
 						}
 					}
@@ -2827,9 +2827,9 @@ namespace ORMMap.VectorTile.Geometry
 				{
 					if (e.OutIdx < 0)
 					{
-						var outRec = CreateOutRec();
+						OutRec outRec = CreateOutRec();
 						outRec.IsOpen = e.WindDelta == 0;
-						var newOp = new OutPt();
+						OutPt newOp = new OutPt();
 						outRec.Pts = newOp;
 						newOp.Idx = outRec.Idx;
 						newOp.Pt = pt;
@@ -2845,10 +2845,10 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var outRec = m_PolyOuts[e.OutIdx];
+						OutRec outRec = m_PolyOuts[e.OutIdx];
 						//OutRec.Pts is the 'Left-most' point & OutRec.Pts.Prev is the 'Right-most'
-						var op = outRec.Pts;
-						var ToFront = e.Side == EdgeSide.esLeft;
+						OutPt op = outRec.Pts;
+						bool ToFront = e.Side == EdgeSide.esLeft;
 						if (ToFront && pt == op.Pt)
 						{
 							return op;
@@ -2859,7 +2859,7 @@ namespace ORMMap.VectorTile.Geometry
 							return op.Prev;
 						}
 
-						var newOp = new OutPt();
+						OutPt newOp = new OutPt();
 						newOp.Idx = outRec.Idx;
 						newOp.Pt = pt;
 						newOp.Next = op;
@@ -2878,7 +2878,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private OutPt GetLastOutPt(TEdge e)
 				{
-					var outRec = m_PolyOuts[e.OutIdx];
+					OutRec outRec = m_PolyOuts[e.OutIdx];
 					if (e.Side == EdgeSide.esLeft)
 					{
 						return outRec.Pts;
@@ -2890,7 +2890,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal void SwapPoints(ref IntPoint pt1, ref IntPoint pt2)
 				{
-					var tmp = new IntPoint(pt1);
+					IntPoint tmp = new IntPoint(pt1);
 					pt1 = pt2;
 					pt2 = tmp;
 				}
@@ -2914,7 +2914,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void SetHoleState(TEdge e, OutRec outRec)
 				{
-					var e2 = e.PrevInAEL;
+					TEdge e2 = e.PrevInAEL;
 					TEdge eTmp = null;
 					while (e2 != null)
 					{
@@ -2959,20 +2959,20 @@ namespace ORMMap.VectorTile.Geometry
 
 				private bool FirstIsBottomPt(OutPt btmPt1, OutPt btmPt2)
 				{
-					var p = btmPt1.Prev;
+					OutPt p = btmPt1.Prev;
 					while (p.Pt == btmPt1.Pt && p != btmPt1)
 					{
 						p = p.Prev;
 					}
 
-					var dx1p = Math.Abs(GetDx(btmPt1.Pt, p.Pt));
+					double dx1p = Math.Abs(GetDx(btmPt1.Pt, p.Pt));
 					p = btmPt1.Next;
 					while (p.Pt == btmPt1.Pt && p != btmPt1)
 					{
 						p = p.Next;
 					}
 
-					var dx1n = Math.Abs(GetDx(btmPt1.Pt, p.Pt));
+					double dx1n = Math.Abs(GetDx(btmPt1.Pt, p.Pt));
 
 					p = btmPt2.Prev;
 					while (p.Pt == btmPt2.Pt && p != btmPt2)
@@ -2980,14 +2980,14 @@ namespace ORMMap.VectorTile.Geometry
 						p = p.Prev;
 					}
 
-					var dx2p = Math.Abs(GetDx(btmPt2.Pt, p.Pt));
+					double dx2p = Math.Abs(GetDx(btmPt2.Pt, p.Pt));
 					p = btmPt2.Next;
 					while (p.Pt == btmPt2.Pt && p != btmPt2)
 					{
 						p = p.Next;
 					}
 
-					var dx2n = Math.Abs(GetDx(btmPt2.Pt, p.Pt));
+					double dx2n = Math.Abs(GetDx(btmPt2.Pt, p.Pt));
 
 					if (Math.Max(dx1p, dx1n) == Math.Max(dx2p, dx2n) &&
 					    Math.Min(dx1p, dx1n) == Math.Min(dx2p, dx2n))
@@ -3002,7 +3002,7 @@ namespace ORMMap.VectorTile.Geometry
 				private OutPt GetBottomPt(OutPt pp)
 				{
 					OutPt dups = null;
-					var p = pp.Next;
+					OutPt p = pp.Next;
 					while (p != pp)
 					{
 						if (p.Pt.Y > pp.Pt.Y)
@@ -3064,8 +3064,8 @@ namespace ORMMap.VectorTile.Geometry
 						outRec2.BottomPt = GetBottomPt(outRec2.Pts);
 					}
 
-					var bPt1 = outRec1.BottomPt;
-					var bPt2 = outRec2.BottomPt;
+					OutPt bPt1 = outRec1.BottomPt;
+					OutPt bPt2 = outRec2.BottomPt;
 					if (bPt1.Pt.Y > bPt2.Pt.Y)
 					{
 						return outRec1;
@@ -3122,7 +3122,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private OutRec GetOutRec(int idx)
 				{
-					var outrec = m_PolyOuts[idx];
+					OutRec outrec = m_PolyOuts[idx];
 					while (outrec != m_PolyOuts[outrec.Idx])
 					{
 						outrec = m_PolyOuts[outrec.Idx];
@@ -3134,8 +3134,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void AppendPolygon(TEdge e1, TEdge e2)
 				{
-					var outRec1 = m_PolyOuts[e1.OutIdx];
-					var outRec2 = m_PolyOuts[e2.OutIdx];
+					OutRec outRec1 = m_PolyOuts[e1.OutIdx];
+					OutRec outRec2 = m_PolyOuts[e2.OutIdx];
 
 					OutRec holeStateRec;
 					if (OutRec1RightOfOutRec2(outRec1, outRec2))
@@ -3153,10 +3153,10 @@ namespace ORMMap.VectorTile.Geometry
 
 					//get the start and ends of both output polygons and
 					//join E2 poly onto E1 poly and delete pointers to E2 ...
-					var p1_lft = outRec1.Pts;
-					var p1_rt = p1_lft.Prev;
-					var p2_lft = outRec2.Pts;
-					var p2_rt = p2_lft.Prev;
+					OutPt p1_lft = outRec1.Pts;
+					OutPt p1_rt = p1_lft.Prev;
+					OutPt p2_lft = outRec2.Pts;
+					OutPt p2_rt = p2_lft.Prev;
 
 					//join e2 poly onto e1 poly and delete pointers to e2 ...
 					if (e1.Side == EdgeSide.esLeft)
@@ -3218,13 +3218,13 @@ namespace ORMMap.VectorTile.Geometry
 
 					outRec2.FirstLeft = outRec1;
 
-					var OKIdx = e1.OutIdx;
-					var ObsoleteIdx = e2.OutIdx;
+					int OKIdx = e1.OutIdx;
+					int ObsoleteIdx = e2.OutIdx;
 
 					e1.OutIdx = Unassigned; //nb: safe because we only get here via AddLocalMaxPoly
 					e2.OutIdx = Unassigned;
 
-					var e = m_ActiveEdges;
+					TEdge e = m_ActiveEdges;
 					while (e != null)
 					{
 						if (e.OutIdx == ObsoleteIdx)
@@ -3263,7 +3263,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private static void SwapSides(TEdge edge1, TEdge edge2)
 				{
-					var side = edge1.Side;
+					EdgeSide side = edge1.Side;
 					edge1.Side = edge2.Side;
 					edge2.Side = side;
 				}
@@ -3271,7 +3271,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private static void SwapPolyIndexes(TEdge edge1, TEdge edge2)
 				{
-					var outIdx = edge1.OutIdx;
+					int outIdx = edge1.OutIdx;
 					edge1.OutIdx = edge2.OutIdx;
 					edge2.OutIdx = outIdx;
 				}
@@ -3282,8 +3282,8 @@ namespace ORMMap.VectorTile.Geometry
 					//e1 will be to the left of e2 BELOW the intersection. Therefore e1 is before
 					//e2 in AEL except when e1 is being inserted at the intersection point ...
 
-					var e1Contributing = e1.OutIdx >= 0;
-					var e2Contributing = e2.OutIdx >= 0;
+					bool e1Contributing = e1.OutIdx >= 0;
+					bool e2Contributing = e2.OutIdx >= 0;
 
 #if use_xyz
           SetZ(ref pt, e1, e2);
@@ -3359,7 +3359,7 @@ namespace ORMMap.VectorTile.Geometry
 					{
 						if (IsEvenOddFillType(e1))
 						{
-							var oldE1WindCnt = e1.WindCnt;
+							int oldE1WindCnt = e1.WindCnt;
 							e1.WindCnt = e2.WindCnt;
 							e2.WindCnt = oldE1WindCnt;
 						}
@@ -3563,8 +3563,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void DeleteFromSEL(TEdge e)
 				{
-					var SelPrev = e.PrevInSEL;
-					var SelNext = e.NextInSEL;
+					TEdge SelPrev = e.PrevInSEL;
+					TEdge SelNext = e.NextInSEL;
 					if (SelPrev == null && SelNext == null && e != m_SortedEdges)
 					{
 						return; //already deleted
@@ -3620,7 +3620,7 @@ namespace ORMMap.VectorTile.Geometry
 				{
 					Direction dir;
 					long horzLeft, horzRight;
-					var IsOpen = horzEdge.WindDelta == 0;
+					bool IsOpen = horzEdge.WindDelta == 0;
 
 					GetHorzDirection(horzEdge, out dir, out horzLeft, out horzRight);
 
@@ -3635,7 +3635,7 @@ namespace ORMMap.VectorTile.Geometry
 						eMaxPair = GetMaximaPair(eLastHorz);
 					}
 
-					var currMax = m_Maxima;
+					Maxima currMax = m_Maxima;
 					if (currMax != null)
 					{
 						//get the first maxima in range (X) ...
@@ -3668,8 +3668,8 @@ namespace ORMMap.VectorTile.Geometry
 					OutPt op1 = null;
 					for (;;) //loop through consec. horizontal edges
 					{
-						var IsLastHorz = horzEdge == eLastHorz;
-						var e = GetNextInAEL(horzEdge, dir);
+						bool IsLastHorz = horzEdge == eLastHorz;
+						TEdge e = GetNextInAEL(horzEdge, dir);
 						while (e != null)
 						{
 							//this code block inserts extra coords into horizontal edges (in output
@@ -3722,14 +3722,14 @@ namespace ORMMap.VectorTile.Geometry
 							if (horzEdge.OutIdx >= 0 && !IsOpen) //note: may be done multiple times
 							{
 								op1 = AddOutPt(horzEdge, e.Curr);
-								var eNextHorz = m_SortedEdges;
+								TEdge eNextHorz = m_SortedEdges;
 								while (eNextHorz != null)
 								{
 									if (eNextHorz.OutIdx >= 0 &&
 									    HorzSegmentsOverlap(horzEdge.Bot.X,
 										    horzEdge.Top.X, eNextHorz.Bot.X, eNextHorz.Top.X))
 									{
-										var op2 = GetLastOutPt(eNextHorz);
+										OutPt op2 = GetLastOutPt(eNextHorz);
 										AddJoin(op2, op1, eNextHorz.Top);
 									}
 
@@ -3755,16 +3755,16 @@ namespace ORMMap.VectorTile.Geometry
 
 							if (dir == Direction.dLeftToRight)
 							{
-								var Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
+								IntPoint Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
 								IntersectEdges(horzEdge, e, Pt);
 							}
 							else
 							{
-								var Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
+								IntPoint Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
 								IntersectEdges(e, horzEdge, Pt);
 							}
 
-							var eNext = GetNextInAEL(e, dir);
+							TEdge eNext = GetNextInAEL(e, dir);
 							SwapPositionsInAEL(horzEdge, e);
 							e = eNext;
 						} //end while(e != null)
@@ -3787,14 +3787,14 @@ namespace ORMMap.VectorTile.Geometry
 					if (horzEdge.OutIdx >= 0 && op1 == null)
 					{
 						op1 = GetLastOutPt(horzEdge);
-						var eNextHorz = m_SortedEdges;
+						TEdge eNextHorz = m_SortedEdges;
 						while (eNextHorz != null)
 						{
 							if (eNextHorz.OutIdx >= 0 &&
 							    HorzSegmentsOverlap(horzEdge.Bot.X,
 								    horzEdge.Top.X, eNextHorz.Bot.X, eNextHorz.Top.X))
 							{
-								var op2 = GetLastOutPt(eNextHorz);
+								OutPt op2 = GetLastOutPt(eNextHorz);
 								AddJoin(op2, op1, eNextHorz.Top);
 							}
 
@@ -3817,13 +3817,13 @@ namespace ORMMap.VectorTile.Geometry
 							}
 
 							//nb: HorzEdge is no longer horizontal here
-							var ePrev = horzEdge.PrevInAEL;
-							var eNext = horzEdge.NextInAEL;
+							TEdge ePrev = horzEdge.PrevInAEL;
+							TEdge eNext = horzEdge.NextInAEL;
 							if (ePrev != null && ePrev.Curr.X == horzEdge.Bot.X &&
 							    ePrev.Curr.Y == horzEdge.Bot.Y && ePrev.WindDelta != 0 && ePrev.OutIdx >= 0 &&
 							    ePrev.Curr.Y > ePrev.Top.Y && SlopesEqual(horzEdge, ePrev, m_UseFullRange))
 							{
-								var op2 = AddOutPt(ePrev, horzEdge.Bot);
+								OutPt op2 = AddOutPt(ePrev, horzEdge.Bot);
 								AddJoin(op1, op2, horzEdge.Top);
 							}
 							else if (eNext != null && eNext.Curr.X == horzEdge.Bot.X &&
@@ -3831,7 +3831,7 @@ namespace ORMMap.VectorTile.Geometry
 							         eNext.OutIdx >= 0 && eNext.Curr.Y > eNext.Top.Y &&
 							         SlopesEqual(horzEdge, eNext, m_UseFullRange))
 							{
-								var op2 = AddOutPt(eNext, horzEdge.Bot);
+								OutPt op2 = AddOutPt(eNext, horzEdge.Bot);
 								AddJoin(op1, op2, horzEdge.Top);
 							}
 						}
@@ -3895,7 +3895,7 @@ namespace ORMMap.VectorTile.Geometry
 				internal TEdge GetMaximaPairEx(TEdge e)
 				{
 					//as above but returns null if MaxPair isn't in AEL (unless it's horizontal)
-					var result = GetMaximaPair(e);
+					TEdge result = GetMaximaPair(e);
 					if (result == null || result.OutIdx == Skip ||
 					    result.NextInAEL == result.PrevInAEL && !IsHorizontal(result))
 					{
@@ -3950,7 +3950,7 @@ namespace ORMMap.VectorTile.Geometry
 					}
 
 					//prepare for sorting ...
-					var e = m_ActiveEdges;
+					TEdge e = m_ActiveEdges;
 					m_SortedEdges = e;
 					while (e != null)
 					{
@@ -3961,14 +3961,14 @@ namespace ORMMap.VectorTile.Geometry
 					}
 
 					//bubblesort ...
-					var isModified = true;
+					bool isModified = true;
 					while (isModified && m_SortedEdges != null)
 					{
 						isModified = false;
 						e = m_SortedEdges;
 						while (e.NextInSEL != null)
 						{
-							var eNext = e.NextInSEL;
+							TEdge eNext = e.NextInSEL;
 							IntPoint pt;
 							if (e.Curr.X > eNext.Curr.X)
 							{
@@ -3978,7 +3978,7 @@ namespace ORMMap.VectorTile.Geometry
 									pt = new IntPoint(TopX(e, topY), topY);
 								}
 
-								var newNode = new IntersectNode();
+								IntersectNode newNode = new IntersectNode();
 								newNode.Edge1 = e;
 								newNode.Edge2 = eNext;
 								newNode.Pt = pt;
@@ -4030,12 +4030,12 @@ namespace ORMMap.VectorTile.Geometry
 					m_IntersectList.Sort(m_IntersectNodeComparer);
 
 					CopyAELToSEL();
-					var cnt = m_IntersectList.Count;
-					for (var i = 0; i < cnt; i++)
+					int cnt = m_IntersectList.Count;
+					for (int i = 0; i < cnt; i++)
 					{
 						if (!EdgesAdjacent(m_IntersectList[i]))
 						{
-							var j = i + 1;
+							int j = i + 1;
 							while (j < cnt && !EdgesAdjacent(m_IntersectList[j]))
 							{
 								j++;
@@ -4046,7 +4046,7 @@ namespace ORMMap.VectorTile.Geometry
 								return false;
 							}
 
-							var tmp = m_IntersectList[i];
+							IntersectNode tmp = m_IntersectList[i];
 							m_IntersectList[i] = m_IntersectList[j];
 							m_IntersectList[j] = tmp;
 						}
@@ -4060,10 +4060,10 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void ProcessIntersectList()
 				{
-					var intersectCnt = m_IntersectList.Count;
-					for (var i = 0; i < intersectCnt; i++)
+					int intersectCnt = m_IntersectList.Count;
+					for (int i = 0; i < intersectCnt; i++)
 					{
-						var iNode = m_IntersectList[i];
+						IntersectNode iNode = m_IntersectList[i];
 						{
 							IntersectEdges(iNode.Edge1, iNode.Edge2, iNode.Pt);
 							SwapPositionsInAEL(iNode.Edge1, iNode.Edge2);
@@ -4134,7 +4134,7 @@ namespace ORMMap.VectorTile.Geometry
 					{
 						b1 = edge1.Bot.X - edge1.Bot.Y * edge1.Dx;
 						b2 = edge2.Bot.X - edge2.Bot.Y * edge2.Dx;
-						var q = (b2 - b1) / (edge1.Dx - edge2.Dx);
+						double q = (b2 - b1) / (edge1.Dx - edge2.Dx);
 						ip.Y = Round(q);
 						if (Math.Abs(edge1.Dx) < Math.Abs(edge2.Dx))
 						{
@@ -4186,16 +4186,16 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void ProcessEdgesAtTopOfScanbeam(long topY)
 				{
-					var e = m_ActiveEdges;
+					TEdge e = m_ActiveEdges;
 					while (e != null)
 					{
 						//1. process maxima, treating them as if they're 'bent' horizontal edges,
 						//   but exclude maxima with horizontal edges. nb: e can't be a horizontal.
-						var IsMaximaEdge = IsMaxima(e, topY);
+						bool IsMaximaEdge = IsMaxima(e, topY);
 
 						if (IsMaximaEdge)
 						{
-							var eMaxPair = GetMaximaPairEx(e);
+							TEdge eMaxPair = GetMaximaPairEx(e);
 							IsMaximaEdge = eMaxPair == null || !IsHorizontal(eMaxPair);
 						}
 
@@ -4206,7 +4206,7 @@ namespace ORMMap.VectorTile.Geometry
 								InsertMaxima(e.Top.X);
 							}
 
-							var ePrev = e.PrevInAEL;
+							TEdge ePrev = e.PrevInAEL;
 							DoMaxima(e);
 							if (ePrev == null)
 							{
@@ -4240,17 +4240,17 @@ namespace ORMMap.VectorTile.Geometry
 							//make sure both edges have a vertex here ...
 							if (StrictlySimple)
 							{
-								var ePrev = e.PrevInAEL;
+								TEdge ePrev = e.PrevInAEL;
 								if (e.OutIdx >= 0 && e.WindDelta != 0 && ePrev != null &&
 								    ePrev.OutIdx >= 0 && ePrev.Curr.X == e.Curr.X &&
 								    ePrev.WindDelta != 0)
 								{
-									var ip = new IntPoint(e.Curr);
+									IntPoint ip = new IntPoint(e.Curr);
 #if use_xyz
                 SetZ(ref ip, ePrev, e);
 #endif
-									var op = AddOutPt(ePrev, ip);
-									var op2 = AddOutPt(e, ip);
+									OutPt op = AddOutPt(ePrev, ip);
+									OutPt op2 = AddOutPt(e, ip);
 									AddJoin(op, op2, ip); //StrictlySimple (type-3) join
 								}
 							}
@@ -4278,15 +4278,15 @@ namespace ORMMap.VectorTile.Geometry
 							UpdateEdgeIntoAEL(ref e);
 
 							//if output polygons share an edge, they'll need joining later ...
-							var ePrev = e.PrevInAEL;
-							var eNext = e.NextInAEL;
+							TEdge ePrev = e.PrevInAEL;
+							TEdge eNext = e.NextInAEL;
 							if (ePrev != null && ePrev.Curr.X == e.Bot.X &&
 							    ePrev.Curr.Y == e.Bot.Y && op != null &&
 							    ePrev.OutIdx >= 0 && ePrev.Curr.Y > ePrev.Top.Y &&
 							    SlopesEqual(e.Curr, e.Top, ePrev.Curr, ePrev.Top, m_UseFullRange) &&
 							    e.WindDelta != 0 && ePrev.WindDelta != 0)
 							{
-								var op2 = AddOutPt(ePrev, e.Bot);
+								OutPt op2 = AddOutPt(ePrev, e.Bot);
 								AddJoin(op, op2, e.Top);
 							}
 							else if (eNext != null && eNext.Curr.X == e.Bot.X &&
@@ -4295,7 +4295,7 @@ namespace ORMMap.VectorTile.Geometry
 							         SlopesEqual(e.Curr, e.Top, eNext.Curr, eNext.Top, m_UseFullRange) &&
 							         e.WindDelta != 0 && eNext.WindDelta != 0)
 							{
-								var op2 = AddOutPt(eNext, e.Bot);
+								OutPt op2 = AddOutPt(eNext, e.Bot);
 								AddJoin(op, op2, e.Top);
 							}
 						}
@@ -4307,7 +4307,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void DoMaxima(TEdge e)
 				{
-					var eMaxPair = GetMaximaPairEx(e);
+					TEdge eMaxPair = GetMaximaPairEx(e);
 					if (eMaxPair == null)
 					{
 						if (e.OutIdx >= 0)
@@ -4319,7 +4319,7 @@ namespace ORMMap.VectorTile.Geometry
 						return;
 					}
 
-					var eNext = e.NextInAEL;
+					TEdge eNext = e.NextInAEL;
 					while (eNext != null && eNext != eMaxPair)
 					{
 						IntersectEdges(e, eNext, e.Top);
@@ -4391,8 +4391,8 @@ namespace ORMMap.VectorTile.Geometry
 						return 0;
 					}
 
-					var result = 0;
-					var p = pts;
+					int result = 0;
+					OutPt p = pts;
 					do
 					{
 						result++;
@@ -4407,24 +4407,24 @@ namespace ORMMap.VectorTile.Geometry
 				{
 					polyg.Clear();
 					polyg.Capacity = m_PolyOuts.Count;
-					var polyCnt = m_PolyOuts.Count;
-					for (var i = 0; i < polyCnt; i++)
+					int polyCnt = m_PolyOuts.Count;
+					for (int i = 0; i < polyCnt; i++)
 					{
-						var outRec = m_PolyOuts[i];
+						OutRec outRec = m_PolyOuts[i];
 						if (outRec.Pts == null)
 						{
 							continue;
 						}
 
-						var p = outRec.Pts.Prev;
-						var cnt = PointCount(p);
+						OutPt p = outRec.Pts.Prev;
+						int cnt = PointCount(p);
 						if (cnt < 2)
 						{
 							continue;
 						}
 
-						Path pg = new Path(cnt);
-						for (var j = 0; j < cnt; j++)
+						var pg = new Path(cnt);
+						for (int j = 0; j < cnt; j++)
 						{
 							pg.Add(p.Pt);
 							p = p.Prev;
@@ -4441,11 +4441,11 @@ namespace ORMMap.VectorTile.Geometry
 
 					//add each output polygon/contour to polytree ...
 					polytree.m_AllPolys.Capacity = m_PolyOuts.Count;
-					var polyCnt = m_PolyOuts.Count;
-					for (var i = 0; i < polyCnt; i++)
+					int polyCnt = m_PolyOuts.Count;
+					for (int i = 0; i < polyCnt; i++)
 					{
-						var outRec = m_PolyOuts[i];
-						var cnt = PointCount(outRec.Pts);
+						OutRec outRec = m_PolyOuts[i];
+						int cnt = PointCount(outRec.Pts);
 						if (outRec.IsOpen && cnt < 2 ||
 						    !outRec.IsOpen && cnt < 3)
 						{
@@ -4453,12 +4453,12 @@ namespace ORMMap.VectorTile.Geometry
 						}
 
 						FixHoleLinkage(outRec);
-						var pn = new PolyNode();
+						PolyNode pn = new PolyNode();
 						polytree.m_AllPolys.Add(pn);
 						outRec.PolyNode = pn;
 						pn.m_polygon.Capacity = cnt;
-						var op = outRec.Pts.Prev;
-						for (var j = 0; j < cnt; j++)
+						OutPt op = outRec.Pts.Prev;
+						for (int j = 0; j < cnt; j++)
 						{
 							pn.m_polygon.Add(op.Pt);
 							op = op.Prev;
@@ -4468,9 +4468,9 @@ namespace ORMMap.VectorTile.Geometry
 					//fixup PolyNode links etc ...
 					polytree.m_Childs.Capacity = m_PolyOuts.Count;
 					polyCnt = m_PolyOuts.Count;
-					for (var i = 0; i < polyCnt; i++)
+					for (int i = 0; i < polyCnt; i++)
 					{
-						var outRec = m_PolyOuts[i];
+						OutRec outRec = m_PolyOuts[i];
 						if (outRec.PolyNode == null)
 						{
 							continue;
@@ -4496,8 +4496,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void FixupOutPolyline(OutRec outrec)
 				{
-					var pp = outrec.Pts;
-					var lastPP = pp.Prev;
+					OutPt pp = outrec.Pts;
+					OutPt lastPP = pp.Prev;
 					while (pp != lastPP)
 					{
 						pp = pp.Next;
@@ -4508,7 +4508,7 @@ namespace ORMMap.VectorTile.Geometry
 								lastPP = pp.Prev;
 							}
 
-							var tmpPP = pp.Prev;
+							OutPt tmpPP = pp.Prev;
 							tmpPP.Next = pp.Next;
 							pp.Next.Prev = tmpPP;
 							pp = tmpPP;
@@ -4528,8 +4528,8 @@ namespace ORMMap.VectorTile.Geometry
 					//parallel edges by removing the middle vertex.
 					OutPt lastOK = null;
 					outRec.BottomPt = null;
-					var pp = outRec.Pts;
-					var preserveCol = PreserveCollinear || StrictlySimple;
+					OutPt pp = outRec.Pts;
+					bool preserveCol = PreserveCollinear || StrictlySimple;
 					for (;;)
 					{
 						if (pp.Prev == pp || pp.Prev == pp.Next)
@@ -4569,7 +4569,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private OutPt DupOutPt(OutPt outPt, bool InsertAfter)
 				{
-					var result = new OutPt();
+					OutPt result = new OutPt();
 					result.Pt = outPt.Pt;
 					result.Idx = outPt.Idx;
 					if (InsertAfter)
@@ -4627,8 +4627,8 @@ namespace ORMMap.VectorTile.Geometry
 				private bool JoinHorz(OutPt op1, OutPt op1b, OutPt op2, OutPt op2b,
 					IntPoint Pt, bool DiscardLeft)
 				{
-					var Dir1 = op1.Pt.X > op1b.Pt.X ? Direction.dRightToLeft : Direction.dLeftToRight;
-					var Dir2 = op2.Pt.X > op2b.Pt.X ? Direction.dRightToLeft : Direction.dLeftToRight;
+					Direction Dir1 = op1.Pt.X > op1b.Pt.X ? Direction.dRightToLeft : Direction.dLeftToRight;
+					Direction Dir2 = op2.Pt.X > op2b.Pt.X ? Direction.dRightToLeft : Direction.dLeftToRight;
 					if (Dir1 == Dir2)
 					{
 						return false;
@@ -4762,7 +4762,7 @@ namespace ORMMap.VectorTile.Geometry
 					//location at the Bottom of the overlapping segment (& Join.OffPt is above).
 					//3. StrictlySimple joins where edges touch but are not collinear and where
 					//Join.OutPt1, Join.OutPt2 & Join.OffPt all share the same point.
-					var isHorizontal = j.OutPt1.Pt.Y == j.OffPt.Y;
+					bool isHorizontal = j.OutPt1.Pt.Y == j.OffPt.Y;
 
 					if (isHorizontal && j.OffPt == j.OutPt1.Pt && j.OffPt == j.OutPt2.Pt)
 					{
@@ -4778,14 +4778,14 @@ namespace ORMMap.VectorTile.Geometry
 							op1b = op1b.Next;
 						}
 
-						var reverse1 = op1b.Pt.Y > j.OffPt.Y;
+						bool reverse1 = op1b.Pt.Y > j.OffPt.Y;
 						op2b = j.OutPt2.Next;
 						while (op2b != op2 && op2b.Pt == j.OffPt)
 						{
 							op2b = op2b.Next;
 						}
 
-						var reverse2 = op2b.Pt.Y > j.OffPt.Y;
+						bool reverse2 = op2b.Pt.Y > j.OffPt.Y;
 						if (reverse1 == reverse2)
 						{
 							return false;
@@ -4900,8 +4900,8 @@ namespace ORMMap.VectorTile.Geometry
 						op1b = op1b.Next;
 					}
 
-					var Reverse1 = op1b.Pt.Y > op1.Pt.Y ||
-					               !SlopesEqual(op1.Pt, op1b.Pt, j.OffPt, m_UseFullRange);
+					bool Reverse1 = op1b.Pt.Y > op1.Pt.Y ||
+					                !SlopesEqual(op1.Pt, op1b.Pt, j.OffPt, m_UseFullRange);
 					if (Reverse1)
 					{
 						op1b = op1.Prev;
@@ -4924,8 +4924,8 @@ namespace ORMMap.VectorTile.Geometry
 						op2b = op2b.Next;
 					}
 
-					var Reverse2 = op2b.Pt.Y > op2.Pt.Y ||
-					               !SlopesEqual(op2.Pt, op2b.Pt, j.OffPt, m_UseFullRange);
+					bool Reverse2 = op2b.Pt.Y > op2.Pt.Y ||
+					                !SlopesEqual(op2.Pt, op2b.Pt, j.OffPt, m_UseFullRange);
 					if (Reverse2)
 					{
 						op2b = op2.Prev;
@@ -4983,10 +4983,10 @@ namespace ORMMap.VectorTile.Geometry
 						return 0;
 					}
 
-					var ip = path[0];
-					for (var i = 1; i <= cnt; ++i)
+					IntPoint ip = path[0];
+					for (int i = 1; i <= cnt; ++i)
 					{
-						var ipNext = i == cnt ? path[0] : path[i];
+						IntPoint ipNext = i == cnt ? path[0] : path[i];
 						if (ipNext.Y == pt.Y)
 						{
 							if (ipNext.X == pt.X || ip.Y == pt.Y &&
@@ -5006,8 +5006,8 @@ namespace ORMMap.VectorTile.Geometry
 								}
 								else
 								{
-									var d = (double) (ip.X - pt.X) * (ipNext.Y - pt.Y) -
-									        (double) (ipNext.X - pt.X) * (ip.Y - pt.Y);
+									double d = (double) (ip.X - pt.X) * (ipNext.Y - pt.Y) -
+									           (double) (ipNext.X - pt.X) * (ip.Y - pt.Y);
 									if (d == 0)
 									{
 										return -1;
@@ -5023,8 +5023,8 @@ namespace ORMMap.VectorTile.Geometry
 							{
 								if (ipNext.X > pt.X)
 								{
-									var d = (double) (ip.X - pt.X) * (ipNext.Y - pt.Y) -
-									        (double) (ipNext.X - pt.X) * (ip.Y - pt.Y);
+									double d = (double) (ip.X - pt.X) * (ipNext.Y - pt.Y) -
+									           (double) (ipNext.X - pt.X) * (ip.Y - pt.Y);
 									if (d == 0)
 									{
 										return -1;
@@ -5050,8 +5050,8 @@ namespace ORMMap.VectorTile.Geometry
 				private static int PointInPolygon(IntPoint pt, OutPt op)
 				{
 					//returns 0 if false, +1 if true, -1 if pt ON polygon boundary
-					var result = 0;
-					var startOp = op;
+					int result = 0;
+					OutPt startOp = op;
 					long ptx = pt.X, pty = pt.Y;
 					long poly0x = op.Pt.X, poly0y = op.Pt.Y;
 					do
@@ -5078,8 +5078,8 @@ namespace ORMMap.VectorTile.Geometry
 								}
 								else
 								{
-									var d = (double) (poly0x - ptx) * (poly1y - pty) -
-									        (double) (poly1x - ptx) * (poly0y - pty);
+									double d = (double) (poly0x - ptx) * (poly1y - pty) -
+									           (double) (poly1x - ptx) * (poly0y - pty);
 									if (d == 0)
 									{
 										return -1;
@@ -5095,8 +5095,8 @@ namespace ORMMap.VectorTile.Geometry
 							{
 								if (poly1x > ptx)
 								{
-									var d = (double) (poly0x - ptx) * (poly1y - pty) -
-									        (double) (poly1x - ptx) * (poly0y - pty);
+									double d = (double) (poly0x - ptx) * (poly1y - pty) -
+									           (double) (poly1x - ptx) * (poly0y - pty);
 									if (d == 0)
 									{
 										return -1;
@@ -5120,11 +5120,11 @@ namespace ORMMap.VectorTile.Geometry
 
 				private static bool Poly2ContainsPoly1(OutPt outPt1, OutPt outPt2)
 				{
-					var op = outPt1;
+					OutPt op = outPt1;
 					do
 					{
 						//nb: PointInPolygon returns 0 if false, +1 if true, -1 if pt on polygon
-						var res = PointInPolygon(op.Pt, outPt2);
+						int res = PointInPolygon(op.Pt, outPt2);
 						if (res >= 0)
 						{
 							return res > 0;
@@ -5139,9 +5139,9 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void FixupFirstLefts1(OutRec OldOutRec, OutRec NewOutRec)
 				{
-					foreach (var outRec in m_PolyOuts)
+					foreach (OutRec outRec in m_PolyOuts)
 					{
-						var firstLeft = ParseFirstLeft(outRec.FirstLeft);
+						OutRec firstLeft = ParseFirstLeft(outRec.FirstLeft);
 						if (outRec.Pts != null && firstLeft == OldOutRec)
 						{
 							if (Poly2ContainsPoly1(outRec.Pts, NewOutRec.Pts))
@@ -5159,15 +5159,15 @@ namespace ORMMap.VectorTile.Geometry
 					//It's possible that these polygons now wrap around other polygons, so check
 					//every polygon that's also contained by OuterOutRec's FirstLeft container
 					//(including nil) to see if they've become inner to the new inner polygon ...
-					var orfl = outerOutRec.FirstLeft;
-					foreach (var outRec in m_PolyOuts)
+					OutRec orfl = outerOutRec.FirstLeft;
+					foreach (OutRec outRec in m_PolyOuts)
 					{
 						if (outRec.Pts == null || outRec == outerOutRec || outRec == innerOutRec)
 						{
 							continue;
 						}
 
-						var firstLeft = ParseFirstLeft(outRec.FirstLeft);
+						OutRec firstLeft = ParseFirstLeft(outRec.FirstLeft);
 						if (firstLeft != orfl && firstLeft != innerOutRec && firstLeft != outerOutRec)
 						{
 							continue;
@@ -5192,7 +5192,7 @@ namespace ORMMap.VectorTile.Geometry
 				private void FixupFirstLefts3(OutRec OldOutRec, OutRec NewOutRec)
 				{
 					//same as FixupFirstLefts1 but doesn't call Poly2ContainsPoly1()
-					foreach (var outRec in m_PolyOuts)
+					foreach (OutRec outRec in m_PolyOuts)
 					{
 						if (outRec.Pts != null && outRec.FirstLeft == OldOutRec)
 						{
@@ -5215,13 +5215,13 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void JoinCommonEdges()
 				{
-					var joinCnt = m_Joins.Count;
-					for (var i = 0; i < joinCnt; i++)
+					int joinCnt = m_Joins.Count;
+					for (int i = 0; i < joinCnt; i++)
 					{
-						var join = m_Joins[i];
+						Join join = m_Joins[i];
 
-						var outRec1 = GetOutRec(join.OutPt1.Idx);
-						var outRec2 = GetOutRec(join.OutPt2.Idx);
+						OutRec outRec1 = GetOutRec(join.OutPt1.Idx);
+						OutRec outRec2 = GetOutRec(join.OutPt2.Idx);
 
 						if (outRec1.Pts == null || outRec2.Pts == null)
 						{
@@ -5345,7 +5345,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void UpdateOutPtIdxs(OutRec outrec)
 				{
-					var op = outrec.Pts;
+					OutPt op = outrec.Pts;
 					do
 					{
 						op.Idx = outrec.Idx;
@@ -5356,11 +5356,11 @@ namespace ORMMap.VectorTile.Geometry
 
 				private void DoSimplePolygons()
 				{
-					var i = 0;
+					int i = 0;
 					while (i < m_PolyOuts.Count)
 					{
-						var outrec = m_PolyOuts[i++];
-						var op = outrec.Pts;
+						OutRec outrec = m_PolyOuts[i++];
+						OutPt op = outrec.Pts;
 						if (op == null || outrec.IsOpen)
 						{
 							continue;
@@ -5368,21 +5368,21 @@ namespace ORMMap.VectorTile.Geometry
 
 						do //for each Pt in Polygon until duplicate found do ...
 						{
-							var op2 = op.Next;
+							OutPt op2 = op.Next;
 							while (op2 != outrec.Pts)
 							{
 								if (op.Pt == op2.Pt && op2.Next != op && op2.Prev != op)
 								{
 									//split the polygon into two ...
-									var op3 = op.Prev;
-									var op4 = op2.Prev;
+									OutPt op3 = op.Prev;
+									OutPt op4 = op2.Prev;
 									op.Prev = op4;
 									op4.Next = op;
 									op2.Prev = op3;
 									op3.Next = op2;
 
 									outrec.Pts = op;
-									var outrec2 = CreateOutRec();
+									OutRec outrec2 = CreateOutRec();
 									outrec2.Pts = op2;
 									UpdateOutPtIdxs(outrec2);
 									if (Poly2ContainsPoly1(outrec2.Pts, outrec.Pts))
@@ -5432,7 +5432,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				public static double Area(Path poly)
 				{
-					var cnt = poly.Count;
+					int cnt = poly.Count;
 					if (cnt < 3)
 					{
 						return 0;
@@ -5457,7 +5457,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal double Area(OutPt op)
 				{
-					var opFirst = op;
+					OutPt opFirst = op;
 					if (op == null)
 					{
 						return 0;
@@ -5481,8 +5481,8 @@ namespace ORMMap.VectorTile.Geometry
 				public static Paths SimplifyPolygon(Path poly,
 					PolyFillType fillType = PolyFillType.pftEvenOdd)
 				{
-					Paths result = new Paths();
-					var c = new Clipper();
+					var result = new Paths();
+					Clipper c = new Clipper();
 					c.StrictlySimple = true;
 					c.AddPath(poly, PolyType.ptSubject, true);
 					c.Execute(ClipType.ctUnion, result, fillType, fillType);
@@ -5493,8 +5493,8 @@ namespace ORMMap.VectorTile.Geometry
 				public static Paths SimplifyPolygons(Paths polys,
 					PolyFillType fillType = PolyFillType.pftEvenOdd)
 				{
-					Paths result = new Paths();
-					var c = new Clipper();
+					var result = new Paths();
+					Clipper c = new Clipper();
 					c.StrictlySimple = true;
 					c.AddPaths(polys, PolyType.ptSubject, true);
 					c.Execute(ClipType.ctUnion, result, fillType, fillType);
@@ -5504,8 +5504,8 @@ namespace ORMMap.VectorTile.Geometry
 
 				private static double DistanceSqrd(IntPoint pt1, IntPoint pt2)
 				{
-					var dx = (double) pt1.X - pt2.X;
-					var dy = (double) pt1.Y - pt2.Y;
+					double dx = (double) pt1.X - pt2.X;
+					double dy = (double) pt1.Y - pt2.Y;
 					return dx * dx + dy * dy;
 				}
 				//------------------------------------------------------------------------------
@@ -5520,7 +5520,7 @@ namespace ORMMap.VectorTile.Geometry
 					//see http://en.wikipedia.org/wiki/Perpendicular_distance
 					double A = ln1.Y - ln2.Y;
 					double B = ln2.X - ln1.X;
-					var C = A * ln1.X + B * ln1.Y;
+					double C = A * ln1.X + B * ln1.Y;
 					C = A * pt.X + B * pt.Y - C;
 					return C * C / (A * A + B * B);
 				}
@@ -5563,15 +5563,15 @@ namespace ORMMap.VectorTile.Geometry
 
 				private static bool PointsAreClose(IntPoint pt1, IntPoint pt2, double distSqrd)
 				{
-					var dx = (double) pt1.X - pt2.X;
-					var dy = (double) pt1.Y - pt2.Y;
+					double dx = (double) pt1.X - pt2.X;
+					double dy = (double) pt1.Y - pt2.Y;
 					return dx * dx + dy * dy <= distSqrd;
 				}
 				//------------------------------------------------------------------------------
 
 				private static OutPt ExcludeOp(OutPt op)
 				{
-					var result = op.Prev;
+					OutPt result = op.Prev;
 					result.Next = op.Next;
 					op.Next.Prev = result;
 					result.Idx = 0;
@@ -5585,20 +5585,20 @@ namespace ORMMap.VectorTile.Geometry
 					//Default ~= sqrt(2) so when adjacent vertices or semi-adjacent vertices have 
 					//both x & y coords within 1 unit, then the second vertex will be stripped.
 
-					var cnt = path.Count;
+					int cnt = path.Count;
 
 					if (cnt == 0)
 					{
 						return new Path();
 					}
 
-					OutPt[] outPts = new OutPt[cnt];
-					for (var i = 0; i < cnt; ++i)
+					var outPts = new OutPt[cnt];
+					for (int i = 0; i < cnt; ++i)
 					{
 						outPts[i] = new OutPt();
 					}
 
-					for (var i = 0; i < cnt; ++i)
+					for (int i = 0; i < cnt; ++i)
 					{
 						outPts[i].Pt = path[i];
 						outPts[i].Next = outPts[(i + 1) % cnt];
@@ -5606,8 +5606,8 @@ namespace ORMMap.VectorTile.Geometry
 						outPts[i].Idx = 0;
 					}
 
-					var distSqrd = distance * distance;
-					var op = outPts[0];
+					double distSqrd = distance * distance;
+					OutPt op = outPts[0];
 					while (op.Idx == 0 && op.Next != op.Prev)
 					{
 						if (PointsAreClose(op.Pt, op.Prev.Pt, distSqrd))
@@ -5638,8 +5638,8 @@ namespace ORMMap.VectorTile.Geometry
 						cnt = 0;
 					}
 
-					Path result = new Path(cnt);
-					for (var i = 0; i < cnt; ++i)
+					var result = new Path(cnt);
+					for (int i = 0; i < cnt; ++i)
 					{
 						result.Add(op.Pt);
 						op = op.Next;
@@ -5653,9 +5653,9 @@ namespace ORMMap.VectorTile.Geometry
 				public static Paths CleanPolygons(Paths polys,
 					double distance = 1.415)
 				{
-					Paths result = new Paths(polys.Count);
-					var polyCnt = polys.Count;
-					for (var i = 0; i < polyCnt; i++)
+					var result = new Paths(polys.Count);
+					int polyCnt = polys.Count;
+					for (int i = 0; i < polyCnt; i++)
 					{
 						result.Add(CleanPolygon(polys[i], distance));
 					}
@@ -5666,16 +5666,16 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal static Paths Minkowski(Path pattern, Path path, bool IsSum, bool IsClosed)
 				{
-					var delta = IsClosed ? 1 : 0;
-					var polyCnt = pattern.Count;
-					var pathCnt = path.Count;
-					Paths result = new Paths(pathCnt);
+					int delta = IsClosed ? 1 : 0;
+					int polyCnt = pattern.Count;
+					int pathCnt = path.Count;
+					var result = new Paths(pathCnt);
 					if (IsSum)
 					{
-						for (var i = 0; i < pathCnt; i++)
+						for (int i = 0; i < pathCnt; i++)
 						{
-							Path p = new Path(polyCnt);
-							foreach (var ip in pattern)
+							var p = new Path(polyCnt);
+							foreach (IntPoint ip in pattern)
 							{
 								p.Add(new IntPoint(path[i].X + ip.X, path[i].Y + ip.Y));
 							}
@@ -5685,10 +5685,10 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						for (var i = 0; i < pathCnt; i++)
+						for (int i = 0; i < pathCnt; i++)
 						{
-							Path p = new Path(polyCnt);
-							foreach (var ip in pattern)
+							var p = new Path(polyCnt);
+							foreach (IntPoint ip in pattern)
 							{
 								p.Add(new IntPoint(path[i].X - ip.X, path[i].Y - ip.Y));
 							}
@@ -5697,11 +5697,11 @@ namespace ORMMap.VectorTile.Geometry
 						}
 					}
 
-					Paths quads = new Paths((pathCnt + delta) * (polyCnt + 1));
-					for (var i = 0; i < pathCnt - 1 + delta; i++)
-					for (var j = 0; j < polyCnt; j++)
+					var quads = new Paths((pathCnt + delta) * (polyCnt + 1));
+					for (int i = 0; i < pathCnt - 1 + delta; i++)
+					for (int j = 0; j < polyCnt; j++)
 					{
-						Path quad = new Path(4);
+						var quad = new Path(4);
 						quad.Add(result[i % pathCnt][j % polyCnt]);
 						quad.Add(result[(i + 1) % pathCnt][j % polyCnt]);
 						quad.Add(result[(i + 1) % pathCnt][(j + 1) % polyCnt]);
@@ -5721,7 +5721,7 @@ namespace ORMMap.VectorTile.Geometry
 				public static Paths MinkowskiSum(Path pattern, Path path, bool pathIsClosed)
 				{
 					Paths paths = Minkowski(pattern, path, true, pathIsClosed);
-					var c = new Clipper();
+					Clipper c = new Clipper();
 					c.AddPaths(paths, PolyType.ptSubject, true);
 					c.Execute(ClipType.ctUnion, paths, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
 					return paths;
@@ -5730,9 +5730,9 @@ namespace ORMMap.VectorTile.Geometry
 
 				private static Path TranslatePath(Path path, IntPoint delta)
 				{
-					var pathCnt = path.Count;
-					Path outPath = new Path(pathCnt);
-					for (var i = 0; i < pathCnt; i++)
+					int pathCnt = path.Count;
+					var outPath = new Path(pathCnt);
+					for (int i = 0; i < pathCnt; i++)
 					{
 						outPath.Add(new IntPoint(path[i].X + delta.X, path[i].Y + delta.Y));
 					}
@@ -5743,10 +5743,10 @@ namespace ORMMap.VectorTile.Geometry
 
 				public static Paths MinkowskiSum(Path pattern, Paths paths, bool pathIsClosed)
 				{
-					Paths solution = new Paths();
-					var c = new Clipper();
-					var pathCnt = paths.Count;
-					for (var i = 0; i < pathCnt; ++i)
+					var solution = new Paths();
+					Clipper c = new Clipper();
+					int pathCnt = paths.Count;
+					for (int i = 0; i < pathCnt; ++i)
 					{
 						Paths tmp = Minkowski(pattern, paths[i], true, pathIsClosed);
 						c.AddPaths(tmp, PolyType.ptSubject, true);
@@ -5766,7 +5766,7 @@ namespace ORMMap.VectorTile.Geometry
 				public static Paths MinkowskiDiff(Path poly1, Path poly2)
 				{
 					Paths paths = Minkowski(poly1, poly2, false, true);
-					var c = new Clipper();
+					Clipper c = new Clipper();
 					c.AddPaths(paths, PolyType.ptSubject, true);
 					c.Execute(ClipType.ctUnion, paths, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
 					return paths;
@@ -5782,7 +5782,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				public static Paths PolyTreeToPaths(PolyTree polytree)
 				{
-					Paths result = new Paths();
+					var result = new Paths();
 					result.Capacity = polytree.Total;
 					AddPolyNodeToPaths(polytree, NodeType.ntAny, result);
 					return result;
@@ -5791,7 +5791,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal static void AddPolyNodeToPaths(PolyNode polynode, NodeType nt, Paths paths)
 				{
-					var match = true;
+					bool match = true;
 					switch (nt)
 					{
 						case NodeType.ntOpen:
@@ -5806,7 +5806,7 @@ namespace ORMMap.VectorTile.Geometry
 						paths.Add(polynode.m_polygon);
 					}
 
-					foreach (var pn in polynode.Childs)
+					foreach (PolyNode pn in polynode.Childs)
 					{
 						AddPolyNodeToPaths(pn, nt, paths);
 					}
@@ -5815,9 +5815,9 @@ namespace ORMMap.VectorTile.Geometry
 
 				public static Paths OpenPathsFromPolyTree(PolyTree polytree)
 				{
-					Paths result = new Paths();
+					var result = new Paths();
 					result.Capacity = polytree.ChildCount;
-					for (var i = 0; i < polytree.ChildCount; i++)
+					for (int i = 0; i < polytree.ChildCount; i++)
 					{
 						if (polytree.Childs[i].IsOpen)
 						{
@@ -5831,7 +5831,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				public static Paths ClosedPathsFromPolyTree(PolyTree polytree)
 				{
-					Paths result = new Paths();
+					var result = new Paths();
 					result.Capacity = polytree.Total;
 					AddPolyNodeToPaths(polytree, NodeType.ntClosed, result);
 					return result;
@@ -5882,13 +5882,13 @@ namespace ORMMap.VectorTile.Geometry
 
 				public void AddPath(Path path, JoinType joinType, EndType endType)
 				{
-					var highI = path.Count - 1;
+					int highI = path.Count - 1;
 					if (highI < 0)
 					{
 						return;
 					}
 
-					var newNode = new PolyNode();
+					PolyNode newNode = new PolyNode();
 					newNode.m_jointype = joinType;
 					newNode.m_endtype = endType;
 
@@ -5904,7 +5904,7 @@ namespace ORMMap.VectorTile.Geometry
 					newNode.m_polygon.Capacity = highI + 1;
 					newNode.m_polygon.Add(path[0]);
 					int j = 0, k = 0;
-					for (var i = 1; i <= highI; i++)
+					for (int i = 1; i <= highI; i++)
 					{
 						if (newNode.m_polygon[j] != path[i])
 						{
@@ -5938,7 +5938,7 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var ip = m_polyNodes.Childs[(int) m_lowest.X].m_polygon[(int) m_lowest.Y];
+						IntPoint ip = m_polyNodes.Childs[(int) m_lowest.X].m_polygon[(int) m_lowest.Y];
 						if (newNode.m_polygon[k].Y > ip.Y ||
 						    newNode.m_polygon[k].Y == ip.Y &&
 						    newNode.m_polygon[k].X < ip.X)
@@ -5965,9 +5965,9 @@ namespace ORMMap.VectorTile.Geometry
 					if (m_lowest.X >= 0 &&
 					    !Clipper.Orientation(m_polyNodes.Childs[(int) m_lowest.X].m_polygon))
 					{
-						for (var i = 0; i < m_polyNodes.ChildCount; i++)
+						for (int i = 0; i < m_polyNodes.ChildCount; i++)
 						{
-							var node = m_polyNodes.Childs[i];
+							PolyNode node = m_polyNodes.Childs[i];
 							if (node.m_endtype == EndType.etClosedPolygon ||
 							    node.m_endtype == EndType.etClosedLine &&
 							    Clipper.Orientation(node.m_polygon))
@@ -5978,9 +5978,9 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						for (var i = 0; i < m_polyNodes.ChildCount; i++)
+						for (int i = 0; i < m_polyNodes.ChildCount; i++)
 						{
-							var node = m_polyNodes.Childs[i];
+							PolyNode node = m_polyNodes.Childs[i];
 							if (node.m_endtype == EndType.etClosedLine &&
 							    !Clipper.Orientation(node.m_polygon))
 							{
@@ -6000,7 +6000,7 @@ namespace ORMMap.VectorTile.Geometry
 						return new DoublePoint();
 					}
 
-					var f = 1 * 1.0 / Math.Sqrt(dx * dx + dy * dy);
+					double f = 1 * 1.0 / Math.Sqrt(dx * dx + dy * dy);
 					dx *= f;
 					dy *= f;
 
@@ -6017,9 +6017,9 @@ namespace ORMMap.VectorTile.Geometry
 					if (ClipperBase.near_zero(delta))
 					{
 						m_destPolys.Capacity = m_polyNodes.ChildCount;
-						for (var i = 0; i < m_polyNodes.ChildCount; i++)
+						for (int i = 0; i < m_polyNodes.ChildCount; i++)
 						{
-							var node = m_polyNodes.Childs[i];
+							PolyNode node = m_polyNodes.Childs[i];
 							if (node.m_endtype == EndType.etClosedPolygon)
 							{
 								m_destPolys.Add(node.m_polygon);
@@ -6054,7 +6054,7 @@ namespace ORMMap.VectorTile.Geometry
 					}
 
 					//see offset_triginometry2.svg in the documentation folder ...
-					var steps = Math.PI / Math.Acos(1 - y / Math.Abs(delta));
+					double steps = Math.PI / Math.Acos(1 - y / Math.Abs(delta));
 					m_sin = Math.Sin(two_pi / steps);
 					m_cos = Math.Cos(two_pi / steps);
 					m_StepsPerRad = steps / two_pi;
@@ -6064,12 +6064,12 @@ namespace ORMMap.VectorTile.Geometry
 					}
 
 					m_destPolys.Capacity = m_polyNodes.ChildCount * 2;
-					for (var i = 0; i < m_polyNodes.ChildCount; i++)
+					for (int i = 0; i < m_polyNodes.ChildCount; i++)
 					{
-						var node = m_polyNodes.Childs[i];
+						PolyNode node = m_polyNodes.Childs[i];
 						m_srcPoly = node.m_polygon;
 
-						var len = m_srcPoly.Count;
+						int len = m_srcPoly.Count;
 
 						if (len == 0 || delta <= 0 && (len < 3 ||
 						                               node.m_endtype != EndType.etClosedPolygon))
@@ -6084,12 +6084,12 @@ namespace ORMMap.VectorTile.Geometry
 							if (node.m_jointype == JoinType.jtRound)
 							{
 								double X = 1.0, Y = 0.0;
-								for (var j = 1; j <= steps; j++)
+								for (int j = 1; j <= steps; j++)
 								{
 									m_destPoly.Add(new IntPoint(
 										Round(m_srcPoly[0].X + X * delta),
 										Round(m_srcPoly[0].Y + Y * delta)));
-									var X2 = X;
+									double X2 = X;
 									X = X * m_cos - m_sin * Y;
 									Y = X2 * m_sin + Y * m_cos;
 								}
@@ -6097,7 +6097,7 @@ namespace ORMMap.VectorTile.Geometry
 							else
 							{
 								double X = -1.0, Y = -1.0;
-								for (var j = 0; j < 4; ++j)
+								for (int j = 0; j < 4; ++j)
 								{
 									m_destPoly.Add(new IntPoint(
 										Round(m_srcPoly[0].X + X * delta),
@@ -6124,7 +6124,7 @@ namespace ORMMap.VectorTile.Geometry
 						//build m_normals ...
 						m_normals.Clear();
 						m_normals.Capacity = len;
-						for (var j = 0; j < len - 1; j++)
+						for (int j = 0; j < len - 1; j++)
 						{
 							m_normals.Add(GetUnitNormal(m_srcPoly[j], m_srcPoly[j + 1]));
 						}
@@ -6141,8 +6141,8 @@ namespace ORMMap.VectorTile.Geometry
 
 						if (node.m_endtype == EndType.etClosedPolygon)
 						{
-							var k = len - 1;
-							for (var j = 0; j < len; j++)
+							int k = len - 1;
+							for (int j = 0; j < len; j++)
 							{
 								OffsetPoint(j, ref k, node.m_jointype);
 							}
@@ -6151,8 +6151,8 @@ namespace ORMMap.VectorTile.Geometry
 						}
 						else if (node.m_endtype == EndType.etClosedLine)
 						{
-							var k = len - 1;
-							for (var j = 0; j < len; j++)
+							int k = len - 1;
+							for (int j = 0; j < len; j++)
 							{
 								OffsetPoint(j, ref k, node.m_jointype);
 							}
@@ -6160,15 +6160,15 @@ namespace ORMMap.VectorTile.Geometry
 							m_destPolys.Add(m_destPoly);
 							m_destPoly = new Path();
 							//re-build m_normals ...
-							var n = m_normals[len - 1];
-							for (var j = len - 1; j > 0; j--)
+							DoublePoint n = m_normals[len - 1];
+							for (int j = len - 1; j > 0; j--)
 							{
 								m_normals[j] = new DoublePoint(-m_normals[j - 1].X, -m_normals[j - 1].Y);
 							}
 
 							m_normals[0] = new DoublePoint(-n.X, -n.Y);
 							k = 0;
-							for (var j = len - 1; j >= 0; j--)
+							for (int j = len - 1; j >= 0; j--)
 							{
 								OffsetPoint(j, ref k, node.m_jointype);
 							}
@@ -6177,8 +6177,8 @@ namespace ORMMap.VectorTile.Geometry
 						}
 						else
 						{
-							var k = 0;
-							for (var j = 1; j < len - 1; ++j)
+							int k = 0;
+							for (int j = 1; j < len - 1; ++j)
 							{
 								OffsetPoint(j, ref k, node.m_jointype);
 							}
@@ -6186,7 +6186,7 @@ namespace ORMMap.VectorTile.Geometry
 							IntPoint pt1;
 							if (node.m_endtype == EndType.etOpenButt)
 							{
-								var j = len - 1;
+								int j = len - 1;
 								pt1 = new IntPoint(Round(m_srcPoly[j].X + m_normals[j].X *
 									delta), Round(m_srcPoly[j].Y + m_normals[j].Y * delta));
 								m_destPoly.Add(pt1);
@@ -6196,7 +6196,7 @@ namespace ORMMap.VectorTile.Geometry
 							}
 							else
 							{
-								var j = len - 1;
+								int j = len - 1;
 								k = len - 2;
 								m_sinA = 0;
 								m_normals[j] = new DoublePoint(-m_normals[j].X, -m_normals[j].Y);
@@ -6211,7 +6211,7 @@ namespace ORMMap.VectorTile.Geometry
 							}
 
 							//re-build m_normals ...
-							for (var j = len - 1; j > 0; j--)
+							for (int j = len - 1; j > 0; j--)
 							{
 								m_normals[j] = new DoublePoint(-m_normals[j - 1].X, -m_normals[j - 1].Y);
 							}
@@ -6219,7 +6219,7 @@ namespace ORMMap.VectorTile.Geometry
 							m_normals[0] = new DoublePoint(-m_normals[1].X, -m_normals[1].Y);
 
 							k = len - 1;
-							for (var j = k - 1; j > 0; --j)
+							for (int j = k - 1; j > 0; --j)
 							{
 								OffsetPoint(j, ref k, node.m_jointype);
 							}
@@ -6259,7 +6259,7 @@ namespace ORMMap.VectorTile.Geometry
 					FixOrientations();
 					DoOffset(delta);
 					//now clean up 'corners' ...
-					var clpr = new Clipper();
+					Clipper clpr = new Clipper();
 					clpr.AddPaths(m_destPolys, PolyType.ptSubject, true);
 					if (delta > 0)
 					{
@@ -6268,8 +6268,8 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var r = ClipperBase.GetBounds(m_destPolys);
-						Path outer = new Path(4);
+						IntRect r = ClipperBase.GetBounds(m_destPolys);
+						var outer = new Path(4);
 
 						outer.Add(new IntPoint(r.left - 10, r.bottom + 10));
 						outer.Add(new IntPoint(r.right + 10, r.bottom + 10));
@@ -6294,7 +6294,7 @@ namespace ORMMap.VectorTile.Geometry
 					DoOffset(delta);
 
 					//now clean up 'corners' ...
-					var clpr = new Clipper();
+					Clipper clpr = new Clipper();
 					clpr.AddPaths(m_destPolys, PolyType.ptSubject, true);
 					if (delta > 0)
 					{
@@ -6303,8 +6303,8 @@ namespace ORMMap.VectorTile.Geometry
 					}
 					else
 					{
-						var r = ClipperBase.GetBounds(m_destPolys);
-						Path outer = new Path(4);
+						IntRect r = ClipperBase.GetBounds(m_destPolys);
+						var outer = new Path(4);
 
 						outer.Add(new IntPoint(r.left - 10, r.bottom + 10));
 						outer.Add(new IntPoint(r.right + 10, r.bottom + 10));
@@ -6317,11 +6317,11 @@ namespace ORMMap.VectorTile.Geometry
 						//remove the outer PolyNode rectangle ...
 						if (solution.ChildCount == 1 && solution.Childs[0].ChildCount > 0)
 						{
-							var outerNode = solution.Childs[0];
+							PolyNode outerNode = solution.Childs[0];
 							solution.Childs.Capacity = outerNode.ChildCount;
 							solution.Childs[0] = outerNode.Childs[0];
 							solution.Childs[0].m_Parent = solution;
-							for (var i = 1; i < outerNode.ChildCount; i++)
+							for (int i = 1; i < outerNode.ChildCount; i++)
 							{
 								solution.AddChild(outerNode.Childs[i]);
 							}
@@ -6342,7 +6342,7 @@ namespace ORMMap.VectorTile.Geometry
 					if (Math.Abs(m_sinA * m_delta) < 1.0)
 					{
 						//dot product ...
-						var cosA = m_normals[k].X * m_normals[j].X + m_normals[j].Y * m_normals[k].Y;
+						double cosA = m_normals[k].X * m_normals[j].X + m_normals[j].Y * m_normals[k].Y;
 						if (cosA > 0) // angle ==> 0 degrees
 						{
 							m_destPoly.Add(new IntPoint(Round(m_srcPoly[j].X + m_normals[k].X * m_delta),
@@ -6375,8 +6375,8 @@ namespace ORMMap.VectorTile.Geometry
 						{
 							case JoinType.jtMiter:
 							{
-								var r = 1 + (m_normals[j].X * m_normals[k].X +
-								             m_normals[j].Y * m_normals[k].Y);
+								double r = 1 + (m_normals[j].X * m_normals[k].X +
+								                m_normals[j].Y * m_normals[k].Y);
 								if (r >= m_miterLim)
 								{
 									DoMiter(j, k, r);
@@ -6403,7 +6403,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal void DoSquare(int j, int k)
 				{
-					var dx = Math.Tan(Math.Atan2(m_sinA,
+					double dx = Math.Tan(Math.Atan2(m_sinA,
 						m_normals[k].X * m_normals[j].X + m_normals[k].Y * m_normals[j].Y) / 4);
 					m_destPoly.Add(new IntPoint(
 						Round(m_srcPoly[j].X + m_delta * (m_normals[k].X - m_normals[k].Y * dx)),
@@ -6416,7 +6416,7 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal void DoMiter(int j, int k, double r)
 				{
-					var q = m_delta / r;
+					double q = m_delta / r;
 					m_destPoly.Add(new IntPoint(Round(m_srcPoly[j].X + (m_normals[k].X + m_normals[j].X) * q),
 						Round(m_srcPoly[j].Y + (m_normals[k].Y + m_normals[j].Y) * q)));
 				}
@@ -6424,12 +6424,12 @@ namespace ORMMap.VectorTile.Geometry
 
 				internal void DoRound(int j, int k)
 				{
-					var a = Math.Atan2(m_sinA,
+					double a = Math.Atan2(m_sinA,
 						m_normals[k].X * m_normals[j].X + m_normals[k].Y * m_normals[j].Y);
-					var steps = Math.Max((int) Round(m_StepsPerRad * Math.Abs(a)), 1);
+					int steps = Math.Max((int) Round(m_StepsPerRad * Math.Abs(a)), 1);
 
 					double X = m_normals[k].X, Y = m_normals[k].Y, X2;
-					for (var i = 0; i < steps; ++i)
+					for (int i = 0; i < steps; ++i)
 					{
 						m_destPoly.Add(new IntPoint(
 							Round(m_srcPoly[j].X + X * m_delta),

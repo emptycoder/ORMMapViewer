@@ -170,13 +170,13 @@ namespace MIConvexHull
 
 			DelaunayTriangulation<TVertex, TCell> t = DelaunayTriangulation<TVertex, TCell>.Create(data, PlaneDistanceTolerance);
 			List<TCell> vertices = t.Cells.ToList();
-			HashSet<TEdge> edges = new HashSet<TEdge>(new EdgeComparer());
+			var edges = new HashSet<TEdge>(new EdgeComparer());
 
-			foreach (var f in vertices)
+			foreach (TCell f in vertices)
 			{
-				for (var i = 0; i < f.Adjacency.Length; i++)
+				for (int i = 0; i < f.Adjacency.Length; i++)
 				{
-					var af = f.Adjacency[i];
+					TCell af = f.Adjacency[i];
 					if (af != null)
 					{
 						edges.Add(new TEdge {Source = f, Target = af});

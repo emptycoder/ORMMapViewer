@@ -24,7 +24,7 @@ namespace ORMMap.Model.Entitites
 
 		public static Vector3<T> DecodeFromJSON(string str)
 		{
-			var str1 = Encoding.ASCII.GetString(Convert.FromBase64String(str));
+			string str1 = Encoding.ASCII.GetString(Convert.FromBase64String(str));
 			return JsonConvert.DeserializeObject<Vector3<T>>(str1);
 		}
 

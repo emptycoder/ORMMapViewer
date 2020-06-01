@@ -25,7 +25,7 @@ namespace ORMMapViewer.Model.Entitites
 
 		public override int GetHashCode()
 		{
-			var hashCode = 1502939027;
+			int hashCode = 1502939027;
 			hashCode = hashCode * -1521134295 + pos.X.GetHashCode();
 			hashCode = hashCode * -1521134295 + pos.Y.GetHashCode();
 			return hashCode;
@@ -33,9 +33,9 @@ namespace ORMMapViewer.Model.Entitites
 
 		public void TakeRelatives(Node other)
 		{
-			foreach (var otherNode in other.relatives.Keys)
+			foreach (Node otherNode in other.relatives.Keys)
 			{
-				foreach (var thisNode in relatives.Keys)
+				foreach (Node thisNode in relatives.Keys)
 				{
 					if (otherNode.Equals(thisNode))
 					{
@@ -49,7 +49,7 @@ namespace ORMMapViewer.Model.Entitites
 
 		public void UpdateRelatives()
 		{
-			foreach (var node in relatives.Keys)
+			foreach (Node node in relatives.Keys)
 			{
 				if (!node.relatives.ContainsKey(this))
 				{

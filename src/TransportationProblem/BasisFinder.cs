@@ -20,17 +20,17 @@ namespace TransportationProblem
 
 		public int[] GetBasis()
 		{
-			int[] basis = new int[matrix.RowCount];
+			var basis = new int[matrix.RowCount];
 			basis.Fill(-1);
 
-			for (var columnIndex = 0; columnIndex < matrix.ColumnCount; columnIndex++)
+			for (int columnIndex = 0; columnIndex < matrix.ColumnCount; columnIndex++)
 			{
-				var rowIndex = IsConvertibleToBasis(columnIndex);
+				int rowIndex = IsConvertibleToBasis(columnIndex);
 				if (rowIndex != -1 && basis[rowIndex] == -1)
 				{
 					// Reduction to a basis
 					Vector<double> columnData = matrix.Column(columnIndex);
-					for (var i = 0; i < columnData.Count; i++)
+					for (int i = 0; i < columnData.Count; i++)
 					{
 						matrix[rowIndex, i] = columnData[i] / columnData[rowIndex];
 					}
@@ -42,7 +42,7 @@ namespace TransportationProblem
 			}
 
 			// Add artificial vector for basis creation
-			for (var i = 0; i < basis.Length; i++)
+			for (int i = 0; i < basis.Length; i++)
 			{
 				if (basis[i] == -1)
 				{
@@ -55,15 +55,15 @@ namespace TransportationProblem
 
 		private int AddArtificialVector(int i)
 		{
-			double[,] newMatrixData = new double[matrix.RowCount + 1, matrix.ColumnCount];
-			for (var row = 0; row < matrix.RowCount; row++)
-			for (var column = 0; i < matrix.ColumnCount; column++)
+			var newMatrixData = new double[matrix.RowCount + 1, matrix.ColumnCount];
+			for (int row = 0; row < matrix.RowCount; row++)
+			for (int column = 0; i < matrix.ColumnCount; column++)
 			{
 				newMatrixData[row, column] = matrix[row, column];
 			}
 
-			var rowCount = matrix.RowCount;
-			for (var column = 0; column < matrix.ColumnCount; column++)
+			int rowCount = matrix.RowCount;
+			for (int column = 0; column < matrix.ColumnCount; column++)
 			{
 				newMatrixData[rowCount, column] = 0;
 			}
@@ -78,10 +78,10 @@ namespace TransportationProblem
 
 		private int IsConvertibleToBasis(int row)
 		{
-			var columnIndex = -1;
+			int columnIndex = -1;
 
 			Vector<double> rowData = matrix.Column(row);
-			for (var i = 0; i < rowData.Count; i++)
+			for (int i = 0; i < rowData.Count; i++)
 			{
 				if (rowData[i] == 0)
 				{

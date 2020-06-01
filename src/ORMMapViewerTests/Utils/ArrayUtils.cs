@@ -12,9 +12,9 @@ namespace ORMMapViewerTests.Utils
 				return false;
 			}
 
-			for (var i = 0; i < array1.GetLength(0); i++)
+			for (int i = 0; i < array1.GetLength(0); i++)
 			{
-				for (var j = 0; j < array1.GetLength(1); j++)
+				for (int j = 0; j < array1.GetLength(1); j++)
 				{
 					if (array1[i, j] != array2[i, j])
 					{
@@ -34,9 +34,9 @@ namespace ORMMapViewerTests.Utils
 				return false;
 			}
 
-			for (var i = 0; i < array1.GetLength(0); i++)
+			for (int i = 0; i < array1.GetLength(0); i++)
 			{
-				for (var j = 0; j < array1.GetLength(1); j++)
+				for (int j = 0; j < array1.GetLength(1); j++)
 				{
 					if (array1[i, j] != matrix[i, j])
 					{

@@ -52,7 +52,7 @@ namespace ORMMap.Model.Entitites
 
 		public Color GetPropDrawColor(string prop)
 		{
-			if (propsDrawColor != null && propsDrawColor.TryGetValue(prop, out var color))
+			if (propsDrawColor != null && propsDrawColor.TryGetValue(prop, out Color color))
 			{
 				return color;
 			}
@@ -62,7 +62,7 @@ namespace ORMMap.Model.Entitites
 
 		public Color GetPropFillColor(string prop)
 		{
-			if (propsFillColor != null && propsFillColor.TryGetValue(prop, out var color))
+			if (propsFillColor != null && propsFillColor.TryGetValue(prop, out Color color))
 			{
 				return color;
 			}
@@ -72,7 +72,7 @@ namespace ORMMap.Model.Entitites
 
 		public override string ToString()
 		{
-			var stringBuilder =
+			StringBuilder stringBuilder =
 				new StringBuilder(
 					$"Pallete:\n Main fill color: {MainFillColor}\n Main draw color: {MainDrawColor}\n Draw prop colors:");
 			foreach (KeyValuePair<string, Color> pair in propsDrawColor)

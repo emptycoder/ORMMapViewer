@@ -75,10 +75,10 @@ namespace MIConvexHull
 
 			while (TraverseStack.Count > 0)
 			{
-				var top = FacePool[TraverseStack.Pop()];
-				for (var i = 0; i < NumOfDimensions; i++)
+				ConvexFaceInternal top = FacePool[TraverseStack.Pop()];
+				for (int i = 0; i < NumOfDimensions; i++)
 				{
-					var adjFace = top.AdjacentFaces[i];
+					int adjFace = top.AdjacentFaces[i];
 
 					if (!AffectedFaceFlags[adjFace] &&
 					    mathHelper.GetVertexDistance(CurrentVertex, FacePool[adjFace]) >= PlaneDistanceTolerance)
@@ -103,7 +103,7 @@ namespace MIConvexHull
 		private DeferredFace MakeDeferredFace(ConvexFaceInternal face, int faceIndex, ConvexFaceInternal pivot,
 			int pivotIndex, ConvexFaceInternal oldFace)
 		{
-			var ret = ObjectManager.GetDeferredFace();
+			DeferredFace ret = ObjectManager.GetDeferredFace();
 
 			ret.Face = face;
 			ret.FaceIndex = faceIndex;
@@ -120,10 +120,10 @@ namespace MIConvexHull
 		/// <param name="connector">The connector.</param>
 		private void ConnectFace(FaceConnector connector)
 		{
-			var index = connector.HashCode % Constants.ConnectorTableSize;
-			var list = ConnectorTable[index];
+			uint index = connector.HashCode % Constants.ConnectorTableSize;
+			ConnectorList list = ConnectorTable[index];
 
-			for (var current = list.First; current != null; current = current.Next)
+			for (FaceConnector current = list.First; current != null; current = current.Next)
 			{
 				if (FaceConnector.AreConnectable(connector, current, NumOfDimensions))
 				{
@@ -146,19 +146,19 @@ namespace MIConvexHull
 		/// <returns><c>true</c> if possible, <c>false</c> otherwise.</returns>
 		private bool CreateCone()
 		{
-			var currentVertexIndex = CurrentVertex;
+			int currentVertexIndex = CurrentVertex;
 			ConeFaceBuffer.Clear();
 
-			for (var fIndex = 0; fIndex < AffectedFaceBuffer.Count; fIndex++)
+			for (int fIndex = 0; fIndex < AffectedFaceBuffer.Count; fIndex++)
 			{
-				var oldFaceIndex = AffectedFaceBuffer[fIndex];
-				var oldFace = FacePool[oldFaceIndex];
+				int oldFaceIndex = AffectedFaceBuffer[fIndex];
+				ConvexFaceInternal oldFace = FacePool[oldFaceIndex];
 
 				// Find the faces that need to be updated
-				var updateCount = 0;
-				for (var i = 0; i < NumOfDimensions; i++)
+				int updateCount = 0;
+				for (int i = 0; i < NumOfDimensions; i++)
 				{
-					var af = oldFace.AdjacentFaces[i];
+					int af = oldFace.AdjacentFaces[i];
 					if (!AffectedFaceFlags[af]) // Tag == false when oldFaces does not contain af
 					{
 						UpdateBuffer[updateCount] = af;
@@ -167,13 +167,13 @@ namespace MIConvexHull
 					}
 				}
 
-				for (var i = 0; i < updateCount; i++)
+				for (int i = 0; i < updateCount; i++)
 				{
-					var adjacentFace = FacePool[UpdateBuffer[i]];
+					ConvexFaceInternal adjacentFace = FacePool[UpdateBuffer[i]];
 
-					var oldFaceAdjacentIndex = 0;
+					int oldFaceAdjacentIndex = 0;
 					int[] adjFaceAdjacency = adjacentFace.AdjacentFaces;
-					for (var j = 0; j < adjFaceAdjacency.Length; j++)
+					for (int j = 0; j < adjFaceAdjacency.Length; j++)
 					{
 						if (oldFaceIndex == adjFaceAdjacency[j])
 						{
@@ -182,17 +182,17 @@ namespace MIConvexHull
 						}
 					}
 
-					var forbidden = UpdateIndices[i]; // Index of the face that corresponds to this adjacent face
+					int forbidden = UpdateIndices[i]; // Index of the face that corresponds to this adjacent face
 
-					var newFaceIndex = ObjectManager.GetFace();
-					var newFace = FacePool[newFaceIndex];
+					int newFaceIndex = ObjectManager.GetFace();
+					ConvexFaceInternal newFace = FacePool[newFaceIndex];
 					int[] vertices = newFace.Vertices;
-					for (var j = 0; j < NumOfDimensions; j++)
+					for (int j = 0; j < NumOfDimensions; j++)
 					{
 						vertices[j] = oldFace.Vertices[j];
 					}
 
-					var oldVertexIndex = vertices[forbidden];
+					int oldVertexIndex = vertices[forbidden];
 
 					int orderedPivotIndex;
 
@@ -200,7 +200,7 @@ namespace MIConvexHull
 					if (currentVertexIndex < oldVertexIndex)
 					{
 						orderedPivotIndex = 0;
-						for (var j = forbidden - 1; j >= 0; j--)
+						for (int j = forbidden - 1; j >= 0; j--)
 						{
 							if (vertices[j] > currentVertexIndex)
 							{
@@ -216,7 +216,7 @@ namespace MIConvexHull
 					else
 					{
 						orderedPivotIndex = NumOfDimensions - 1;
-						for (var j = forbidden + 1; j < NumOfDimensions; j++)
+						for (int j = forbidden + 1; j < NumOfDimensions; j++)
 						{
 							if (vertices[j] < currentVertexIndex)
 							{
@@ -251,27 +251,27 @@ namespace MIConvexHull
 		private void CommitCone()
 		{
 			// Fill the adjacency.
-			for (var i = 0; i < ConeFaceBuffer.Count; i++)
+			for (int i = 0; i < ConeFaceBuffer.Count; i++)
 			{
-				var face = ConeFaceBuffer[i];
+				DeferredFace face = ConeFaceBuffer[i];
 
-				var newFace = face.Face;
-				var adjacentFace = face.Pivot;
-				var oldFace = face.OldFace;
-				var orderedPivotIndex = face.FaceIndex;
+				ConvexFaceInternal newFace = face.Face;
+				ConvexFaceInternal adjacentFace = face.Pivot;
+				ConvexFaceInternal oldFace = face.OldFace;
+				int orderedPivotIndex = face.FaceIndex;
 
 				newFace.AdjacentFaces[orderedPivotIndex] = adjacentFace.Index;
 				adjacentFace.AdjacentFaces[face.PivotIndex] = newFace.Index;
 
 				// let there be a connection.
-				for (var j = 0; j < NumOfDimensions; j++)
+				for (int j = 0; j < NumOfDimensions; j++)
 				{
 					if (j == orderedPivotIndex)
 					{
 						continue;
 					}
 
-					var connector = ObjectManager.GetConnector();
+					FaceConnector connector = ObjectManager.GetConnector();
 					connector.Update(newFace, j, NumOfDimensions);
 					ConnectFace(connector);
 				}
@@ -309,9 +309,9 @@ namespace MIConvexHull
 			}
 
 			// Recycle the affected faces.
-			for (var fIndex = 0; fIndex < AffectedFaceBuffer.Count; fIndex++)
+			for (int fIndex = 0; fIndex < AffectedFaceBuffer.Count; fIndex++)
 			{
-				var face = AffectedFaceBuffer[fIndex];
+				int face = AffectedFaceBuffer[fIndex];
 				UnprocessedFaces.Remove(FacePool[face]);
 				ObjectManager.DepositFace(face);
 			}
@@ -325,7 +325,7 @@ namespace MIConvexHull
 		/// <param name="v">The v.</param>
 		private void IsBeyond(ConvexFaceInternal face, IndexBuffer beyondVertices, int v)
 		{
-			var distance = mathHelper.GetVertexDistance(v, face);
+			double distance = mathHelper.GetVertexDistance(v, face);
 			if (distance >= PlaneDistanceTolerance)
 			{
 				if (distance > MaxDistance)
@@ -363,10 +363,10 @@ namespace MIConvexHull
 		private int LexCompare(int u, int v)
 		{
 			int uOffset = u * NumOfDimensions, vOffset = v * NumOfDimensions;
-			for (var i = 0; i < NumOfDimensions; i++)
+			for (int i = 0; i < NumOfDimensions; i++)
 			{
 				double x = Positions[uOffset + i], y = Positions[vOffset + i];
-				var comp = x.CompareTo(y);
+				int comp = x.CompareTo(y);
 				if (comp != 0)
 				{
 					return comp;
@@ -385,19 +385,19 @@ namespace MIConvexHull
 		/// <param name="beyond1">The beyond1.</param>
 		private void FindBeyondVertices(ConvexFaceInternal face, IndexBuffer beyond, IndexBuffer beyond1)
 		{
-			var beyondVertices = BeyondBuffer;
+			IndexBuffer beyondVertices = BeyondBuffer;
 
 			MaxDistance = double.NegativeInfinity;
 			FurthestVertex = 0;
 			int v;
 
-			for (var i = 0; i < beyond1.Count; i++)
+			for (int i = 0; i < beyond1.Count; i++)
 			{
 				VertexVisited[beyond1[i]] = true;
 			}
 
 			VertexVisited[CurrentVertex] = false;
-			for (var i = 0; i < beyond.Count; i++)
+			for (int i = 0; i < beyond.Count; i++)
 			{
 				v = beyond[i];
 				if (v == CurrentVertex)
@@ -409,7 +409,7 @@ namespace MIConvexHull
 				IsBeyond(face, beyondVertices, v);
 			}
 
-			for (var i = 0; i < beyond1.Count; i++)
+			for (int i = 0; i < beyond1.Count; i++)
 			{
 				v = beyond1[i];
 				if (VertexVisited[v])
@@ -421,7 +421,7 @@ namespace MIConvexHull
 			face.FurthestVertex = FurthestVertex;
 
 			// Pull the old switch a roo (switch the face beyond buffers)
-			var temp = face.VerticesBeyond;
+			IndexBuffer temp = face.VerticesBeyond;
 			face.VerticesBeyond = beyondVertices;
 			if (temp.Count > 0)
 			{
@@ -438,14 +438,14 @@ namespace MIConvexHull
 		/// <param name="beyond">The beyond.</param>
 		private void FindBeyondVertices(ConvexFaceInternal face, IndexBuffer beyond)
 		{
-			var beyondVertices = BeyondBuffer;
+			IndexBuffer beyondVertices = BeyondBuffer;
 
 			MaxDistance = double.NegativeInfinity;
 			FurthestVertex = 0;
 
-			for (var i = 0; i < beyond.Count; i++)
+			for (int i = 0; i < beyond.Count; i++)
 			{
-				var v = beyond[i];
+				int v = beyond[i];
 				if (v == CurrentVertex)
 				{
 					continue;
@@ -457,7 +457,7 @@ namespace MIConvexHull
 			face.FurthestVertex = FurthestVertex;
 
 			// Pull the old switch a roo (switch the face beyond buffers)
-			var temp = face.VerticesBeyond;
+			IndexBuffer temp = face.VerticesBeyond;
 			face.VerticesBeyond = beyondVertices;
 			if (temp.Count > 0)
 			{
@@ -475,11 +475,11 @@ namespace MIConvexHull
 			SingularVertices.Add(CurrentVertex);
 
 			// This means that all the affected faces must be on the hull and that all their "vertices beyond" are singular.
-			for (var fIndex = 0; fIndex < AffectedFaceBuffer.Count; fIndex++)
+			for (int fIndex = 0; fIndex < AffectedFaceBuffer.Count; fIndex++)
 			{
-				var face = FacePool[AffectedFaceBuffer[fIndex]];
-				var vb = face.VerticesBeyond;
-				for (var i = 0; i < vb.Count; i++)
+				ConvexFaceInternal face = FacePool[AffectedFaceBuffer[fIndex]];
+				IndexBuffer vb = face.VerticesBeyond;
+				for (int i = 0; i < vb.Count; i++)
 				{
 					SingularVertices.Add(vb[i]);
 				}
@@ -513,20 +513,20 @@ namespace MIConvexHull
 		/// <returns>TVertex[].</returns>
 		internal TVertex[] GetHullVertices<TVertex>(IList<TVertex> data)
 		{
-			var cellCount = ConvexFaces.Count;
-			var hullVertexCount = 0;
+			int cellCount = ConvexFaces.Count;
+			int hullVertexCount = 0;
 
-			for (var i = 0; i < NumberOfVertices; i++)
+			for (int i = 0; i < NumberOfVertices; i++)
 			{
 				VertexVisited[i] = false;
 			}
 
-			for (var i = 0; i < cellCount; i++)
+			for (int i = 0; i < cellCount; i++)
 			{
 				int[] vs = FacePool[ConvexFaces[i]].Vertices;
-				for (var j = 0; j < vs.Length; j++)
+				for (int j = 0; j < vs.Length; j++)
 				{
-					var v = vs[j];
+					int v = vs[j];
 					if (!VertexVisited[v])
 					{
 						VertexVisited[v] = true;
@@ -535,8 +535,8 @@ namespace MIConvexHull
 				}
 			}
 
-			TVertex[] result = new TVertex[hullVertexCount];
-			for (var i = 0; i < NumberOfVertices; i++)
+			var result = new TVertex[hullVertexCount];
+			for (int i = 0; i < NumberOfVertices; i++)
 			{
 				if (VertexVisited[i])
 				{
@@ -557,15 +557,15 @@ namespace MIConvexHull
 			where TFace : ConvexFace<TVertex, TFace>, new()
 			where TVertex : IVertex
 		{
-			var faces = ConvexFaces;
-			var cellCount = faces.Count;
-			TFace[] cells = new TFace[cellCount];
+			IndexBuffer faces = ConvexFaces;
+			int cellCount = faces.Count;
+			var cells = new TFace[cellCount];
 
-			for (var i = 0; i < cellCount; i++)
+			for (int i = 0; i < cellCount; i++)
 			{
-				var face = FacePool[faces[i]];
-				TVertex[] vertices = new TVertex[NumOfDimensions];
-				for (var j = 0; j < NumOfDimensions; j++)
+				ConvexFaceInternal face = FacePool[faces[i]];
+				var vertices = new TVertex[NumOfDimensions];
+				for (int j = 0; j < NumOfDimensions; j++)
 				{
 					vertices[j] = (TVertex) Vertices[face.Vertices[j]];
 				}
@@ -579,11 +579,11 @@ namespace MIConvexHull
 				face.Tag = i;
 			}
 
-			for (var i = 0; i < cellCount; i++)
+			for (int i = 0; i < cellCount; i++)
 			{
-				var face = FacePool[faces[i]];
-				var cell = cells[i];
-				for (var j = 0; j < NumOfDimensions; j++)
+				ConvexFaceInternal face = FacePool[faces[i]];
+				TFace cell = cells[i];
+				for (int j = 0; j < NumOfDimensions; j++)
 				{
 					if (face.AdjacentFaces[j] < 0)
 					{
@@ -596,11 +596,11 @@ namespace MIConvexHull
 				// Fix the vertex orientation.
 				if (face.IsNormalFlipped)
 				{
-					var tempVertex = cell.Vertices[0];
+					TVertex tempVertex = cell.Vertices[0];
 					cell.Vertices[0] = cell.Vertices[NumOfDimensions - 1];
 					cell.Vertices[NumOfDimensions - 1] = tempVertex;
 
-					var tempAdj = cell.Adjacency[0];
+					TFace tempAdj = cell.Adjacency[0];
 					cell.Adjacency[0] = cell.Adjacency[NumOfDimensions - 1];
 					cell.Adjacency[NumOfDimensions - 1] = tempAdj;
 				}

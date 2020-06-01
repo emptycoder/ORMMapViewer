@@ -66,7 +66,7 @@ namespace ORMMap.VectorTile
 
 			// TODO: how to cache 'finalGeom' without making whole class generic???
 			// and without using an object (boxing) ???
-			List<List<Vector2<T>>> finalGeom = _cachedGeometry as List<List<Vector2<T>>>;
+			var finalGeom = _cachedGeometry as List<List<Vector2<T>>>;
 			if (null != finalGeom && scale == _previousScale)
 			{
 				return finalGeom;
@@ -93,14 +93,14 @@ namespace ORMMap.VectorTile
 				else
 				{
 					// process every ring of a polygon in a separate loop
-					List<List<Vector2<long>>> newGeom = new List<List<Vector2<long>>>();
-					var geomCount = geom.Count;
-					for (var i = 0; i < geomCount; i++)
+					var newGeom = new List<List<Vector2<long>>>();
+					int geomCount = geom.Count;
+					for (int i = 0; i < geomCount; i++)
 					{
 						List<Vector2<long>> part = geom[i];
-						List<List<Vector2<long>>> tmp = new List<List<Vector2<long>>>();
+						var tmp = new List<List<Vector2<long>>>();
 						// flip order of inner rings to look like outer rings
-						var isInner = signedPolygonArea(part) >= 0;
+						bool isInner = signedPolygonArea(part) >= 0;
 						if (isInner)
 						{
 							part.Reverse();
@@ -146,9 +146,9 @@ namespace ORMMap.VectorTile
 
 		private float signedPolygonArea(List<Vector2<long>> vertices)
 		{
-			var num_points = vertices.Count - 1;
+			int num_points = vertices.Count - 1;
 			float area = 0;
-			for (var i = 0; i < num_points; i++)
+			for (int i = 0; i < num_points; i++)
 			{
 				area +=
 					(vertices[i + 1].X - vertices[i].X) *
@@ -170,9 +170,9 @@ namespace ORMMap.VectorTile
 				throw new Exception(string.Format("Layer [{0}]: uneven number of feature tag ids", Layer.Name));
 			}
 
-			Dictionary<string, object> properties = new Dictionary<string, object>();
-			var tagCount = Tags.Count;
-			for (var i = 0; i < tagCount; i += 2)
+			var properties = new Dictionary<string, object>();
+			int tagCount = Tags.Count;
+			for (int i = 0; i < tagCount; i += 2)
 			{
 				properties.Add(Layer.Keys[Tags[i]], Layer.Values[Tags[i + 1]]);
 			}
@@ -188,14 +188,14 @@ namespace ORMMap.VectorTile
 		/// <returns>Value of the requested property</returns>
 		public object GetValue(string key)
 		{
-			var idxKey = Layer.Keys.IndexOf(key);
+			int idxKey = Layer.Keys.IndexOf(key);
 			if (-1 == idxKey)
 			{
 				throw new Exception(string.Format("Key [{0}] does not exist", key));
 			}
 
-			var tagCount = Tags.Count;
-			for (var i = 0; i < tagCount; i++)
+			int tagCount = Tags.Count;
+			for (int i = 0; i < tagCount; i++)
 			{
 				if (idxKey == Tags[i])
 				{
@@ -208,7 +208,7 @@ namespace ORMMap.VectorTile
 
 		public override string ToString()
 		{
-			var text = $"Feature: {GeometryType}\n";
+			string text = $"Feature: {GeometryType}\n";
 			foreach (KeyValuePair<string, object> prop in GetProperties())
 			{
 				text += $"   {prop.Key} ({prop.Value.GetType()}): {prop.Value}\n";

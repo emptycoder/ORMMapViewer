@@ -14,23 +14,23 @@ namespace ORMMapViewer.Utils
 
 		public static LinkedList<Node> FindPath(Node start, Node end)
 		{
-			LinkedList<Node> path = new LinkedList<Node>();
+			var path = new LinkedList<Node>();
 			if (start.Equals(end))
 			{
 				path.AddFirst(start);
 				return path;
 			}
 
-			SimplePriorityQueue<Node> openSet = new SimplePriorityQueue<Node>();
+			var openSet = new SimplePriorityQueue<Node>();
 			openSet.Enqueue(start, DefaultHeuristic(start, end));
 
-			Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
+			var cameFrom = new Dictionary<Node, Node>();
 
-			Dictionary<Node, float> gScore = new Dictionary<Node, float> {{start, 0}};
+			var gScore = new Dictionary<Node, float> {{start, 0}};
 
 			while (openSet.Count > 0)
 			{
-				var current = openSet.Dequeue();
+				Node current = openSet.Dequeue();
 				if (current.Equals(end))
 				{
 					path.AddFirst(current);
@@ -47,7 +47,7 @@ namespace ORMMapViewer.Utils
 				{
 					if (!pair.Key.Equals(current))
 					{
-						var tentativeGScore = gScore.ContainsKey(current) ? gScore[current] : float.MaxValue + pair.Value.Calculate();
+						float tentativeGScore = gScore.ContainsKey(current) ? gScore[current] : float.MaxValue + pair.Value.Calculate();
 						if (tentativeGScore < (gScore.ContainsKey(pair.Key) ? gScore[pair.Key] : float.MaxValue))
 						{
 							cameFrom[pair.Key] = current;

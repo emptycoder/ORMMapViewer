@@ -45,12 +45,12 @@ namespace ORMMap.Model.Data
 
 		public VectorTileObj GetData(Vector3<double> lonLatZoom)
 		{
-			if (memoryCache.TryGetValue(lonLatZoom.ToString(), out var data))
+			if (memoryCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
 			{
 				return data;
 			}
 
-			if (diskCache.TryGetValue(lonLatZoom.ToString(), out var path))
+			if (diskCache.TryGetValue(lonLatZoom.ToString(), out string path))
 			{
 				data = new VectorTileObj(File.ReadAllBytes(path));
 			}
@@ -89,17 +89,17 @@ namespace ORMMap.Model.Data
 				return;
 			}
 
-			var layer = data.GetLayer("roads");
+			VectorTileLayer layer = data.GetLayer("roads");
 
-			var graph = new Graph();
+			Graph graph = new Graph();
 
-			for (var i = 0; i < layer.FeatureCount(); i++)
+			for (int i = 0; i < layer.FeatureCount(); i++)
 			{
-				var feature = layer.GetFeature(i);
+				VectorTileFeature feature = layer.GetFeature(i);
 				List<Vector2<int>> geometry = feature.Geometry<int>()[0];
 
-				var node1 = new Node(geometry[0].X, geometry[0].Y);
-				var node2 = new Node(geometry[1].X, geometry[1].Y);
+				Node node1 = new Node(geometry[0].X, geometry[0].Y);
+				Node node2 = new Node(geometry[1].X, geometry[1].Y);
 
 				node1.relatives.Add(node2, new LengthWeight(node1, node2));
 				node2.relatives.Add(node1, new LengthWeight(node2, node1));
@@ -108,7 +108,7 @@ namespace ORMMap.Model.Data
 				graph.AddNode(node2);
 			}
 
-			foreach (var node in graph.nodes)
+			foreach (Node node in graph.nodes)
 			{
 				node.UpdateRelatives();
 			}

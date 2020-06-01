@@ -22,9 +22,9 @@ namespace TransportationProblem
 		{
 			double result = 0;
 
-			for (var rowIndex = 0; rowIndex < basis.Length; rowIndex++)
+			for (int rowIndex = 0; rowIndex < basis.Length; rowIndex++)
 			{
-				var columnIndex = basis[rowIndex];
+				int columnIndex = basis[rowIndex];
 				result += simplexFunction[columnIndex] * constraints[rowIndex];
 			}
 
@@ -33,7 +33,7 @@ namespace TransportationProblem
 
 		public Simplex FindAnswer()
 		{
-			var pivot = FindPivot();
+			Pivot pivot = FindPivot();
 			while (pivot != null)
 			{
 				RecalculateMatrix(pivot);
@@ -46,7 +46,7 @@ namespace TransportationProblem
 		private Pivot FindPivot()
 		{
 			// Calculate simplexCalculations
-			double[] simplexCalculations = new double[matrix.ColumnCount];
+			var simplexCalculations = new double[matrix.ColumnCount];
 			int columnIndex;
 			Vector<double> columnData;
 
@@ -54,7 +54,7 @@ namespace TransportationProblem
 			{
 				double value = 0;
 				columnData = matrix.Column(columnIndex);
-				for (var rowIndex = 0; rowIndex < matrix.RowCount; rowIndex++)
+				for (int rowIndex = 0; rowIndex < matrix.RowCount; rowIndex++)
 				{
 					value += simplexFunction[basis[rowIndex]] * columnData[rowIndex];
 				}
@@ -71,17 +71,17 @@ namespace TransportationProblem
 			}
 
 			// Find min value for row
-			var minRowIndex = -1;
-			var minRowValue = double.MaxValue;
+			int minRowIndex = -1;
+			double minRowValue = double.MaxValue;
 			columnData = matrix.Column(columnIndex);
-			for (var rowIndex = 0; rowIndex < columnData.Count; rowIndex++)
+			for (int rowIndex = 0; rowIndex < columnData.Count; rowIndex++)
 			{
 				if (columnData[rowIndex] <= 0)
 				{
 					continue;
 				}
 
-				var value = constraints[rowIndex] / columnData[rowIndex];
+				double value = constraints[rowIndex] / columnData[rowIndex];
 				if (value < minRowValue)
 				{
 					minRowIndex = rowIndex;
@@ -102,7 +102,7 @@ namespace TransportationProblem
 			// Change basis
 			basis[pivot.rowIndex] = pivot.columnIndex;
 			// Calculate constraints
-			for (var rowIndex = 0; rowIndex < matrix.RowCount; rowIndex++)
+			for (int rowIndex = 0; rowIndex < matrix.RowCount; rowIndex++)
 			{
 				if (rowIndex == pivot.rowIndex)
 				{
@@ -114,7 +114,7 @@ namespace TransportationProblem
 
 			constraints[pivot.rowIndex] = constraints[pivot.rowIndex] / pivot.value;
 			// Calculate matrix without main lines
-			for (var columnIndex = 0; columnIndex < matrix.ColumnCount; columnIndex++)
+			for (int columnIndex = 0; columnIndex < matrix.ColumnCount; columnIndex++)
 			{
 				if (columnIndex == pivot.columnIndex)
 				{
@@ -122,7 +122,7 @@ namespace TransportationProblem
 				}
 
 				Vector<double> columnData = matrix.Column(columnIndex);
-				for (var rowIndex = 0; rowIndex < columnData.Count; rowIndex++)
+				for (int rowIndex = 0; rowIndex < columnData.Count; rowIndex++)
 				{
 					if (rowIndex == pivot.rowIndex)
 					{
@@ -135,12 +135,12 @@ namespace TransportationProblem
 
 			// Calculate main lines of matrix
 			Vector<double> mainRowData = matrix.Row(pivot.rowIndex);
-			for (var columnIndex = 0; columnIndex < mainRowData.Count; columnIndex++)
+			for (int columnIndex = 0; columnIndex < mainRowData.Count; columnIndex++)
 			{
 				matrix[pivot.rowIndex, columnIndex] = mainRowData[columnIndex] / pivot.value;
 			}
 
-			for (var rowIndex = 0; rowIndex < matrix.RowCount; rowIndex++)
+			for (int rowIndex = 0; rowIndex < matrix.RowCount; rowIndex++)
 			{
 				matrix[rowIndex, pivot.columnIndex] = 0;
 			}
