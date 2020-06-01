@@ -64,6 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ControllerView\TransportationProblem.cs" />
     <Compile Include="Model\Entitites\Graph\Graph.cs" />
     <Compile Include="Model\Entitites\Graph\LengthWeight.cs" />
     <Compile Include="Model\Entitites\Graph\Node.cs" />
@@ -71,7 +72,7 @@
     <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\DirectoryUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
-    <Compile Include="ControllerView\MapWindowEvents.cs" />
+    <Compile Include="ControllerView\MainWindowEvents.cs" />
     <Page Include="ControllerView\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

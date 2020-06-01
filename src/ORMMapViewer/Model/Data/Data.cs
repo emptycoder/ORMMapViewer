@@ -45,23 +45,28 @@ namespace ORMMap.Model.Data
             if (diskCache.TryGetValue(lonLatZoom.ToString(), out string path))
             {
                 data = new VectorTileObj(File.ReadAllBytes(path));
-                CacheToMemory(lonLatZoom, data);
-                CacheRoads(lonLatZoom, data);
-                return data;
+            }
+            else
+            {
+                byte[] byteData = GetDataFromSource(lonLatZoom);
+                // Save to disk
+                path = $"{pathToDataFolder}\\{lonLatZoom.EncodeToString()}{FileExtension}";
+                File.WriteAllBytes(path, byteData);
+                // Add to disk cache
+                diskCache.Add(lonLatZoom.ToString(), path);
+
+                data = new VectorTileObj(byteData);
             }
 
-            byte[] byteData = GetDataFromSource(lonLatZoom);
-            data = new VectorTileObj(byteData);
             CacheToMemory(lonLatZoom, data);
             CacheRoads(lonLatZoom, data);
-            // Save to disk
-            File.WriteAllBytes($"{pathToDataFolder}\\{lonLatZoom.EncodeToString()}{FileExtension}", byteData);
 
             return data;
         }
 
         private void CacheRoads(Vector3<double> lonLatZoom, VectorTileObj data)
         {
+            if (roadsCache.ContainsKey(lonLatZoom.ToString())) { return; }
             if (!data.LayerNames().Contains("roads"))
             {
                 return;

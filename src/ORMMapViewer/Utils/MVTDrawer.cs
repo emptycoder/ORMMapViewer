@@ -18,14 +18,13 @@ namespace ORMMap
             for (int i = 0; i < featureCount; i++)
             {
                 VectorTileFeature feature = layer.GetFeature(i);
-                if (feature.GeometryType == GeomType.POLYGON || feature.GeometryType == GeomType.LINESTRING)
-                {
-                    featureDrawDictionary[feature.GeometryType](feature, pallete, graphics);
-                }
-                else if (feature.GeometryType == GeomType.UNKNOWN)
+                if (feature.GeometryType == GeomType.UNKNOWN)
                 {
                     Console.WriteLine("Unknown feature: " + feature.ToString());
+                    continue;
                 }
+
+                featureDrawDictionary[feature.GeometryType](feature, pallete, graphics);
             }
         }
 
