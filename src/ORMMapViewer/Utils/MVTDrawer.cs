@@ -84,7 +84,20 @@ namespace ORMMap
 			using (var pen = new Pen(pallete.MainDrawColor, pallete.Thickness)) graphics.DrawLines(pen, points);
 		}
 
-		public static void DrawGraphRoads(List<Node> roads, Graphics graphics)
+		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)
+		{
+			int index = 0;
+			
+			using (var brush = new SolidBrush(Color.Chartreuse))
+			{
+				foreach (Node node in roads)
+				{
+					graphics.DrawString(index++.ToString(), SystemFonts.DefaultFont, brush, new Point(node.pos.X, node.pos.Y));
+				}
+			}
+		}
+
+		public static void DrawGraphRoads(LinkedList<Node> roads, Graphics graphics)
 		{
 			var points = roads.Select((node) => new Point(node.pos.X, node.pos.Y)).ToArray();
 			using (Pen pen = new Pen(Color.Red, 7))

@@ -33,9 +33,9 @@ namespace ORMMapViewer.Model.Entitites
 
 		public void TakeRelatives(Node other)
 		{
-			foreach (var otherNode in other.relatives.Keys)
+			foreach (Node otherNode in other.relatives.Keys)
 			{
-				foreach (var thisNode in relatives.Keys)
+				foreach (Node thisNode in relatives.Keys)
 				{
 					if (otherNode.Equals(thisNode))
 						thisNode.relatives = thisNode.relatives.Concat(
@@ -47,7 +47,7 @@ namespace ORMMapViewer.Model.Entitites
 
 		public void UpdateRelatives()
 		{
-			foreach (var node in relatives.Keys)
+			foreach (Node node in relatives.Keys)
 			{
 				if (!node.relatives.ContainsKey(this)) node.relatives.Add(this, new LengthWeight(this, node));
 			}

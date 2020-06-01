@@ -12,6 +12,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 - [Simplex alghoritm](https://en.wikipedia.org/wiki/Simplex_algorithm) for transportation problem
 - [MIConvexHull](https://github.com/DesignEngrLab/MIConvexHull) for delaunay triangulation
 - [OptimizedPriorityQueue](https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp)
+- [A* search](https://en.wikipedia.org/wiki/A*_search_algorithm)
 
 ## News:
 

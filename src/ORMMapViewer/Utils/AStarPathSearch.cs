@@ -59,6 +59,8 @@ namespace ORMMapViewer.Utils
 					}
 				}
 			}
+			
+			Console.WriteLine("No path found!");
 
 			return null;
 		}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows;
 using ORMMap;
 using ORMMap.Model.Data;
@@ -71,7 +72,10 @@ namespace ORMMapViewer
 				}
 
 				Graph graph = dataController.GetRoads(lonLatZoom);
-				MVTDrawer.DrawGraphRoads(graph.nodes, graphics);
+				// LinkedList<Node> list = AStarPathSearch.FindPath();
+				// Console.WriteLine(list.Count);
+				// MVTDrawer.DrawGraphRoads(list, graphics);
+				MVTDrawer.DrawNodeIndices(graph.nodes, graphics);
 			}
 
 			map.ImageSource = ImageUtils.GetImageStream(scene);
