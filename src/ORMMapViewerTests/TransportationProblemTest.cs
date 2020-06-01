@@ -20,7 +20,7 @@ namespace ORMMapViewerTests
 			BasisFinder basisFinder = new BasisFinder(matrix, simplexFunction, constraints);
 			int[] basis = basisFinder.GetBasis();
 
-			Console.WriteLine($"Basis: {String.Join(", ", basis)}");
+			Console.WriteLine($"Basis: {string.Join(", ", basis)}");
 
 			Simplex simplex = new Simplex(basisFinder, basis);
 			simplex.FindAnswer();
