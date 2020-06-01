@@ -2,6 +2,6 @@
 {
 	public abstract class Weight
 	{
-		public abstract double Calculate();
+		public abstract float Calculate();
 	}
 }
