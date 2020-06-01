@@ -12,6 +12,7 @@ namespace ORMMap
 	public static class MVTDrawer
 	{
 		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics);
+		private static readonly Font font = new Font("Consolas", 48, FontStyle.Regular);
 
 		private static readonly Dictionary<GeomType, DrawDelegate> featureDrawDictionary =
 			new Dictionary<GeomType, DrawDelegate>
@@ -70,18 +71,18 @@ namespace ORMMap
 
 			Console.WriteLine(string.Join(",\n", points) + ",\n");
 
+			using (var pen = new Pen(pallete.MainDrawColor, pallete.Thickness)) graphics.DrawLines(pen, points);
+
 			// Draw name of street
 			if (props.ContainsKey("name"))
 			{
 				using (var brush = new SolidBrush(pallete.GetPropFillColor("name")))
 				{
-					var text = (string) props["name"];
+					var text = (string)props["name"];
 					foreach (var point in geometry)
-						graphics.DrawString(text, SystemFonts.DefaultFont, brush, new Point(point.X, point.Y));
+						graphics.DrawString(text, font, brush, new Point(point.X, point.Y));
 				}
 			}
-
-			using (var pen = new Pen(pallete.MainDrawColor, pallete.Thickness)) graphics.DrawLines(pen, points);
 		}
 
 		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)
@@ -92,7 +93,7 @@ namespace ORMMap
 			{
 				foreach (Node node in roads)
 				{
-					graphics.DrawString(index++.ToString(), SystemFonts.DefaultFont, brush, new Point(node.pos.X, node.pos.Y));
+					graphics.DrawString(index++.ToString(), font, brush, new Point(node.pos.X, node.pos.Y));
 				}
 			}
 		}
