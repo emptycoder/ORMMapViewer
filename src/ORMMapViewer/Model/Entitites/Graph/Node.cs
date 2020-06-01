@@ -6,7 +6,7 @@ namespace ORMMapViewer.Model.Entitites
 {
 	public class Node
 	{
-		private const int maxDistance = 1;
+		private const int maxDistance = 10;
 		public readonly Dictionary<Node, Weight> neighbours = new Dictionary<Node, Weight>();
 		public int id = -1;
 		public Vector2<int> pos;
@@ -16,14 +16,12 @@ namespace ORMMapViewer.Model.Entitites
 			pos = new Vector2<int>(x, y);
 		}
 
-		public Node AddNeighbour(Node node)
+		public void AddNeighbour(Node node)
 		{
 			if (!neighbours.ContainsKey(node))
 			{
 				neighbours.Add(node, new LengthWeight(this, node));
 			}
-
-			return this;
 		}
 
 		public override bool Equals(object obj)
@@ -41,18 +39,6 @@ namespace ORMMapViewer.Model.Entitites
 			return hashCode;
 		}
 
-		public void TakeNeighbours(Node other)
-		{
-			foreach (Node node in other.neighbours.Keys)
-			{
-				if (!neighbours.ContainsKey(node))
-				{
-					node.AddNeighbour(this);
-					AddNeighbour(node);
-				}
-			}
-		}
-
 		public void UpdateNeighbours()
 		{
 			foreach (Node node in neighbours.Keys)
@@ -62,15 +48,6 @@ namespace ORMMapViewer.Model.Entitites
 					node.AddNeighbour(this);
 				}
 			}
-		}
-
-		public void SetRemoved()
-		{
-			foreach (Node node in neighbours.Keys)
-			{
-				node.neighbours.Remove(this);
-			}
-			neighbours.Clear();
 		}
 	}
 }

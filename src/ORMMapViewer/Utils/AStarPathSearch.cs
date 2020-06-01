@@ -14,19 +14,19 @@ namespace ORMMapViewer.Utils
 
 		public static LinkedList<Node> FindPath(Node start, Node end)
 		{
-			var path = new LinkedList<Node>();
+			LinkedList<Node> path = new LinkedList<Node>();
 			if (start.Equals(end))
 			{
 				path.AddFirst(start);
 				return path;
 			}
 
-			var openSet = new SimplePriorityQueue<Node>();
+			SimplePriorityQueue<Node> openSet = new SimplePriorityQueue<Node>();
 			openSet.Enqueue(start, DefaultHeuristic(start, end));
 
-			var cameFrom = new Dictionary<Node, Node>();
+			Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
 
-			var gScore = new Dictionary<Node, float> {{start, 0}};
+			Dictionary<Node, float> gScore = new Dictionary<Node, float> {{start, 0}};
 
 			while (openSet.Count > 0)
 			{
@@ -47,11 +47,17 @@ namespace ORMMapViewer.Utils
 				{
 					if (!pair.Key.Equals(current))
 					{
-						float tentativeGScore = gScore.ContainsKey(current) ? gScore[current] : float.MaxValue + pair.Value.Calculate();
+						float tentativeGScore = gScore.ContainsKey(current) ? gScore[current] + pair.Value.Calculate() : float.MaxValue;
 						if (tentativeGScore < (gScore.ContainsKey(pair.Key) ? gScore[pair.Key] : float.MaxValue))
 						{
 							cameFrom[pair.Key] = current;
-							gScore[pair.Key] = tentativeGScore;
+							if (!gScore.ContainsKey(pair.Key)) {
+								gScore.Add(pair.Key, tentativeGScore);
+							}
+							else
+							{
+								gScore[pair.Key] = tentativeGScore;
+							}
 							if (!openSet.Contains(pair.Key))
 							{
 								openSet.Enqueue(pair.Key, tentativeGScore + DefaultHeuristic(pair.Key, end));

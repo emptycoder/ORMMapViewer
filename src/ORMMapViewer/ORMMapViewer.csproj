@@ -67,6 +67,7 @@
     </ApplicationDefinition>
     <Compile Include="Model\Entitites\Graph\Graph.cs" />
     <Compile Include="Model\Entitites\Graph\LengthWeight.cs" />
+    <Compile Include="Model\Entitites\Graph\Line.cs" />
     <Compile Include="Model\Entitites\Graph\Node.cs" />
     <Compile Include="Model\Entitites\Graph\Weight.cs" />
     <Compile Include="Utils\AStarPathSearch.cs" />

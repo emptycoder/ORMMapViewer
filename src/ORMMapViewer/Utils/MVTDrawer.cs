@@ -100,11 +100,6 @@ namespace ORMMap
 			using (Pen pen = new Pen(Color.Red, 7))
 			{
 				graphics.DrawLines(pen, points);
-
-				foreach (var point in points)
-				{
-					graphics.DrawEllipse(pen, point.X, point.Y, 4, 4);
-				}
 			}
 		}
 

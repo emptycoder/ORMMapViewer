@@ -93,6 +93,7 @@ namespace ORMMap.Model.Data
 			VectorTileLayer layer = data.GetLayer("roads");
 
 			Graph graph = new Graph();
+			List<Line> lines = new List<Line>();
 
 			for (int i = 0; i < layer.FeatureCount(); i++)
 			{
@@ -103,15 +104,60 @@ namespace ORMMap.Model.Data
 				for (int k = 0; k < geometry.Count; k++)
 				{
 					Node current = new Node(geometry[k].X, geometry[k].Y);
+					if (current.pos.X > 4500 || current.pos.Y > 4500)
+					{
+						last = null;
+						continue;
+					}
+
+					current = graph.AddNode(current);
 					if (last != null)
 					{
-						current.AddNeighbour(last);
-						last.AddNeighbour(current);
+						Graph.LinkNodes(last, current);
+						lines.Add(new Line(current, last));
 					}
-					graph.AddNode(current);
+
 					last = current;
 				}
 			}
+
+			Line[] copyOfLines = new Line[lines.Count];
+			lines.CopyTo(copyOfLines);
+
+			foreach (Line line in copyOfLines)
+			{
+				foreach (Node node in graph.nodes)
+				{
+					if (line.IsVectorOnLine(node.pos))
+					{
+						Graph.UnlinkNodes(line.node1, line.node2);
+						Graph.LinkNodes(line.node1, node);
+						Graph.LinkNodes(line.node2, node);
+
+						lines.Remove(line);
+						lines.Add(new Line(line.node1, node));
+						lines.Add(new Line(line.node2, node));
+					}
+				}
+			}
+
+			foreach (Line line1 in lines)
+			{
+				foreach (Line line2 in lines)
+				{
+					if (line1 != line2)
+					{
+						graph.CheckAndAddIntersection(line1, line2);
+					}
+				}
+			}
+			
+
+			// Console.WriteLine(string.Join(", ", graph.nodes[123].neighbours.Select(node=>node.Key.id)));
+
+			Console.WriteLine(new Line(graph.nodes[8], graph.nodes[42]).IsVectorOnLine(graph.nodes[100].pos));
+
+			// graph.CheckAndAddIntersection(graph.nodes[309], graph.nodes[310], graph.nodes[76], graph.nodes[75]);
 
 			foreach (Node node in graph.nodes)
 			{

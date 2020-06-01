@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using ORMMap.VectorTile.Geometry;
 
 namespace ORMMapViewer.Model.Entitites
 {
@@ -7,32 +7,45 @@ namespace ORMMapViewer.Model.Entitites
 	{
 		public List<Node> nodes = new List<Node>();
 
-		public void AddNodesToList(List<Node> newNodes)
+		public static void LinkNodes(Node first, Node second)
 		{
-			foreach (Node node in newNodes)
-			{
-				AddNode(node);
-			}
+			first.AddNeighbour(second);
+			second.AddNeighbour(first);
+		}
+		
+		public static void UnlinkNodes(Node first, Node second)
+		{
+			first.neighbours.Remove(second);
+			second.neighbours.Remove(first);
 		}
 
-		public void AddNode(Node newNode)
+		public Node AddNode(Node newNode)
 		{
 			int index = nodes.IndexOf(newNode);
-			if (index == -1)
+			if (index != -1)
 			{
-				newNode.id = nodes.Count;
-				nodes.Add(newNode);
+				return nodes[index];
 			}
-			else
+
+			newNode.id = nodes.Count;
+			nodes.Add(newNode);
+			return newNode;
+		}
+
+		public void CheckAndAddIntersection(Line l1, Line l2)
+		{
+			Vector2<int> intersection = l1.CheckIntersection(l2);
+			if (!intersection.Equals(Line.NotIntersected))
 			{
-				newNode.id = -2;
-				nodes[index].TakeNeighbours(newNode);
-				newNode.SetRemoved();
-				foreach (Node node in nodes)
-				{
-					node.neighbours.Remove(newNode);
-				}
-				// nodes[index].UpdateRelatives();
+				Node node = new Node(intersection.X, intersection.Y);
+				node = AddNode(node);
+				UnlinkNodes(l1.node1, l1.node2);
+				UnlinkNodes(l2.node1, l2.node2);
+				
+				LinkNodes(node, l1.node1);
+				LinkNodes(node, l1.node2);
+				LinkNodes(node, l2.node1);
+				LinkNodes(node, l2.node2);
 			}
 		}
 	}
