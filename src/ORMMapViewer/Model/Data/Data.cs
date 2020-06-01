@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
+using ORMMap.VectorTile.Geometry;
 using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
 
@@ -25,7 +26,7 @@ namespace ORMMap.Model.Data
 			// Check for folder existing
 			DirectoryUtils.TryCreateFolder(this.pathToDataFolder);
 			// Scan folder for cache files
-			var pathes = Directory.GetFiles(this.pathToDataFolder, $"*{FileExtension}", SearchOption.AllDirectories);
+			string[] pathes = Directory.GetFiles(this.pathToDataFolder, $"*{FileExtension}", SearchOption.AllDirectories);
 			diskCache = pathes.ToDictionary(
 				path => Vector3<double>.DecodeFromJSON(Path.GetFileNameWithoutExtension(path)).ToString(),
 				path => path);
@@ -44,13 +45,18 @@ namespace ORMMap.Model.Data
 
 		public VectorTileObj GetData(Vector3<double> lonLatZoom)
 		{
-			if (memoryCache.TryGetValue(lonLatZoom.ToString(), out var data)) return data;
+			if (memoryCache.TryGetValue(lonLatZoom.ToString(), out var data))
+			{
+				return data;
+			}
 
 			if (diskCache.TryGetValue(lonLatZoom.ToString(), out var path))
+			{
 				data = new VectorTileObj(File.ReadAllBytes(path));
+			}
 			else
 			{
-				var byteData = GetDataFromSource(lonLatZoom);
+				byte[] byteData = GetDataFromSource(lonLatZoom);
 				// Save to disk
 				path = $"{pathToDataFolder}\\{lonLatZoom.EncodeToString()}{FileExtension}";
 				File.WriteAllBytes(path, byteData);
@@ -73,8 +79,16 @@ namespace ORMMap.Model.Data
 
 		private void CacheRoads(Vector3<double> lonLatZoom, VectorTileObj data)
 		{
-			if (roadsCache.ContainsKey(lonLatZoom.ToString())) return;
-			if (!data.LayerNames().Contains("roads")) return;
+			if (roadsCache.ContainsKey(lonLatZoom.ToString()))
+			{
+				return;
+			}
+
+			if (!data.LayerNames().Contains("roads"))
+			{
+				return;
+			}
+
 			var layer = data.GetLayer("roads");
 
 			var graph = new Graph();
@@ -82,7 +96,7 @@ namespace ORMMap.Model.Data
 			for (var i = 0; i < layer.FeatureCount(); i++)
 			{
 				var feature = layer.GetFeature(i);
-				var geometry = feature.Geometry<int>()[0];
+				List<Vector2<int>> geometry = feature.Geometry<int>()[0];
 
 				var node1 = new Node(geometry[0].X, geometry[0].Y);
 				var node2 = new Node(geometry[1].X, geometry[1].Y);
@@ -94,14 +108,20 @@ namespace ORMMap.Model.Data
 				graph.AddNode(node2);
 			}
 
-			foreach (var node in graph.nodes) node.UpdateRelatives();
+			foreach (var node in graph.nodes)
+			{
+				node.UpdateRelatives();
+			}
 
 			roadsCache.Add(lonLatZoom.ToString(), graph);
 		}
 
 		private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)
 		{
-			if (memoryCache.Count == Settings.memoryCacheOpacity) memoryCache.Remove(memoryCache.Keys.First());
+			if (memoryCache.Count == Settings.memoryCacheOpacity)
+			{
+				memoryCache.Remove(memoryCache.Keys.First());
+			}
 
 			memoryCache.Add(lonLatZoom.ToString(), data);
 		}

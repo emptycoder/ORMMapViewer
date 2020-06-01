@@ -38,7 +38,7 @@ namespace ORMMap.VectorTile.ExtensionMethods
 			var templateFeature =
 				@"{{""type"":""Feature"",""geometry"":{{""type"":""{0}"",""coordinates"":[{1}]}},""properties"":{2}}}";
 
-			var geojsonFeatures = new List<string>();
+			List<string> geojsonFeatures = new List<string>();
 
 			foreach (var layerName in tile.LayerNames())
 			{
@@ -48,10 +48,13 @@ namespace ORMMap.VectorTile.ExtensionMethods
 				{
 					var feat = layer.GetFeature(i, clipBuffer);
 
-					if (feat.GeometryType == GeomType.UNKNOWN) continue;
+					if (feat.GeometryType == GeomType.UNKNOWN)
+					{
+						continue;
+					}
 
 					//resolve properties
-					var keyValue = new List<string>();
+					List<string> keyValue = new List<string>();
 					var tagCnt = feat.Tags.Count;
 					for (var j = 0; j < tagCnt; j += 2)
 					{
@@ -75,7 +78,7 @@ namespace ORMMap.VectorTile.ExtensionMethods
 					var geomType = feat.GeometryType.Description();
 
 					//multipart
-					var geomWgs84 = feat.GeometryAsWgs84(zoom, tileColumn, tileRow);
+					List<List<LatLng>> geomWgs84 = feat.GeometryAsWgs84(zoom, tileColumn, tileRow);
 					if (geomWgs84.Count > 1)
 					{
 						switch (feat.GeometryType)
@@ -93,8 +96,8 @@ namespace ORMMap.VectorTile.ExtensionMethods
 								break;
 							case GeomType.LINESTRING:
 								geomType = "MultiLineString";
-								var parts = new List<string>();
-								foreach (var part in geomWgs84)
+								List<string> parts = new List<string>();
+								foreach (List<LatLng> part in geomWgs84)
 								{
 									parts.Add("[" + string.Join(
 										","
@@ -106,8 +109,8 @@ namespace ORMMap.VectorTile.ExtensionMethods
 								break;
 							case GeomType.POLYGON:
 								geomType = "MultiPolygon";
-								var partsMP = new List<string>();
-								foreach (var part in geomWgs84)
+								List<string> partsMP = new List<string>();
+								foreach (List<LatLng> part in geomWgs84)
 								{
 									partsMP.Add("[" + string.Join(
 										",",

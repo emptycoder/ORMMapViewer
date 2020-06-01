@@ -62,7 +62,11 @@ namespace ORMMap.VectorTile
 				var b = _buffer[_pos];
 				result |= (long) (b & 0x7F) << shift;
 				_pos++;
-				if ((b & 0x80) == 0) return result;
+				if ((b & 0x80) == 0)
+				{
+					return result;
+				}
+
 				shift += 7;
 			}
 
@@ -78,14 +82,21 @@ namespace ORMMap.VectorTile
 		public byte[] View()
 		{
 			// return layer/feature subsections of the main stream
-			if (Tag == 0) throw new Exception("call next() before accessing field value");
+			if (Tag == 0)
+			{
+				throw new Exception("call next() before accessing field value");
+			}
+
 			;
-			if (WireType != WireTypes.BYTES) throw new Exception("not of type string, bytes or message");
+			if (WireType != WireTypes.BYTES)
+			{
+				throw new Exception("not of type string, bytes or message");
+			}
 
 			var skipBytes = (ulong) Varint();
 			SkipBytes(skipBytes);
 
-			var buf = new byte[skipBytes];
+			byte[] buf = new byte[skipBytes];
 			Array.Copy(_buffer, (int) _pos - (int) skipBytes, buf, 0, (int) skipBytes);
 
 			return buf;
@@ -98,30 +109,42 @@ namespace ORMMap.VectorTile
 		/// <returns>List of decoded `uint`s</returns>
 		public List<uint> GetPackedUnit32()
 		{
-			var values = new List<uint>(200);
+			List<uint> values = new List<uint>(200);
 			var sizeInByte = (ulong) Varint();
 			var end = _pos + sizeInByte;
-			while (_pos < end) values.Add((uint) Varint());
+			while (_pos < end)
+			{
+				values.Add((uint) Varint());
+			}
+
 			return values;
 		}
 
 
 		public List<int> GetPackedSInt32()
 		{
-			var values = new List<int>(200);
+			List<int> values = new List<int>(200);
 			var sizeInByte = (ulong) Varint();
 			var end = _pos + sizeInByte;
-			while (_pos < end) values.Add(decodeZigZag32((int) Varint()));
+			while (_pos < end)
+			{
+				values.Add(decodeZigZag32((int) Varint()));
+			}
+
 			return values;
 		}
 
 
 		public List<long> GetPackedSInt64()
 		{
-			var values = new List<long>(200);
+			List<long> values = new List<long>(200);
 			var sizeInByte = (ulong) Varint();
 			var end = _pos + sizeInByte;
-			while (_pos < end) values.Add(decodeZigZag64(Varint()));
+			while (_pos < end)
+			{
+				values.Add(decodeZigZag64(Varint()));
+			}
+
 			return values;
 		}
 
@@ -144,7 +167,7 @@ namespace ORMMap.VectorTile
 		/// <returns>Decoded double</returns>
 		public double GetDouble()
 		{
-			var buf = new byte[8];
+			byte[] buf = new byte[8];
 			Array.Copy(_buffer, (int) _pos, buf, 0, 8);
 			_pos += 8;
 			var dblVal = BitConverter.ToDouble(buf, 0);
@@ -158,7 +181,7 @@ namespace ORMMap.VectorTile
 		/// <returns>Decoded float</returns>
 		public float GetFloat()
 		{
-			var buf = new byte[4];
+			byte[] buf = new byte[4];
 			Array.Copy(_buffer, (int) _pos, buf, 0, 4);
 			_pos += 4;
 			var snglVal = BitConverter.ToSingle(buf, 0);
@@ -173,7 +196,7 @@ namespace ORMMap.VectorTile
 		/// <returns>Decoded string</returns>
 		public string GetString(ulong length)
 		{
-			var buf = new byte[length];
+			byte[] buf = new byte[length];
 			Array.Copy(_buffer, (int) _pos, buf, 0, (int) length);
 			_pos += length;
 			return Encoding.UTF8.GetString(buf, 0, buf.Length);
@@ -186,7 +209,11 @@ namespace ORMMap.VectorTile
 		/// <returns>Returns false if at end of buffer</returns>
 		public bool NextByte()
 		{
-			if (_pos >= _length) return false;
+			if (_pos >= _length)
+			{
+				return false;
+			}
+
 			// get and process the next byte in the buffer
 			// return true until end of stream
 			Value = (ulong) Varint();
@@ -195,7 +222,10 @@ namespace ORMMap.VectorTile
 				(Tag == 0 || Tag >= 19000)
 				&& (Tag > 19999 || Tag <= (1 << 29) - 1)
 			)
+			{
 				throw new Exception("tag out of range");
+			}
+
 			WireType = (WireTypes) (Value & 0x07);
 			return true;
 		}
@@ -246,7 +276,10 @@ namespace ORMMap.VectorTile
 		/// <returns>New position within the byte array</returns>
 		public ulong Skip()
 		{
-			if (Tag == 0) throw new Exception("call next() before calling skip()");
+			if (Tag == 0)
+			{
+				throw new Exception("call next() before calling skip()");
+			}
 
 			switch (WireType)
 			{

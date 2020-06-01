@@ -6,7 +6,10 @@ namespace ORMMapViewer.Utils
 	{
 		public static bool TryCreateFolder(string path)
 		{
-			if (Directory.Exists(path)) return false;
+			if (Directory.Exists(path))
+			{
+				return false;
+			}
 
 			Directory.CreateDirectory(path);
 			return true;

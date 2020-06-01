@@ -25,9 +25,20 @@ namespace ORMMap.VectorTile
 		/// <param name="validate">If true, run checks if the tile contains valid data. Decreases decoding speed.</param>
 		public VectorTileReader(byte[] data, bool validate = true)
 		{
-			if (null == data) throw new Exception("Tile data cannot be null");
-			if (data.Length < 1) throw new Exception("Tile data cannot be empty");
-			if (data[0] == 0x1f && data[1] == 0x8b) throw new Exception("Tile data is zipped");
+			if (null == data)
+			{
+				throw new Exception("Tile data cannot be null");
+			}
+
+			if (data.Length < 1)
+			{
+				throw new Exception("Tile data cannot be empty");
+			}
+
+			if (data[0] == 0x1f && data[1] == 0x8b)
+			{
+				throw new Exception("Tile data is zipped");
+			}
 
 			_Validate = validate;
 			layers(data);
@@ -42,13 +53,15 @@ namespace ORMMap.VectorTile
 				if (_Validate)
 				{
 					if (!ConstantsAsDictionary.TileType.ContainsKey(tileReader.Tag))
+					{
 						throw new Exception(string.Format("Unknown tile tag: {0}", tileReader.Tag));
+					}
 				}
 
 				if (tileReader.Tag == (int) TileType.Layers)
 				{
 					string name = null;
-					var layerMessage = tileReader.View();
+					byte[] layerMessage = tileReader.View();
 					var layerView = new PbfReader(layerMessage);
 					while (layerView.NextByte())
 					{
@@ -58,20 +71,30 @@ namespace ORMMap.VectorTile
 							name = layerView.GetString(strLen);
 						}
 						else
+						{
 							layerView.Skip();
+						}
 					}
 
 					if (_Validate)
 					{
-						if (string.IsNullOrEmpty(name)) throw new Exception("Layer missing name");
+						if (string.IsNullOrEmpty(name))
+						{
+							throw new Exception("Layer missing name");
+						}
+
 						if (_Layers.ContainsKey(name))
+						{
 							throw new Exception(string.Format("Duplicate layer names: {0}", name));
+						}
 					}
 
 					_Layers.Add(name, layerMessage);
 				}
 				else
+				{
 					tileReader.Skip();
+				}
 			}
 		}
 
@@ -92,7 +115,10 @@ namespace ORMMap.VectorTile
 		/// <returns>Decoded <see cref="VectorTileLayer" /></returns>
 		public VectorTileLayer GetLayer(string name)
 		{
-			if (!_Layers.ContainsKey(name)) return null;
+			if (!_Layers.ContainsKey(name))
+			{
+				return null;
+			}
 
 			return getLayer(_Layers[name]);
 		}
@@ -108,7 +134,9 @@ namespace ORMMap.VectorTile
 				if (_Validate)
 				{
 					if (!ConstantsAsDictionary.LayerType.ContainsKey(layerType))
+					{
 						throw new Exception(string.Format("Unknown layer type: {0}", layerType));
+					}
 				}
 
 				switch ((LayerType) layerType)
@@ -125,19 +153,19 @@ namespace ORMMap.VectorTile
 						layer.Extent = (ulong) layerReader.Varint();
 						break;
 					case LayerType.Keys:
-						var keyBuffer = layerReader.View();
+						byte[] keyBuffer = layerReader.View();
 						var key = Encoding.UTF8.GetString(keyBuffer, 0, keyBuffer.Length);
 						layer.Keys.Add(key);
 						break;
 					case LayerType.Values:
-						var valueBuffer = layerReader.View();
+						byte[] valueBuffer = layerReader.View();
 						var valReader = new PbfReader(valueBuffer);
 						while (valReader.NextByte())
 						{
 							switch ((ValueType) valReader.Tag)
 							{
 								case ValueType.String:
-									var stringBuffer = valReader.View();
+									byte[] stringBuffer = valReader.View();
 									var value = Encoding.UTF8.GetString(stringBuffer, 0, stringBuffer.Length);
 									layer.Values.Add(value);
 									break;
@@ -190,7 +218,11 @@ namespace ORMMap.VectorTile
 
 			if (_Validate)
 			{
-				if (string.IsNullOrEmpty(layer.Name)) throw new Exception("Layer has no name");
+				if (string.IsNullOrEmpty(layer.Name))
+				{
+					throw new Exception("Layer has no name");
+				}
+
 				if (0 == layer.Version)
 				{
 					throw new Exception(string.Format(
@@ -205,11 +237,20 @@ namespace ORMMap.VectorTile
 						layer.Name, layer.Version));
 				}
 
-				if (0 == layer.Extent) throw new Exception(string.Format("Layer [{0}] has no extent.", layer.Name));
+				if (0 == layer.Extent)
+				{
+					throw new Exception(string.Format("Layer [{0}] has no extent.", layer.Name));
+				}
+
 				if (0 == layer.FeatureCount())
+				{
 					throw new Exception(string.Format("Layer [{0}] has no features.", layer.Name));
+				}
+
 				if (layer.Values.Count != layer.Values.Distinct().Count())
+				{
 					throw new Exception(string.Format("Layer [{0}]: duplicate attribute values found", layer.Name));
+				}
 			}
 
 			return layer;
@@ -257,7 +298,7 @@ namespace ORMMap.VectorTile
 						feat.Id = (ulong) featureReader.Varint();
 						break;
 					case FeatureType.Tags:
-						var tags = featureReader.GetPackedUnit32().Select(t => (int) t).ToList();
+						List<int> tags = featureReader.GetPackedUnit32().Select(t => (int) t).ToList();
 						feat.Tags = tags;
 						break;
 					case FeatureType.Type:
@@ -293,11 +334,20 @@ namespace ORMMap.VectorTile
 			if (validate)
 			{
 				if (!geomTypeSet)
+				{
 					throw new Exception(string.Format("Layer [{0}]: feature missing geometry type", layer.Name));
+				}
+
 				if (null == feat.GeometryCommands)
+				{
 					throw new Exception(string.Format("Layer [{0}]: feature has no geometry", layer.Name));
+				}
+
 				if (0 != feat.Tags.Count % 2)
+				{
 					throw new Exception(string.Format("Layer [{0}]: uneven number of feature tag ids", layer.Name));
+				}
+
 				if (feat.Tags.Count > 0)
 				{
 					var maxKeyIndex = feat.Tags.Where((key, idx) => idx % 2 == 0).Max();

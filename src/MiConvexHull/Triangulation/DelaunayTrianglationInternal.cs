@@ -79,8 +79,12 @@ namespace MIConvexHull
 						{
 							var face = FacePool[af];
 							for (var j = 0; j < face.AdjacentFaces.Length; j++)
+							{
 								if (face.AdjacentFaces[j] == candidateIndex)
+								{
 									face.AdjacentFaces[j] = -1;
+								}
+							}
 						}
 					}
 

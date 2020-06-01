@@ -90,7 +90,7 @@ namespace MIConvexHull
 			IList<double[]> data,
 			double tolerance = Constants.DefaultPlaneDistanceTolerance)
 		{
-			var points = data.Select(p => new DefaultVertex {Position = p})
+			List<DefaultVertex> points = data.Select(p => new DefaultVertex {Position = p})
 				.ToList();
 			return ConvexHull<DefaultVertex, DefaultConvexFace<DefaultVertex>>.Create(points, tolerance);
 		}
@@ -118,7 +118,7 @@ namespace MIConvexHull
 		public static ConvexHullCreationResult<DefaultVertex2D> Create2D(IList<double[]> data,
 			double tolerance = Constants.DefaultPlaneDistanceTolerance)
 		{
-			var points = data.Select(p => new DefaultVertex2D(p)).ToList();
+			List<DefaultVertex2D> points = data.Select(p => new DefaultVertex2D(p)).ToList();
 			return Create2D(points, tolerance);
 		}
 	}
@@ -163,7 +163,10 @@ namespace MIConvexHull
 		/// <exception cref="ArgumentNullException">data</exception>
 		internal static ConvexHullCreationResult<TVertex, TFace> Create(IList<TVertex> data, double tolerance)
 		{
-			if (data == null) throw new ArgumentNullException("The supplied data is null.");
+			if (data == null)
+			{
+				throw new ArgumentNullException("The supplied data is null.");
+			}
 
 			try
 			{
@@ -171,7 +174,7 @@ namespace MIConvexHull
 				// todo: can this cast be avoided by changing ConvexHullAlgorithm to use TVertex?
 				ch.GetConvexHull();
 
-				var convexHull = new ConvexHull<TVertex, TFace>
+				ConvexHull<TVertex, TFace> convexHull = new ConvexHull<TVertex, TFace>
 				{
 					Points = ch.GetHullVertices(data),
 					Faces = ch.GetConvexFaces<TVertex, TFace>()
@@ -224,11 +227,14 @@ namespace MIConvexHull
 		/// <exception cref="ArgumentNullException">data</exception>
 		internal static ConvexHullCreationResult<TVertex> Create(IList<TVertex> data, double tolerance)
 		{
-			if (data == null) throw new ArgumentNullException("The supplied data is null.");
+			if (data == null)
+			{
+				throw new ArgumentNullException("The supplied data is null.");
+			}
 
 			try
 			{
-				var points = ConvexHull2DAlgorithm.Create(data, tolerance);
+				List<TVertex> points = ConvexHull2DAlgorithm.Create(data, tolerance);
 
 				return new ConvexHullCreationResult<TVertex>(points, ConvexHullCreationResultOutcome.Success);
 			}

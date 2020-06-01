@@ -82,7 +82,7 @@ namespace MIConvexHull
 			IList<double[]> data,
 			double PlaneDistanceTolerance = Constants.DefaultPlaneDistanceTolerance)
 		{
-			var points = data.Select(p => new DefaultVertex {Position = p}).ToList();
+			List<DefaultVertex> points = data.Select(p => new DefaultVertex {Position = p}).ToList();
 			return DelaunayTriangulation<DefaultVertex, DefaultTriangulationCell<DefaultVertex>>.Create(points,
 				PlaneDistanceTolerance);
 		}
@@ -173,7 +173,7 @@ namespace MIConvexHull
 			CreateVoronoi(IList<double[]> data,
 				double PlaneDistanceTolerance = Constants.DefaultPlaneDistanceTolerance)
 		{
-			var points = data.Select(p => new DefaultVertex {Position = p.ToArray()}).ToList();
+			List<DefaultVertex> points = data.Select(p => new DefaultVertex {Position = p.ToArray()}).ToList();
 			return
 				VoronoiMesh
 					<DefaultVertex, DefaultTriangulationCell<DefaultVertex>,

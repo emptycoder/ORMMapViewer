@@ -22,8 +22,8 @@ namespace ORMMap.VectorTile.ExtensionMethods
 			, uint? clipBuffer = null
 		)
 		{
-			var geometryAsWgs84 = new List<List<LatLng>>();
-			foreach (var part in feature.Geometry<long>(clipBuffer, 1.0f))
+			List<List<LatLng>> geometryAsWgs84 = new List<List<LatLng>>();
+			foreach (List<Vector2<long>> part in feature.Geometry<long>(clipBuffer, 1.0f))
 			{
 				geometryAsWgs84.Add(
 					part.Select(g => g.ToLngLat(zoom, tileColumn, tileRow, feature.Layer.Extent)).ToList()

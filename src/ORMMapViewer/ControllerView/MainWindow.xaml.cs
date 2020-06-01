@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
 using System.Windows;
 using ORMMap;
 using ORMMap.Model.Data;
 using ORMMap.Model.Entitites;
 using ORMMap.VectorTile.Geometry;
-using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
 
 namespace ORMMapViewer
@@ -49,7 +48,7 @@ namespace ORMMapViewer
 		private void UpdateScene()
 		{
 			var cZoom = dataController.ConvertToMapZoom(zoom);
-			var tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
+			Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
 			Vector3<double> lonLatZoom = new Vector3<double>(
 				tileCoordinations.X,
 				tileCoordinations.Y,
@@ -60,7 +59,7 @@ namespace ORMMapViewer
 			var scene = new Bitmap((int) dataController.GetTileScale(), (int) dataController.GetTileScale());
 			using (var graphics = Graphics.FromImage(scene))
 			{
-				var layers = tile.LayerNames();
+				ReadOnlyCollection<string> layers = tile.LayerNames();
 				foreach (var layerName in layersPallete.Keys)
 				{
 					if (layers.Contains(layerName))
@@ -71,7 +70,7 @@ namespace ORMMapViewer
 					}
 				}
 
-				Graph graph = dataController.GetRoads(lonLatZoom);
+				var graph = dataController.GetRoads(lonLatZoom);
 				// LinkedList<Node> list = AStarPathSearch.FindPath();
 				// Console.WriteLine(list.Count);
 				// MVTDrawer.DrawGraphRoads(list, graphics);

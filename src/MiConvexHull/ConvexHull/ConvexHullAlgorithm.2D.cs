@@ -48,9 +48,15 @@ namespace MIConvexHull
 			// instead of calling points.Count several times, we create this variable. 
 			// by the ways points is unaffected by this method
 			var numPoints = points.Count;
-			if (numPoints == 2) return points.ToList();
+			if (numPoints == 2)
+			{
+				return points.ToList();
+			}
+
 			if (numPoints < 2)
+			{
 				throw new ArgumentException("Cannot define the 2D convex hull for less than two points.");
+			}
 
 			#region Step 1 : Define Convex Octogon
 
@@ -138,11 +144,19 @@ namespace MIConvexHull
 
 			// what if all points are on a horizontal line? temporarily set to max and min Y to min X. This'll be fixed
 			// in the function: FindIntermediatePointsForLongSkinny
-			if (minY == maxY) minYIndex = maxYIndex = minXIndex;
+			if (minY == maxY)
+			{
+				minYIndex = maxYIndex = minXIndex;
+			}
+
 			// what if all points are on a vertical line? then do the opposite
-			if (minX == maxX) minXIndex = maxXIndex = minYIndex;
+			if (minX == maxX)
+			{
+				minXIndex = maxXIndex = minYIndex;
+			}
+
 			//put these on a list in counter-clockwise (CCW) direction
-			var extremeIndices = new List<int>(new[]
+			List<int> extremeIndices = new List<int>(new[]
 			{
 				minXIndex, minSumIndex, minYIndex, maxDiffIndex,
 				maxXIndex, maxSumIndex, maxYIndex, minDiffIndex
@@ -168,21 +182,24 @@ namespace MIConvexHull
 			// before we check if points are on top of one another or have some round-off error issues, these
 			// indices are stored and sorted numerically for use in the second half of part 2 where we go through
 			// all the points a second time. 
-			var indicesUsed = extremeIndices.OrderBy(x => x).ToArray();
+			int[] indicesUsed = extremeIndices.OrderBy(x => x).ToArray();
 
 			// create the list that is eventually returned by the function. Initially it will have the 3 to 8 extrema
 			// (as is produced in the following loop).
-			var convexHullCCW = new List<TVertex>();
+			List<TVertex> convexHullCCW = new List<TVertex>();
 
 			// on very rare occasions (long skinny diagonal set of points), there may only be two extrema.
 			// in this case just add
 			if (cvxVNum == 2)
 			{
 				convexHullCCW = FindIntermediatePointsForLongSkinny(points, numPoints, indicesUsed[0], indicesUsed[1],
-					out var newUsedIndices);
+					out List<int> newUsedIndices);
 				if (!newUsedIndices.Any())
 					// looks like only two indices total! so all points are co-linear.
+				{
 					return new List<TVertex> {points[indicesUsed[0]], points[indicesUsed[1]]};
+				}
+
 				newUsedIndices.Add(indicesUsed[0]);
 				newUsedIndices.Add(indicesUsed[1]);
 				indicesUsed = newUsedIndices.OrderBy(x => x).ToArray();
@@ -356,9 +373,9 @@ namespace MIConvexHull
 			 * above. These are to be sorted arrays and they are sorted by the distances (stored in sortedDistances) from the
 			 * started extrema vertex to the last. We are going to make each array really big so that we don't have to waste
 			 * time extending them later. The sizes array keeps the true length. */
-			var sortedPoints = new TVertex[cvxVNum][];
-			var sortedDistances = new double[cvxVNum][];
-			var sizes = new int[cvxVNum];
+			TVertex[][] sortedPoints = new TVertex[cvxVNum][];
+			double[][] sortedDistances = new double[cvxVNum][];
+			int[] sizes = new int[cvxVNum];
 			for (var i = 0; i < cvxVNum; i++)
 			{
 				sizes[i] = 0;
@@ -384,26 +401,76 @@ namespace MIConvexHull
 					var newPointX = point.X;
 					var newPointY = point.Y;
 					if (AddToListAlong(sortedPoints[0], sortedDistances[0], ref sizes[0], point, newPointX, newPointY,
-						p0X, p0Y, v0X, v0Y, tolerance)) continue;
+						p0X, p0Y, v0X, v0Y, tolerance))
+					{
+						continue;
+					}
+
 					if (AddToListAlong(sortedPoints[1], sortedDistances[1], ref sizes[1], point, newPointX, newPointY,
-						p1X, p1Y, v1X, v1Y, tolerance)) continue;
+						p1X, p1Y, v1X, v1Y, tolerance))
+					{
+						continue;
+					}
+
 					if (AddToListAlong(sortedPoints[2], sortedDistances[2], ref sizes[2], point, newPointX, newPointY,
-						p2X, p2Y, v2X, v2Y, tolerance)) continue;
-					if (cvxVNum == 3) continue;
+						p2X, p2Y, v2X, v2Y, tolerance))
+					{
+						continue;
+					}
+
+					if (cvxVNum == 3)
+					{
+						continue;
+					}
+
 					if (AddToListAlong(sortedPoints[3], sortedDistances[3], ref sizes[3], point, newPointX, newPointY,
-						p3X, p3Y, v3X, v3Y, tolerance)) continue;
-					if (cvxVNum == 4) continue;
+						p3X, p3Y, v3X, v3Y, tolerance))
+					{
+						continue;
+					}
+
+					if (cvxVNum == 4)
+					{
+						continue;
+					}
+
 					if (AddToListAlong(sortedPoints[4], sortedDistances[4], ref sizes[4], point, newPointX, newPointY,
-						p4X, p4Y, v4X, v4Y, tolerance)) continue;
-					if (cvxVNum == 5) continue;
+						p4X, p4Y, v4X, v4Y, tolerance))
+					{
+						continue;
+					}
+
+					if (cvxVNum == 5)
+					{
+						continue;
+					}
+
 					if (AddToListAlong(sortedPoints[5], sortedDistances[5], ref sizes[5], point, newPointX, newPointY,
-						p5X, p5Y, v5X, v5Y, tolerance)) continue;
-					if (cvxVNum == 6) continue;
+						p5X, p5Y, v5X, v5Y, tolerance))
+					{
+						continue;
+					}
+
+					if (cvxVNum == 6)
+					{
+						continue;
+					}
+
 					if (AddToListAlong(sortedPoints[6], sortedDistances[6], ref sizes[6], point, newPointX, newPointY,
-						p6X, p6Y, v6X, v6Y, tolerance)) continue;
-					if (cvxVNum == 7) continue;
+						p6X, p6Y, v6X, v6Y, tolerance))
+					{
+						continue;
+					}
+
+					if (cvxVNum == 7)
+					{
+						continue;
+					}
+
 					if (AddToListAlong(sortedPoints[7], sortedDistances[7], ref sizes[7], point, newPointX, newPointY,
-						p7X, p7Y, v7X, v7Y, tolerance)) continue;
+						p7X, p7Y, v7X, v7Y, tolerance))
+					{
+					}
 				}
 			}
 
@@ -421,20 +488,31 @@ namespace MIConvexHull
 				var size = sizes[j];
 				if (size == 1)
 					/* If there is one and only one candidate, it must be in the convex hull. Add it now. */
+				{
 					convexHullCCW.Insert(j + 1, sortedPoints[j][0]);
+				}
 				else if (size > 1)
 				{
 					/* it seems a shame to have this list since it's nearly the same as the sorted array, but
 					 * it is necessary for the removal of points. */
-					var pointsAlong = new List<TVertex>();
+					List<TVertex> pointsAlong = new List<TVertex>();
 					/* put the known starting point as the beginning of the list.  */
 					pointsAlong.Add(convexHullCCW[j]);
 					for (var k = 0; k < size; k++)
+					{
 						pointsAlong.Add(sortedPoints[j][k]);
+					}
+
 					/* put the ending point on the end of the list. Need to check if it wraps back around to 
 					 * the first in the loop (hence the simple condition). */
-					if (j == cvxVNum - 1) pointsAlong.Add(convexHullCCW[0]);
-					else pointsAlong.Add(convexHullCCW[j + 1]);
+					if (j == cvxVNum - 1)
+					{
+						pointsAlong.Add(convexHullCCW[0]);
+					}
+					else
+					{
+						pointsAlong.Add(convexHullCCW[j + 1]);
+					}
 
 					/* Now starting from second from end, work backwards looks for places where the angle 
 					 * between the vertices is concave (which would produce a negative value of z). */
@@ -453,17 +531,25 @@ namespace MIConvexHull
 							pointsAlong.RemoveAt(i);
 							/* but don't reduce k since we need to check the previous angle again. Well, 
 							 * if you're back to the end you do need to reduce k (hence the line below). */
-							if (i == pointsAlong.Count - 1) i--;
+							if (i == pointsAlong.Count - 1)
+							{
+								i--;
+							}
 						}
 						/* if the angle is convex, then continue toward the start, k-- */
-						else i--;
+						else
+						{
+							i--;
+						}
 					}
 
 					/* for each of the remaining vertices in hullCands[i-1], add them to the convexHullCCW. 
 					 * Here we insert them backwards (k counts down) to simplify the insert operation (k.e.
 					 * since all are inserted @ i, the previous inserts are pushed up to i+1, i+2, etc. */
 					for (i = pointsAlong.Count - 2; i > 0; i--)
+					{
 						convexHullCCW.Insert(j + 1, pointsAlong[i]);
+					}
 				}
 			}
 
@@ -486,7 +572,11 @@ namespace MIConvexHull
 			var maxCrossIndex = -1;
 			for (var i = 0; i < numPoints; i++)
 			{
-				if (i == usedIndex1 || i == usedIndex2) continue;
+				if (i == usedIndex1 || i == usedIndex2)
+				{
+					continue;
+				}
+
 				var p = points[i];
 				var cross = spanVectorX * (p.Y - pStartY) + spanVectorY * (pStartX - p.X);
 				if (cross < minCross)
@@ -502,7 +592,7 @@ namespace MIConvexHull
 				}
 			}
 
-			var newCvxList = new List<TVertex>();
+			List<TVertex> newCvxList = new List<TVertex>();
 			newCvxList.Add(points[usedIndex1]);
 			if (minCrossIndex != -1)
 			{
@@ -532,7 +622,11 @@ namespace MIConvexHull
 			var vectorToNewPointX = newPointX - basePointX;
 			var vectorToNewPointY = newPointY - basePointY;
 			var newDxOut = vectorToNewPointX * edgeVectorY - vectorToNewPointY * edgeVectorX;
-			if (newDxOut <= tolerance) return false;
+			if (newDxOut <= tolerance)
+			{
+				return false;
+			}
+
 			var newDxAlong = edgeVectorX * vectorToNewPointX + edgeVectorY * vectorToNewPointY;
 			var index = BinarySearch(sortedKeys, size, newDxAlong);
 			if (index >= 0)
@@ -542,7 +636,9 @@ namespace MIConvexHull
 				var ptOnList = sortedPoints[index];
 				var onListDxOut = (ptOnList.X - basePointX) * edgeVectorY - (ptOnList.Y - basePointY) * edgeVectorX;
 				if (newDxOut > onListDxOut)
+				{
 					sortedPoints[index] = newPoint;
+				}
 			}
 			else
 			{
@@ -573,7 +669,11 @@ namespace MIConvexHull
 					var zValue = lX * rY - lY * rX;
 					// if cross produce is negative (well, is less than some small positive number, then new point is concave) then don't add it.
 					// also, don't add it if the point is nearly identical (again, within the tolerance) of the previous point.
-					if (zValue < tolerance || Math.Abs(lX) < tolerance && Math.Abs(lY) < tolerance) return false;
+					if (zValue < tolerance || Math.Abs(lX) < tolerance && Math.Abs(lY) < tolerance)
+					{
+						return false;
+					}
+
 					//Else
 					for (var i = size; i > index; i--)
 					{
@@ -608,9 +708,19 @@ namespace MIConvexHull
 			{
 				var i = lo + ((hi - lo) >> 1);
 				var c = array[i];
-				if (c == value) return i;
-				if (c < value) lo = i + 1;
-				else hi = i - 1;
+				if (c == value)
+				{
+					return i;
+				}
+
+				if (c < value)
+				{
+					lo = i + 1;
+				}
+				else
+				{
+					hi = i - 1;
+				}
 			}
 
 			return ~lo;

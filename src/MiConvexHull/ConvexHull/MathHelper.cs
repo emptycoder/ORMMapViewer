@@ -103,11 +103,14 @@ namespace MIConvexHull
 		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
 		internal bool CalculateFacePlane(ConvexFaceInternal face, double[] center)
 		{
-			var vertices = face.Vertices;
-			var normal = face.Normal;
+			int[] vertices = face.Vertices;
+			double[] normal = face.Normal;
 			FindNormalVector(vertices, normal);
 
-			if (double.IsNaN(normal[0])) return false;
+			if (double.IsNaN(normal[0]))
+			{
+				return false;
+			}
 
 			var offset = 0.0;
 			var centerDistance = 0.0;
@@ -124,11 +127,18 @@ namespace MIConvexHull
 
 			if (centerDistance > 0)
 			{
-				for (var i = 0; i < Dimension; i++) normal[i] = -normal[i];
+				for (var i = 0; i < Dimension; i++)
+				{
+					normal[i] = -normal[i];
+				}
+
 				face.Offset = offset;
 				face.IsNormalFlipped = true;
 			}
-			else face.IsNormalFlipped = false;
+			else
+			{
+				face.IsNormalFlipped = false;
+			}
 
 			return true;
 		}
@@ -142,11 +152,14 @@ namespace MIConvexHull
 		/// <returns>The vertex is "over face" if the result is positive.</returns>
 		internal double GetVertexDistance(int v, ConvexFaceInternal f)
 		{
-			var normal = f.Normal;
+			double[] normal = f.Normal;
 			var x = v * Dimension;
 			var distance = f.Offset;
 			for (var i = 0; i < normal.Length; i++)
+			{
 				distance += normal[i] * PositionData[x + i];
+			}
+
 			return distance;
 		}
 
@@ -158,7 +171,7 @@ namespace MIConvexHull
 		/// <returns>System.Double[].</returns>
 		internal double[] VectorBetweenVertices(int toIndex, int fromIndex)
 		{
-			var target = new double[Dimension];
+			double[] target = new double[Dimension];
 			VectorBetweenVertices(toIndex, fromIndex, target);
 			return target;
 		}
@@ -173,7 +186,10 @@ namespace MIConvexHull
 		private void VectorBetweenVertices(int toIndex, int fromIndex, double[] target)
 		{
 			int u = toIndex * Dimension, v = fromIndex * Dimension;
-			for (var i = 0; i < Dimension; i++) target[i] = PositionData[u + i] - PositionData[v + i];
+			for (var i = 0; i < Dimension; i++)
+			{
+				target[i] = PositionData[u + i] - PositionData[v + i];
+			}
 		}
 
 		#region Simplex Volume
@@ -187,7 +203,7 @@ namespace MIConvexHull
 		{
 			// this is the Cayley-Menger determinant, so a matrix is defined that is numDimensions+2
 			var numRowCol = Dimension + 2;
-			var A = new double[numRowCol * numRowCol];
+			double[] A = new double[numRowCol * numRowCol];
 			for (var i = 1; i < numRowCol; i++)
 			{
 				A[i] = 1;
@@ -197,30 +213,44 @@ namespace MIConvexHull
 			for (var i = 0; i <= Dimension; i++)
 			for (var j = i + 1; j <= Dimension; j++)
 			{
-				var d = VectorBetweenVertices(vertexIndices[i], vertexIndices[j]);
+				double[] d = VectorBetweenVertices(vertexIndices[i], vertexIndices[j]);
 				var distanceSquared = 0.0;
 				for (var k = 0; k < Dimension; k++)
+				{
 					distanceSquared += d[k] * d[k];
+				}
+
 				A[i + 1 + (j + 1) * numRowCol] = distanceSquared;
 				A[j + 1 + (i + 1) * numRowCol] = distanceSquared;
 			}
 
-			var iPiv = new int[2 + Dimension];
-			var helper = new double[2 + Dimension];
+			int[] iPiv = new int[2 + Dimension];
+			double[] helper = new double[2 + Dimension];
 			// determinant(A, 2 + Dimension);  //, iPiv, helper);
 			LUFactor(A, 2 + Dimension, iPiv, helper);
 			var det = 1.0;
 			for (var i = 0; i < iPiv.Length; i++)
 			{
 				det *= A[(2 + Dimension) * i + i];
-				if (iPiv[i] != i) det *= -1; // the determinant sign changes on row swap.
+				if (iPiv[i] != i)
+				{
+					det *= -1; // the determinant sign changes on row swap.
+				}
 			}
 
 			var denom = Math.Pow(2, Dimension);
 			var m = 1;
-			while (m++ < Dimension) denom *= m;
+			while (m++ < Dimension)
+			{
+				denom *= m;
+			}
+
 			det /= denom;
-			if (Dimension % 2 == 0) det *= -1;
+			if (Dimension % 2 == 0)
+			{
+				det *= -1;
+			}
+
 			return det;
 		}
 
@@ -239,7 +269,10 @@ namespace MIConvexHull
 		private static void LUFactor(IList<double> data, int order, int[] ipiv, double[] vecLUcolj)
 		{
 			// Initialize the pivot matrix to the identity permutation.
-			for (var i = 0; i < order; i++) ipiv[i] = i;
+			for (var i = 0; i < order; i++)
+			{
+				ipiv[i] = i;
+			}
 
 			// Outer loop.
 			for (var j = 0; j < order; j++)
@@ -248,7 +281,10 @@ namespace MIConvexHull
 				var indexjj = indexj + j;
 
 				// Make a copy of the j-th column to localize references.
-				for (var i = 0; i < order; i++) vecLUcolj[i] = data[indexj + i];
+				for (var i = 0; i < order; i++)
+				{
+					vecLUcolj[i] = data[indexj + i];
+				}
 
 				// Apply previous transformations.
 				for (var i = 0; i < order; i++)
@@ -256,7 +292,10 @@ namespace MIConvexHull
 					// Most of the time is spent in the following dot product.
 					var kmax = Math.Min(i, j);
 					var s = 0.0;
-					for (var k = 0; k < kmax; k++) s += data[k * order + i] * vecLUcolj[k];
+					for (var k = 0; k < kmax; k++)
+					{
+						s += data[k * order + i] * vecLUcolj[k];
+					}
 
 					data[indexj + i] = vecLUcolj[i] -= s;
 				}
@@ -266,7 +305,9 @@ namespace MIConvexHull
 				for (var i = j + 1; i < order; i++)
 				{
 					if (Math.Abs(vecLUcolj[i]) > Math.Abs(vecLUcolj[p]))
+					{
 						p = i;
+					}
 				}
 
 				if (p != j)
@@ -288,7 +329,9 @@ namespace MIConvexHull
 				if ((j < order) & (data[indexjj] != 0.0))
 				{
 					for (var i = j + 1; i < order; i++)
+					{
 						data[indexj + i] /= data[indexjj];
+					}
 				}
 			}
 		}
@@ -372,9 +415,9 @@ namespace MIConvexHull
 			VectorBetweenVertices(vertices[2], vertices[1], ntY);
 			VectorBetweenVertices(vertices[3], vertices[2], ntZ);
 
-			var x = ntX;
-			var y = ntY;
-			var z = ntZ;
+			double[] x = ntX;
+			double[] y = ntY;
+			double[] z = ntZ;
 
 			// This was generated using Mathematica
 			var nx = x[3] * (y[2] * z[1] - y[1] * z[2])
@@ -412,8 +455,8 @@ namespace MIConvexHull
 			 *      the plane from the origin, but - since we're not worried about that
 			 *      here and we will normalize the normal anyway - all 1's suffices.
 			 */
-			var iPiv = matrixPivots;
-			var data = nDMatrix;
+			int[] iPiv = matrixPivots;
+			double[] data = nDMatrix;
 			var norm = 0.0;
 
 			// Solve determinants by replacing x-th column by all 1.
@@ -425,15 +468,23 @@ namespace MIConvexHull
 					for (var j = 0; j < Dimension; j++)
 						// maybe I got the i/j mixed up here regarding the representation Math.net uses...
 						// ...but it does not matter since Det(A) = Det(Transpose(A)).
+					{
 						data[Dimension * i + j] = j == x ? 1.0 : PositionData[offset + j];
+					}
 				}
 
 				LUFactor(data, Dimension, iPiv, nDNormalHelperVector);
 				var coord = 1.0;
 				for (var i = 0; i < Dimension; i++)
 				{
-					if (iPiv[i] != i) coord *= -data[Dimension * i + i]; // the determinant sign changes on row swap.
-					else coord *= data[Dimension * i + i];
+					if (iPiv[i] != i)
+					{
+						coord *= -data[Dimension * i + i]; // the determinant sign changes on row swap.
+					}
+					else
+					{
+						coord *= data[Dimension * i + i];
+					}
 				}
 
 				normal[x] = coord;
@@ -442,7 +493,10 @@ namespace MIConvexHull
 
 			// Normalize the result
 			var f = 1.0 / Math.Sqrt(norm);
-			for (var i = 0; i < normal.Length; i++) normal[i] *= f;
+			for (var i = 0; i < normal.Length; i++)
+			{
+				normal[i] *= f;
+			}
 		}
 
 		#endregion

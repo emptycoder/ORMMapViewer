@@ -75,7 +75,7 @@ namespace MIConvexHull
 			}
 			else
 			{
-				var newItems = new T[capacity * 2];
+				T[] newItems = new T[capacity * 2];
 				Array.Copy(items, newItems, capacity);
 				capacity = 2 * capacity;
 				items = newItems;
@@ -88,7 +88,11 @@ namespace MIConvexHull
 		/// <param name="item">The item.</param>
 		public void Add(T item)
 		{
-			if (Count + 1 > capacity) EnsureCapacity();
+			if (Count + 1 > capacity)
+			{
+				EnsureCapacity();
+			}
+
 			items[Count++] = item;
 		}
 
@@ -98,7 +102,11 @@ namespace MIConvexHull
 		/// <param name="item">The item.</param>
 		public void Push(T item)
 		{
-			if (Count + 1 > capacity) EnsureCapacity();
+			if (Count + 1 > capacity)
+			{
+				EnsureCapacity();
+			}
+
 			items[Count++] = item;
 		}
 
@@ -184,10 +192,17 @@ namespace MIConvexHull
 			}
 			else
 			{
-				if (last != null) last.Next = face;
+				if (last != null)
+				{
+					last.Next = face;
+				}
+
 				face.Previous = last;
 				last = face;
-				if (First == null) First = face;
+				if (First == null)
+				{
+					First = face;
+				}
 			}
 		}
 
@@ -197,17 +212,30 @@ namespace MIConvexHull
 		/// <param name="face">The face.</param>
 		public void Remove(ConvexFaceInternal face)
 		{
-			if (!face.InList) return;
+			if (!face.InList)
+			{
+				return;
+			}
 
 			face.InList = false;
 
 			if (face.Previous != null)
+			{
 				face.Previous.Next = face.Next;
-			else if ( /*first == face*/ face.Previous == null) First = face.Next;
+			}
+			else if ( /*first == face*/ face.Previous == null)
+			{
+				First = face.Next;
+			}
 
 			if (face.Next != null)
+			{
 				face.Next.Previous = face.Previous;
-			else if ( /*last == face*/ face.Next == null) last = face.Previous;
+			}
+			else if ( /*last == face*/ face.Next == null)
+			{
+				last = face.Previous;
+			}
 
 			face.Next = null;
 			face.Previous = null;
@@ -247,10 +275,17 @@ namespace MIConvexHull
 		/// <param name="element">The element.</param>
 		public void Add(FaceConnector element)
 		{
-			if (last != null) last.Next = element;
+			if (last != null)
+			{
+				last.Next = element;
+			}
+
 			element.Previous = last;
 			last = element;
-			if (First == null) First = element;
+			if (First == null)
+			{
+				First = element;
+			}
 		}
 
 		/// <summary>
@@ -260,12 +295,22 @@ namespace MIConvexHull
 		public void Remove(FaceConnector connector)
 		{
 			if (connector.Previous != null)
+			{
 				connector.Previous.Next = connector.Next;
-			else if ( /*first == face*/ connector.Previous == null) First = connector.Next;
+			}
+			else if ( /*first == face*/ connector.Previous == null)
+			{
+				First = connector.Next;
+			}
 
 			if (connector.Next != null)
+			{
 				connector.Next.Previous = connector.Previous;
-			else if ( /*last == face*/ connector.Next == null) last = connector.Previous;
+			}
+			else if ( /*last == face*/ connector.Next == null)
+			{
+				last = connector.Previous;
+			}
 
 			connector.Next = null;
 			connector.Previous = null;

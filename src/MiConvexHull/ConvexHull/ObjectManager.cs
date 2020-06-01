@@ -106,8 +106,12 @@ namespace MIConvexHull
 		public void DepositFace(int faceIndex)
 		{
 			var face = FacePool[faceIndex];
-			var af = face.AdjacentFaces;
-			for (var i = 0; i < af.Length; i++) af[i] = -1;
+			int[] af = face.AdjacentFaces;
+			for (var i = 0; i < af.Length; i++)
+			{
+				af[i] = -1;
+			}
+
 			FreeFaceIndices.Push(faceIndex);
 		}
 
@@ -116,8 +120,8 @@ namespace MIConvexHull
 		/// </summary>
 		private void ReallocateFacePool()
 		{
-			var newPool = new ConvexFaceInternal[2 * FacePoolCapacity];
-			var newTags = new bool[2 * FacePoolCapacity];
+			ConvexFaceInternal[] newPool = new ConvexFaceInternal[2 * FacePoolCapacity];
+			bool[] newTags = new bool[2 * FacePoolCapacity];
 			Array.Copy(FacePool, newPool, FacePoolCapacity);
 			Buffer.BlockCopy(Hull.AffectedFaceFlags, 0, newTags, 0, FacePoolCapacity * sizeof(bool));
 			FacePoolCapacity = 2 * FacePoolCapacity;
@@ -135,7 +139,11 @@ namespace MIConvexHull
 			var index = FacePoolSize;
 			var face = new ConvexFaceInternal(Dimension, index, GetVertexBuffer());
 			FacePoolSize++;
-			if (FacePoolSize > FacePoolCapacity) ReallocateFacePool();
+			if (FacePoolSize > FacePoolCapacity)
+			{
+				ReallocateFacePool();
+			}
+
 			FacePool[index] = face;
 			return index;
 		}
@@ -146,7 +154,11 @@ namespace MIConvexHull
 		/// <returns>System.Int32.</returns>
 		public int GetFace()
 		{
-			if (FreeFaceIndices.Count > 0) return FreeFaceIndices.Pop();
+			if (FreeFaceIndices.Count > 0)
+			{
+				return FreeFaceIndices.Pop();
+			}
+
 			return CreateFace();
 		}
 
@@ -174,7 +186,10 @@ namespace MIConvexHull
 		/// <returns>FaceConnector.</returns>
 		public FaceConnector GetConnector()
 		{
-			if (ConnectorStack == null) return new FaceConnector(Dimension);
+			if (ConnectorStack == null)
+			{
+				return new FaceConnector(Dimension);
+			}
 
 			var ret = ConnectorStack;
 			ConnectorStack = ConnectorStack.Next;

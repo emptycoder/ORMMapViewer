@@ -20,7 +20,7 @@ namespace TransportationProblem
 
 		public int[] GetBasis()
 		{
-			var basis = new int[matrix.RowCount];
+			int[] basis = new int[matrix.RowCount];
 			basis.Fill(-1);
 
 			for (var columnIndex = 0; columnIndex < matrix.ColumnCount; columnIndex++)
@@ -29,9 +29,12 @@ namespace TransportationProblem
 				if (rowIndex != -1 && basis[rowIndex] == -1)
 				{
 					// Reduction to a basis
-					var columnData = matrix.Column(columnIndex);
+					Vector<double> columnData = matrix.Column(columnIndex);
 					for (var i = 0; i < columnData.Count; i++)
+					{
 						matrix[rowIndex, i] = columnData[i] / columnData[rowIndex];
+					}
+
 					constraints[rowIndex] = constraints[rowIndex] / columnData[rowIndex];
 
 					basis[rowIndex] = columnIndex;
@@ -40,21 +43,31 @@ namespace TransportationProblem
 
 			// Add artificial vector for basis creation
 			for (var i = 0; i < basis.Length; i++)
+			{
 				if (basis[i] == -1)
+				{
 					basis[i] = AddArtificialVector(i);
+				}
+			}
 
 			return basis;
 		}
 
 		private int AddArtificialVector(int i)
 		{
-			var newMatrixData = new double[matrix.RowCount + 1, matrix.ColumnCount];
+			double[,] newMatrixData = new double[matrix.RowCount + 1, matrix.ColumnCount];
 			for (var row = 0; row < matrix.RowCount; row++)
 			for (var column = 0; i < matrix.ColumnCount; column++)
+			{
 				newMatrixData[row, column] = matrix[row, column];
+			}
 
 			var rowCount = matrix.RowCount;
-			for (var column = 0; column < matrix.ColumnCount; column++) newMatrixData[rowCount, column] = 0;
+			for (var column = 0; column < matrix.ColumnCount; column++)
+			{
+				newMatrixData[rowCount, column] = 0;
+			}
+
 			newMatrixData[rowCount, i] = 1;
 
 			matrix = DenseMatrix.OfArray(newMatrixData);
@@ -67,15 +80,22 @@ namespace TransportationProblem
 		{
 			var columnIndex = -1;
 
-			var rowData = matrix.Column(row);
+			Vector<double> rowData = matrix.Column(row);
 			for (var i = 0; i < rowData.Count; i++)
 			{
-				if (rowData[i] == 0) continue;
+				if (rowData[i] == 0)
+				{
+					continue;
+				}
 
 				if (columnIndex == -1)
+				{
 					columnIndex = i;
+				}
 				else
+				{
 					return columnIndex;
+				}
 			}
 
 			return columnIndex;

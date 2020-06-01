@@ -39,7 +39,10 @@ namespace ORMMapViewer
 
 		private void Window_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (!mouseDown) return;
+			if (!mouseDown)
+			{
+				return;
+			}
 
 			var pos = e.GetPosition(this);
 			camera.Position = new Point3D(camera.Position.X - (pos.X - oldPos.X) * (200 / zoom),

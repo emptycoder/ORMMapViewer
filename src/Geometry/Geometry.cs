@@ -4,10 +4,10 @@ using System.Globalization;
 
 namespace ORMMap.VectorTile.Geometry
 {
-    /// <summary>
-    ///     Available geometry types
-    /// </summary>
-    public enum GeomType
+	/// <summary>
+	///     Available geometry types
+	/// </summary>
+	public enum GeomType
 	{
 		UNKNOWN = 0,
 		[Description("Point")] POINT = 1,
@@ -16,10 +16,10 @@ namespace ORMMap.VectorTile.Geometry
 	}
 
 
-    /// <summary>
-    ///     Structure to hold a LatLng coordinate pair
-    /// </summary>
-    public struct LatLng
+	/// <summary>
+	///     Structure to hold a LatLng coordinate pair
+	/// </summary>
+	public struct LatLng
 	{
 		public double Lat { get; set; }
 		public double Lng { get; set; }
@@ -41,10 +41,10 @@ namespace ORMMap.VectorTile.Geometry
 	}
 
 
-    /// <summary>
-    ///     Structure to hold a 2D point coordinate pair
-    /// </summary>
-    public struct Vector2<T>
+	/// <summary>
+	///     Structure to hold a 2D point coordinate pair
+	/// </summary>
+	public struct Vector2<T>
 	{
 		public T X;
 		public T Y;
@@ -77,9 +77,15 @@ namespace ORMMap.VectorTile.Geometry
 
 			if (checkLatLngMax)
 			{
-				if (lng < -180d || lng > 180d) throw new ArgumentOutOfRangeException("Longitude out of range");
+				if (lng < -180d || lng > 180d)
+				{
+					throw new ArgumentOutOfRangeException("Longitude out of range");
+				}
+
 				if (lat < -85.051128779806589d || lat > 85.051128779806589d)
+				{
 					throw new ArgumentOutOfRangeException("Latitude out of range");
+				}
 			}
 
 			var latLng = new LatLng

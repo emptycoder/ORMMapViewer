@@ -72,9 +72,17 @@ namespace MIConvexHull
 		/// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
 		public override bool Equals(object obj)
 		{
-			var other = obj as VoronoiEdge<TVertex, TCell>;
-			if (other == null) return false;
-			if (ReferenceEquals(this, other)) return true;
+			VoronoiEdge<TVertex, TCell> other = obj as VoronoiEdge<TVertex, TCell>;
+			if (other == null)
+			{
+				return false;
+			}
+
+			if (ReferenceEquals(this, other))
+			{
+				return true;
+			}
+
 			return Source == other.Source && Target == other.Target
 			       || Source == other.Target && Target == other.Source;
 		}

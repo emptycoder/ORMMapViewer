@@ -33,23 +33,28 @@ namespace ORMMapViewer.Model.Entitites
 
 		public void TakeRelatives(Node other)
 		{
-			foreach (Node otherNode in other.relatives.Keys)
+			foreach (var otherNode in other.relatives.Keys)
 			{
-				foreach (Node thisNode in relatives.Keys)
+				foreach (var thisNode in relatives.Keys)
 				{
 					if (otherNode.Equals(thisNode))
+					{
 						thisNode.relatives = thisNode.relatives.Concat(
-							otherNode.relatives.Where(x => !thisNode.relatives.ContainsKey(x.Key)))
-							.ToDictionary(x=>x.Key, x=>x.Value);
+								otherNode.relatives.Where(x => !thisNode.relatives.ContainsKey(x.Key)))
+							.ToDictionary(x => x.Key, x => x.Value);
+					}
 				}
 			}
 		}
 
 		public void UpdateRelatives()
 		{
-			foreach (Node node in relatives.Keys)
+			foreach (var node in relatives.Keys)
 			{
-				if (!node.relatives.ContainsKey(this)) node.relatives.Add(this, new LengthWeight(this, node));
+				if (!node.relatives.ContainsKey(this))
+				{
+					node.relatives.Add(this, new LengthWeight(this, node));
+				}
 			}
 		}
 	}

@@ -72,7 +72,9 @@ namespace MIConvexHull
 				foreach (var v in Vertices)
 				{
 					for (var i = 0; i < NumOfDimensions; i++)
+					{
 						Positions[index++] = v.Position[i];
+					}
 				}
 			}
 		}
@@ -85,8 +87,8 @@ namespace MIConvexHull
 		{
 			for (var i = 0; i < NumOfDimensions; i++)
 			{
-				var minIndices = new List<int>();
-				var maxIndices = new List<int>();
+				List<int> minIndices = new List<int>();
+				List<int> maxIndices = new List<int>();
 				double min = double.PositiveInfinity, max = double.NegativeInfinity;
 				for (var j = 0; j < NumberOfVertices; j++)
 				{
@@ -146,10 +148,12 @@ namespace MIConvexHull
 				maxima[origNumDim] *= parabolaScale;
 				// it is done here because
 				for (var i = origNumDim; i < positionsLength; i += NumOfDimensions)
+				{
 					Positions[i] *= parabolaScale;
+				}
 			}
 
-			var shiftAmount = new double[NumOfDimensions];
+			double[] shiftAmount = new double[NumOfDimensions];
 			for (var i = 0; i < NumOfDimensions; i++)
 				// now the entire model is shifted to all positive numbers...plus some more.
 				// why? 
@@ -162,12 +166,20 @@ namespace MIConvexHull
 				//    Think of the first term as the range (max - min), then the second term avoids cases
 				//    where there are both positive and negative numbers.
 			{
-				if (maxima[i] == minima[i]) shiftAmount[i] = 0.0;
-				else shiftAmount[i] = maxima[i] - minima[i] - minima[i];
+				if (maxima[i] == minima[i])
+				{
+					shiftAmount[i] = 0.0;
+				}
+				else
+				{
+					shiftAmount[i] = maxima[i] - minima[i] - minima[i];
+				}
 			}
 
 			for (var i = 0; i < positionsLength; i++)
+			{
 				Positions[i] += shiftAmount[i % NumOfDimensions];
+			}
 		}
 
 		/// <summary>
@@ -180,19 +192,21 @@ namespace MIConvexHull
 		/// </summary>
 		private void CreateInitialSimplex()
 		{
-			var initialPoints = FindInitialPoints();
+			List<int> initialPoints = FindInitialPoints();
 
 			#region Create the first faces from (dimension + 1) vertices.
 
-			var faces = new int[NumOfDimensions + 1];
+			int[] faces = new int[NumOfDimensions + 1];
 
 			for (var i = 0; i < NumOfDimensions + 1; i++)
 			{
-				var vertices = new int[NumOfDimensions];
+				int[] vertices = new int[NumOfDimensions];
 				for (int j = 0, k = 0; j <= NumOfDimensions; j++)
 				{
 					if (i != j)
+					{
 						vertices[k++] = initialPoints[j];
+					}
 				}
 
 				var newFace = FacePool[ObjectManager.GetFace()];
@@ -205,9 +219,14 @@ namespace MIConvexHull
 			// update the adjacency (check all pairs of faces)
 			for (var i = 0; i < NumOfDimensions; i++)
 			for (var j = i + 1; j < NumOfDimensions + 1; j++)
+			{
 				UpdateAdjacency(FacePool[faces[i]], FacePool[faces[j]]);
+			}
+
 			foreach (var item in initialPoints)
+			{
 				VertexVisited[item] = true;
+			}
 
 			#endregion
 
@@ -217,8 +236,14 @@ namespace MIConvexHull
 			{
 				var face = FacePool[faceIndex];
 				FindBeyondVertices(face);
-				if (face.VerticesBeyond.Count == 0) ConvexFaces.Add(face.Index); // The face is on the hull
-				else UnprocessedFaces.Add(face);
+				if (face.VerticesBeyond.Count == 0)
+				{
+					ConvexFaces.Add(face.Index); // The face is on the hull
+				}
+				else
+				{
+					UnprocessedFaces.Add(face);
+				}
 			}
 
 			#endregion
@@ -233,7 +258,11 @@ namespace MIConvexHull
 			// removed. So it is important that we start with a simplex of points guaranteed to be on the
 			// convex hull. This is where the bounding box points come in.
 			var negligibleVolume = Constants.FractionalNegligibleVolume;
-			for (var i = 0; i < NumOfDimensions; i++) negligibleVolume *= maxima[i] - minima[i];
+			for (var i = 0; i < NumOfDimensions; i++)
+			{
+				negligibleVolume *= maxima[i] - minima[i];
+			}
+
 			List<int> bestVertexIndices = null;
 			var numBBPoints = boundingBoxPoints.Count;
 			var degenerate = true;
@@ -288,29 +317,37 @@ namespace MIConvexHull
 			var numBBPoints = bbPoints.Count;
 			for (var i = 0; i < NumberOfInitSimplicesToTest; i++)
 			{
-				var vertexIndices = new List<int>();
-				var alreadyChosenIndices = new HashSet<int>();
+				List<int> vertexIndices = new List<int>();
+				HashSet<int> alreadyChosenIndices = new HashSet<int>();
 				var numRandomIndices = 2 * NumOfDimensions <= numBBPoints
 					? NumOfDimensions
 					: numBBPoints - NumOfDimensions;
 				while (alreadyChosenIndices.Count < numRandomIndices)
 				{
 					var index = random.Next(numBBPoints);
-					if (alreadyChosenIndices.Contains(index)) continue;
+					if (alreadyChosenIndices.Contains(index))
+					{
+						continue;
+					}
+
 					alreadyChosenIndices.Add(index);
 				}
 
 				if (2 * NumOfDimensions <= numBBPoints)
 				{
 					foreach (var index in alreadyChosenIndices)
+					{
 						vertexIndices.Add(bbPoints[index]);
+					}
 				}
 				else
 				{
 					for (var j = 0; j < numBBPoints; j++)
 					{
 						if (!alreadyChosenIndices.Contains(j))
+						{
 							vertexIndices.Add(bbPoints[j]);
+						}
 					}
 				}
 
@@ -319,7 +356,11 @@ namespace MIConvexHull
 				mathHelper.CalculateFacePlane(plane, new double[NumOfDimensions]);
 				// this next line is the only difference between this subroutine and the one
 				var newVertex = FindFarthestPoint(otherPoints, plane);
-				if (newVertex == -1) continue;
+				if (newVertex == -1)
+				{
+					continue;
+				}
+
 				vertexIndices.Add(newVertex);
 				volume = mathHelper.VolumeOfSimplex(vertexIndices);
 				if (maxVolume < volume)
@@ -352,8 +393,8 @@ namespace MIConvexHull
 
 		private List<int> RemoveNVerticesClosestToCentroid(List<int> vertexIndices, int n)
 		{
-			var centroid = CalculateVertexCentriod(vertexIndices);
-			var vertsToRemove = new SortedDictionary<double, int>();
+			double[] centroid = CalculateVertexCentriod(vertexIndices);
+			SortedDictionary<double, int> vertsToRemove = new SortedDictionary<double, int>();
 			foreach (var v in vertexIndices)
 			{
 				var distanceSquared = 0.0;
@@ -363,7 +404,10 @@ namespace MIConvexHull
 					distanceSquared = d * d;
 				}
 
-				if (vertsToRemove.Count < n) vertsToRemove.Add(distanceSquared, v);
+				if (vertsToRemove.Count < n)
+				{
+					vertsToRemove.Add(distanceSquared, v);
+				}
 				else if (vertsToRemove.Keys.Last() > distanceSquared)
 				{
 					vertsToRemove.Add(distanceSquared, v);
@@ -371,13 +415,15 @@ namespace MIConvexHull
 				}
 			}
 
-			var newVertexIndices = new List<int>();
-			var hashOfRemoval = new HashSet<int>(vertsToRemove.Values);
+			List<int> newVertexIndices = new List<int>();
+			HashSet<int> hashOfRemoval = new HashSet<int>(vertsToRemove.Values);
 			for (var i = 0; i < vertexIndices.Count; i++)
 			{
 				var v = vertexIndices[i];
 				if (!hashOfRemoval.Contains(v))
+				{
 					newVertexIndices.Add(v);
+				}
 			}
 
 			return newVertexIndices;
@@ -385,15 +431,19 @@ namespace MIConvexHull
 
 		private List<int> AddNVerticesFarthestToCentroid(List<int> vertexIndices, int n)
 		{
-			var newVertsList = new List<int>(vertexIndices);
+			List<int> newVertsList = new List<int>(vertexIndices);
 			while (newVertsList.Count < n)
 			{
-				var centroid = CalculateVertexCentriod(newVertsList);
+				double[] centroid = CalculateVertexCentriod(newVertsList);
 				var maxDistance = 0.0;
 				var newVert = -1;
 				for (var v = 0; v < NumberOfVertices; v++)
 				{
-					if (newVertsList.Contains(v)) continue;
+					if (newVertsList.Contains(v))
+					{
+						continue;
+					}
+
 					var distanceSquared = 0.0;
 					for (var i = 0; i < NumOfDimensions; i++)
 					{
@@ -417,11 +467,14 @@ namespace MIConvexHull
 		private double[] CalculateVertexCentriod(IList<int> vertexIndices)
 		{
 			var numPoints = vertexIndices.Count;
-			var centroid = new double[NumOfDimensions];
+			double[] centroid = new double[NumOfDimensions];
 			for (var i = 0; i < NumOfDimensions; i++)
 			{
 				for (var j = 0; j < numPoints; j++)
+				{
 					centroid[i] += Positions[i + NumOfDimensions * vertexIndices[j]];
+				}
+
 				centroid[i] /= numPoints;
 			}
 
@@ -435,42 +488,61 @@ namespace MIConvexHull
 		/// <param name="r">The r.</param>
 		private void UpdateAdjacency(ConvexFaceInternal l, ConvexFaceInternal r)
 		{
-			var lv = l.Vertices;
-			var rv = r.Vertices;
+			int[] lv = l.Vertices;
+			int[] rv = r.Vertices;
 			int i;
 
 			// reset marks on the 1st face
-			for (i = 0; i < NumOfDimensions; i++) VertexVisited[lv[i]] = false;
+			for (i = 0; i < NumOfDimensions; i++)
+			{
+				VertexVisited[lv[i]] = false;
+			}
 
 			// mark all vertices on the 2nd face
-			for (i = 0; i < NumOfDimensions; i++) VertexVisited[rv[i]] = true;
+			for (i = 0; i < NumOfDimensions; i++)
+			{
+				VertexVisited[rv[i]] = true;
+			}
 
 			// find the 1st false index
 			for (i = 0; i < NumOfDimensions; i++)
 			{
 				if (!VertexVisited[lv[i]])
+				{
 					break;
+				}
 			}
 
 			// no vertex was marked
-			if (i == NumOfDimensions) return;
+			if (i == NumOfDimensions)
+			{
+				return;
+			}
 
 			// check if only 1 vertex wasn't marked
 			for (var j = i + 1; j < lv.Length; j++)
 			{
 				if (!VertexVisited[lv[j]])
+				{
 					return;
+				}
 			}
 
 			// if we are here, the two faces share an edge
 			l.AdjacentFaces[i] = r.Index;
 
 			// update the adj. face on the other face - find the vertex that remains marked
-			for (i = 0; i < NumOfDimensions; i++) VertexVisited[lv[i]] = false;
+			for (i = 0; i < NumOfDimensions; i++)
+			{
+				VertexVisited[lv[i]] = false;
+			}
+
 			for (i = 0; i < NumOfDimensions; i++)
 			{
 				if (VertexVisited[rv[i]])
+				{
 					break;
+				}
 			}
 
 			r.AdjacentFaces[i] = l.Index;
@@ -487,7 +559,11 @@ namespace MIConvexHull
 			FurthestVertex = 0;
 			for (var i = 0; i < NumberOfVertices; i++)
 			{
-				if (VertexVisited[i]) continue;
+				if (VertexVisited[i])
+				{
+					continue;
+				}
+
 				IsBeyond(face, beyondVertices, i);
 			}
 
@@ -523,7 +599,11 @@ namespace MIConvexHull
 			NumberOfVertices = vertices.Length;
 
 			NumOfDimensions = DetermineDimension();
-			if (IsLifted) NumOfDimensions++;
+			if (IsLifted)
+			{
+				NumOfDimensions++;
+			}
+
 			if (NumOfDimensions < 2)
 			{
 				throw new ConvexHullGenerationException(ConvexHullCreationResultOutcome.DimensionSmallerTwo,
@@ -563,7 +643,10 @@ namespace MIConvexHull
 			BeyondBuffer = new IndexBuffer();
 
 			ConnectorTable = new ConnectorList[Constants.ConnectorTableSize];
-			for (var i = 0; i < Constants.ConnectorTableSize; i++) ConnectorTable[i] = new ConnectorList();
+			for (var i = 0; i < Constants.ConnectorTableSize; i++)
+			{
+				ConnectorTable[i] = new ConnectorList();
+			}
 
 			VertexVisited = new bool[NumberOfVertices];
 			Positions = new double[NumberOfVertices * NumOfDimensions];
@@ -581,9 +664,12 @@ namespace MIConvexHull
 		private int DetermineDimension()
 		{
 			var r = new Random();
-			var dimensions = new List<int>();
+			List<int> dimensions = new List<int>();
 			for (var i = 0; i < 10; i++)
+			{
 				dimensions.Add(Vertices[r.Next(NumberOfVertices)].Position.Length);
+			}
+
 			var dimension = dimensions.Min();
 			if (dimension != dimensions.Max())
 			{
@@ -621,12 +707,21 @@ namespace MIConvexHull
 				TagAffectedFaces(currentFace);
 
 				// Create the cone from the currentVertex and the affected faces horizon.
-				if (!SingularVertices.Contains(CurrentVertex) && CreateCone()) CommitCone();
-				else HandleSingular();
+				if (!SingularVertices.Contains(CurrentVertex) && CreateCone())
+				{
+					CommitCone();
+				}
+				else
+				{
+					HandleSingular();
+				}
 
 				// Need to reset the tags
 				var count = AffectedFaceBuffer.Count;
-				for (var i = 0; i < count; i++) AffectedFaceFlags[AffectedFaceBuffer[i]] = false;
+				for (var i = 0; i < count; i++)
+				{
+					AffectedFaceFlags[AffectedFaceBuffer[i]] = false;
+				}
 			}
 		}
 

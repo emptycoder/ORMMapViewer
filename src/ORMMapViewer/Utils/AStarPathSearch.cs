@@ -11,7 +11,7 @@ namespace ORMMapViewer.Utils
 		{
 			return (float) Math.Sqrt(Math.Pow(first.pos.X - second.pos.X, 2) + Math.Pow(first.pos.Y - second.pos.Y, 2));
 		}
-		
+
 		public static LinkedList<Node> FindPath(Node start, Node end)
 		{
 			LinkedList<Node> path = new LinkedList<Node>();
@@ -23,14 +23,14 @@ namespace ORMMapViewer.Utils
 
 			SimplePriorityQueue<Node> openSet = new SimplePriorityQueue<Node>();
 			openSet.Enqueue(start, DefaultHeuristic(start, end));
-			
+
 			Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
 
 			Dictionary<Node, float> gScore = new Dictionary<Node, float> {{start, 0}};
 
 			while (openSet.Count > 0)
 			{
-				Node current = openSet.Dequeue();
+				var current = openSet.Dequeue();
 				if (current.Equals(end))
 				{
 					path.AddFirst(current);
@@ -39,15 +39,16 @@ namespace ORMMapViewer.Utils
 						current = cameFrom[current];
 						path.AddFirst(current);
 					}
+
 					return path;
 				}
 
-				foreach (var pair in current.relatives)
+				foreach (KeyValuePair<Node, Weight> pair in current.relatives)
 				{
 					if (!pair.Key.Equals(current))
 					{
-						float tentativeGScore = gScore.ContainsKey(current)?gScore[current]:float.MaxValue + pair.Value.Calculate();
-						if (tentativeGScore < (gScore.ContainsKey(pair.Key)?gScore[pair.Key]:float.MaxValue))
+						var tentativeGScore = gScore.ContainsKey(current) ? gScore[current] : float.MaxValue + pair.Value.Calculate();
+						if (tentativeGScore < (gScore.ContainsKey(pair.Key) ? gScore[pair.Key] : float.MaxValue))
 						{
 							cameFrom[pair.Key] = current;
 							gScore[pair.Key] = tentativeGScore;
@@ -59,7 +60,7 @@ namespace ORMMapViewer.Utils
 					}
 				}
 			}
-			
+
 			Console.WriteLine("No path found!");
 
 			return null;

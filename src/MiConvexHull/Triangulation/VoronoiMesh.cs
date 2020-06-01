@@ -92,7 +92,7 @@ namespace MIConvexHull
 			Create(IList<double[]> data,
 				double PlaneDistanceTolerance = Constants.DefaultPlaneDistanceTolerance)
 		{
-			var points = data.Select(p => new DefaultVertex {Position = p.ToArray()}).ToList();
+			List<DefaultVertex> points = data.Select(p => new DefaultVertex {Position = p.ToArray()}).ToList();
 			return
 				VoronoiMesh
 					<DefaultVertex, DefaultTriangulationCell<DefaultVertex>,
@@ -163,18 +163,24 @@ namespace MIConvexHull
 		public static VoronoiMesh<TVertex, TCell, TEdge> Create(IList<TVertex> data,
 			double PlaneDistanceTolerance = Constants.DefaultPlaneDistanceTolerance)
 		{
-			if (data == null) throw new ArgumentNullException("data");
+			if (data == null)
+			{
+				throw new ArgumentNullException("data");
+			}
 
-			var t = DelaunayTriangulation<TVertex, TCell>.Create(data, PlaneDistanceTolerance);
-			var vertices = t.Cells.ToList();
-			var edges = new HashSet<TEdge>(new EdgeComparer());
+			DelaunayTriangulation<TVertex, TCell> t = DelaunayTriangulation<TVertex, TCell>.Create(data, PlaneDistanceTolerance);
+			List<TCell> vertices = t.Cells.ToList();
+			HashSet<TEdge> edges = new HashSet<TEdge>(new EdgeComparer());
 
 			foreach (var f in vertices)
 			{
 				for (var i = 0; i < f.Adjacency.Length; i++)
 				{
 					var af = f.Adjacency[i];
-					if (af != null) edges.Add(new TEdge {Source = f, Target = af});
+					if (af != null)
+					{
+						edges.Add(new TEdge {Source = f, Target = af});
+					}
 				}
 			}
 

@@ -41,7 +41,7 @@ namespace ORMMap
 
 		public static Vector2<uint> LatLngToTile(LatLng latLng, double zoom)
 		{
-			var tile = LatLngToMeters(latLng);
+			Vector2<double> tile = LatLngToMeters(latLng);
 
 			var x = Math.Floor((tile.X + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
 			var y = Math.Floor((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));

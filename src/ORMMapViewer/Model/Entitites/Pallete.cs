@@ -25,9 +25,13 @@ namespace ORMMap.Model.Entitites
 		public Pallete AddPropFillColor(string prop, Color color)
 		{
 			if (propsFillColor == null)
+			{
 				propsFillColor = new Dictionary<string, Color> {{prop, color}};
+			}
 			else
+			{
 				propsFillColor.Add(prop, color);
+			}
 
 			return this;
 		}
@@ -35,23 +39,33 @@ namespace ORMMap.Model.Entitites
 		public Pallete AddPropDrawColor(string prop, Color color)
 		{
 			if (propsDrawColor == null)
+			{
 				propsDrawColor = new Dictionary<string, Color> {{prop, color}};
+			}
 			else
+			{
 				propsDrawColor.Add(prop, color);
+			}
 
 			return this;
 		}
 
 		public Color GetPropDrawColor(string prop)
 		{
-			if (propsDrawColor != null && propsDrawColor.TryGetValue(prop, out var color)) return color;
+			if (propsDrawColor != null && propsDrawColor.TryGetValue(prop, out var color))
+			{
+				return color;
+			}
 
 			return MainDrawColor;
 		}
 
 		public Color GetPropFillColor(string prop)
 		{
-			if (propsFillColor != null && propsFillColor.TryGetValue(prop, out var color)) return color;
+			if (propsFillColor != null && propsFillColor.TryGetValue(prop, out var color))
+			{
+				return color;
+			}
 
 			return MainFillColor;
 		}
@@ -61,9 +75,17 @@ namespace ORMMap.Model.Entitites
 			var stringBuilder =
 				new StringBuilder(
 					$"Pallete:\n Main fill color: {MainFillColor}\n Main draw color: {MainDrawColor}\n Draw prop colors:");
-			foreach (var pair in propsDrawColor) stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
+			foreach (KeyValuePair<string, Color> pair in propsDrawColor)
+			{
+				stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
+			}
+
 			stringBuilder.Append("\n Fill prop colors:");
-			foreach (var pair in propsFillColor) stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
+			foreach (KeyValuePair<string, Color> pair in propsFillColor)
+			{
+				stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
+			}
+
 			return stringBuilder.ToString();
 		}
 	}

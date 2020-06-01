@@ -54,16 +54,26 @@ namespace ORMMap.VectorTile
 		)
 		{
 			// parameters passed to this method override parameters passed to the constructor
-			if (_clipBuffer.HasValue && !clipBuffer.HasValue) clipBuffer = _clipBuffer;
-			if (_scale.HasValue && !scale.HasValue) scale = _scale;
+			if (_clipBuffer.HasValue && !clipBuffer.HasValue)
+			{
+				clipBuffer = _clipBuffer;
+			}
+
+			if (_scale.HasValue && !scale.HasValue)
+			{
+				scale = _scale;
+			}
 
 			// TODO: how to cache 'finalGeom' without making whole class generic???
 			// and without using an object (boxing) ???
-			var finalGeom = _cachedGeometry as List<List<Vector2<T>>>;
-			if (null != finalGeom && scale == _previousScale) return finalGeom;
+			List<List<Vector2<T>>> finalGeom = _cachedGeometry as List<List<Vector2<T>>>;
+			if (null != finalGeom && scale == _previousScale)
+			{
+				return finalGeom;
+			}
 
 			//decode commands and coordinates
-			var geom = DecodeGeometry.GetGeometry(
+			List<List<Vector2<long>>> geom = DecodeGeometry.GetGeometry(
 				Layer.Extent
 				, GeometryType
 				, GeometryCommands
@@ -83,26 +93,38 @@ namespace ORMMap.VectorTile
 				else
 				{
 					// process every ring of a polygon in a separate loop
-					var newGeom = new List<List<Vector2<long>>>();
+					List<List<Vector2<long>>> newGeom = new List<List<Vector2<long>>>();
 					var geomCount = geom.Count;
 					for (var i = 0; i < geomCount; i++)
 					{
-						var part = geom[i];
-						var tmp = new List<List<Vector2<long>>>();
+						List<Vector2<long>> part = geom[i];
+						List<List<Vector2<long>>> tmp = new List<List<Vector2<long>>>();
 						// flip order of inner rings to look like outer rings
 						var isInner = signedPolygonArea(part) >= 0;
-						if (isInner) part.Reverse();
+						if (isInner)
+						{
+							part.Reverse();
+						}
+
 						tmp.Add(part);
 						tmp = UtilGeom.ClipGeometries(tmp, GeometryType, (long) Layer.Extent, clipBuffer.Value,
 							scale.Value);
 						// ring was completely outside of clip border
-						if (0 == tmp.Count) continue;
+						if (0 == tmp.Count)
+						{
+							continue;
+						}
+
 						// one part might result in several geoms after clipping, eg 'u'-shape where the
 						// lower part is completely beyond the actual tile border but still within the buffer
-						foreach (var item in tmp)
+						foreach (List<Vector2<long>> item in tmp)
 						{
 							// flip winding order of inner rings back
-							if (isInner) item.Reverse();
+							if (isInner)
+							{
+								item.Reverse();
+							}
+
 							newGeom.Add(item);
 						}
 					}
@@ -144,10 +166,17 @@ namespace ORMMap.VectorTile
 		public Dictionary<string, object> GetProperties()
 		{
 			if (0 != Tags.Count % 2)
+			{
 				throw new Exception(string.Format("Layer [{0}]: uneven number of feature tag ids", Layer.Name));
-			var properties = new Dictionary<string, object>();
+			}
+
+			Dictionary<string, object> properties = new Dictionary<string, object>();
 			var tagCount = Tags.Count;
-			for (var i = 0; i < tagCount; i += 2) properties.Add(Layer.Keys[Tags[i]], Layer.Values[Tags[i + 1]]);
+			for (var i = 0; i < tagCount; i += 2)
+			{
+				properties.Add(Layer.Keys[Tags[i]], Layer.Values[Tags[i + 1]]);
+			}
+
 			return properties;
 		}
 
@@ -160,13 +189,18 @@ namespace ORMMap.VectorTile
 		public object GetValue(string key)
 		{
 			var idxKey = Layer.Keys.IndexOf(key);
-			if (-1 == idxKey) throw new Exception(string.Format("Key [{0}] does not exist", key));
+			if (-1 == idxKey)
+			{
+				throw new Exception(string.Format("Key [{0}] does not exist", key));
+			}
 
 			var tagCount = Tags.Count;
 			for (var i = 0; i < tagCount; i++)
 			{
 				if (idxKey == Tags[i])
+				{
 					return Layer.Values[Tags[i + 1]];
+				}
 			}
 
 			return null;
@@ -175,7 +209,11 @@ namespace ORMMap.VectorTile
 		public override string ToString()
 		{
 			var text = $"Feature: {GeometryType}\n";
-			foreach (var prop in GetProperties()) text += $"   {prop.Key} ({prop.Value.GetType()}): {prop.Value}\n";
+			foreach (KeyValuePair<string, object> prop in GetProperties())
+			{
+				text += $"   {prop.Key} ({prop.Value.GetType()}): {prop.Value}\n";
+			}
+
 			return text;
 		}
 	}

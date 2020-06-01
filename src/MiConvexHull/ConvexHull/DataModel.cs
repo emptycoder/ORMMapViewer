@@ -101,7 +101,7 @@ namespace MIConvexHull
 
 			unchecked
 			{
-				var vs = face.Vertices;
+				int[] vs = face.Vertices;
 				int i, c = 0;
 				for (i = 0; i < edgeIndex; i++)
 				{
@@ -128,14 +128,19 @@ namespace MIConvexHull
 		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
 		public static bool AreConnectable(FaceConnector a, FaceConnector b, int dim)
 		{
-			if (a.HashCode != b.HashCode) return false;
+			if (a.HashCode != b.HashCode)
+			{
+				return false;
+			}
 
-			var av = a.Vertices;
-			var bv = b.Vertices;
+			int[] av = a.Vertices;
+			int[] bv = b.Vertices;
 			for (var i = 0; i < av.Length; i++)
 			{
 				if (av[i] != bv[i])
+				{
 					return false;
+				}
 			}
 
 			return true;

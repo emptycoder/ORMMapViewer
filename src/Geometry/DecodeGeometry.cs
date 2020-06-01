@@ -29,8 +29,8 @@ namespace ORMMap.VectorTile.Geometry
 			, float scale = 1.0f
 		)
 		{
-			var geomOut = new List<List<Vector2<long>>>();
-			var geomTmp = new List<Vector2<long>>();
+			List<List<Vector2<long>>> geomOut = new List<List<Vector2<long>>>();
+			List<Vector2<long>> geomTmp = new List<Vector2<long>>();
 			long cursorX = 0;
 			long cursorY = 0;
 
@@ -45,7 +45,7 @@ namespace ORMMap.VectorTile.Geometry
 				{
 					for (var j = 0; j < cmdCount; j++)
 					{
-						var delta = zigzagDecode(geometryCommands[i + 1], geometryCommands[i + 2]);
+						Vector2<long> delta = zigzagDecode(geometryCommands[i + 1], geometryCommands[i + 2]);
 						cursorX += delta.X;
 						cursorY += delta.Y;
 						i += 2;
@@ -57,7 +57,7 @@ namespace ORMMap.VectorTile.Geometry
 						}
 
 						//Point2d pntTmp = new Point2d(cursorX, cursorY);
-						var pntTmp = new Vector2<long>
+						Vector2<long> pntTmp = new Vector2<long>
 						{
 							X = cursorX,
 							Y = cursorY
@@ -67,11 +67,18 @@ namespace ORMMap.VectorTile.Geometry
 				}
 
 				if (cmd == Commands.ClosePath)
+				{
 					if (geomType == GeomType.POLYGON && geomTmp.Count > 0)
+					{
 						geomTmp.Add(geomTmp[0]);
+					}
+				}
 			}
 
-			if (geomTmp.Count > 0) geomOut.Add(geomTmp);
+			if (geomTmp.Count > 0)
+			{
+				geomOut.Add(geomTmp);
+			}
 
 			return geomOut;
 		}
@@ -88,11 +95,11 @@ namespace ORMMap.VectorTile.Geometry
 			, float scale = 1.0f
 		)
 		{
-			var outGeom = new List<List<Vector2<T>>>();
-			foreach (var inPart in inGeom)
+			List<List<Vector2<T>>> outGeom = new List<List<Vector2<T>>>();
+			foreach (List<Vector2<long>> inPart in inGeom)
 			{
-				var outPart = new List<Vector2<T>>();
-				foreach (var inVertex in inPart)
+				List<Vector2<T>> outPart = new List<Vector2<T>>();
+				foreach (Vector2<long> inVertex in inPart)
 				{
 					var fX = inVertex.X * scale;
 					var fY = inVertex.Y * scale;
