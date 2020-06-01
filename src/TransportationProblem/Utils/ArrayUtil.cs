@@ -21,5 +21,22 @@ namespace TransportationProblem.Utils
 
 			for (var i = 0; i < array.Length; i++) array[i] = value;
 		}
+
+		public static int GetMinIndex(this double[] array)
+		{
+			double minValue = array[0];
+			int minIndex = 0;
+
+			for (int i = 1; i < array.Length; i++)
+			{
+				if (array[i] < minValue)
+				{
+					minValue = array[i];
+					minIndex = i;
+				}
+			}
+
+			return minIndex;
+		}
 	}
 }
