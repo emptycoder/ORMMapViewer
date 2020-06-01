@@ -39,25 +39,19 @@ namespace ORMMap
 
 		private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics)
 		{
-			using (SolidBrush solidBrush = new SolidBrush(pallete.MainFillColor))
+			List<PointF> points = new List<PointF>();
+			List<List<Vector2<int>>> list = feature.Geometry<int>();
+			foreach (List<Vector2<int>> item in list)
 			{
-				using (Pen pen = new Pen(pallete.MainDrawColor))
+				points.Clear();
+
+				foreach (Vector2<int> point in item)
 				{
-					var points = new List<PointF>();
-					List<List<Vector2<int>>> list = feature.Geometry<int>();
-					foreach (List<Vector2<int>> item in list)
-					{
-						points.Clear();
-
-						foreach (Vector2<int> point in item)
-						{
-							points.Add(new PointF(point.X, point.Y));
-						}
-
-						graphics.FillPolygon(solidBrush, points.ToArray());
-						graphics.DrawPolygon(pen, points.ToArray());
-					}
+					points.Add(new PointF(point.X, point.Y));
 				}
+
+				graphics.FillPolygon(pallete.GetMainFillBrush(), points.ToArray());
+				graphics.DrawPolygon(pallete.GetMainDrawPen(), points.ToArray());
 			}
 		}
 
@@ -72,24 +66,17 @@ namespace ORMMap
 			Point[] points = geometry.Select(vector2 => new Point(vector2.X, vector2.Y)).ToArray();
 
 			// Console.WriteLine(string.Join(",\n", points) + ",\n");
-
-			using (Pen pen = new Pen(pallete.MainDrawColor, pallete.Thickness))
-			{
-				graphics.DrawLines(pen, points);
-			}
+			graphics.DrawLines(pallete.GetMainDrawPen(), points);
 
 			// Draw name of street
-			// if (props.ContainsKey("name"))
-			// {
-			// 	using (var brush = new SolidBrush(pallete.GetPropFillColor("name")))
-			// 	{
-			// 		var text = (string) props["name"];
-			// 		foreach (Vector2<int> point in geometry)
-			// 		{
-			// 			graphics.DrawString(text, font, brush, new Point(point.X, point.Y));
-			// 		}
-			// 	}
-			// }
+			if (props.ContainsKey("name"))
+			{
+				var text = (string)props["name"];
+				foreach (Vector2<int> point in geometry)
+				{
+					graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), new Point(point.X, point.Y));
+				}
+			}
 		}
 
 		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)

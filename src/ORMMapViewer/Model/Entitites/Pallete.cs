@@ -1,92 +1,117 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
 namespace ORMMap.Model.Entitites
 {
-	public struct Pallete
+	public struct Pallete : IDisposable
 	{
-		public readonly Color MainFillColor;
-		public readonly Color MainDrawColor;
-		public readonly float Thickness;
+		private static SolidBrush solidBrush = new SolidBrush(Color.Black);
 
-		private Dictionary<string, Color> propsFillColor;
-		private Dictionary<string, Color> propsDrawColor;
+		private readonly Color mainFillColor;
+		private readonly Pen mainDrawPen;
 
-		public Pallete(Color mainFillColor, Color mainDrawColor, float thickness)
+		private Dictionary<string, Color> propsFillColors;
+		private Dictionary<string, Pen> propsDrawPens;
+
+		public Pallete(Color mainFillColor, Color mainDrawColor, float thickness = 1)
 		{
-			MainFillColor = mainFillColor;
-			MainDrawColor = mainDrawColor;
-			Thickness = thickness;
+			this.mainFillColor = mainFillColor;
+			mainDrawPen = new Pen(mainDrawColor, thickness);
 
-			propsFillColor = propsDrawColor = null;
+			propsFillColors = null;
+			propsDrawPens = null;
 		}
 
-		public Pallete AddPropFillColor(string prop, Color color)
+		public Pen GetMainDrawPen()
 		{
-			if (propsFillColor == null)
+			return mainDrawPen;
+		}
+
+		public SolidBrush GetMainFillBrush()
+		{
+			solidBrush.Color = mainFillColor;
+			return solidBrush;
+		}
+
+		public Pallete AddPropFillBrush(string prop, Color color)
+		{
+			if (propsFillColors == null)
 			{
-				propsFillColor = new Dictionary<string, Color> {{prop, color}};
+				propsFillColors = new Dictionary<string, Color> {{prop, color}};
 			}
 			else
 			{
-				propsFillColor.Add(prop, color);
+				propsFillColors.Add(prop, color);
 			}
 
 			return this;
 		}
 
-		public Pallete AddPropDrawColor(string prop, Color color)
+		public Pallete AddPropDrawPen(string prop, Color color, float thickness = 1)
 		{
-			if (propsDrawColor == null)
+			if (propsDrawPens == null)
 			{
-				propsDrawColor = new Dictionary<string, Color> {{prop, color}};
+				propsDrawPens = new Dictionary<string, Pen> {{prop, new Pen(color, thickness)}};
 			}
 			else
 			{
-				propsDrawColor.Add(prop, color);
+				propsDrawPens.Add(prop, new Pen(color, thickness));
 			}
 
 			return this;
 		}
 
-		public Color GetPropDrawColor(string prop)
+		public Pen GetPropDrawPen(string prop)
 		{
-			if (propsDrawColor != null && propsDrawColor.TryGetValue(prop, out Color color))
+			if (propsDrawPens != null && propsDrawPens.TryGetValue(prop, out Pen pen))
 			{
-				return color;
+				return pen;
 			}
 
-			return MainDrawColor;
+			return mainDrawPen;
 		}
 
-		public Color GetPropFillColor(string prop)
+		public SolidBrush GetPropFillBrush(string prop)
 		{
-			if (propsFillColor != null && propsFillColor.TryGetValue(prop, out Color color))
+			if (propsFillColors != null && propsFillColors.TryGetValue(prop, out Color color))
 			{
-				return color;
+				solidBrush.Color = color;
+				return solidBrush;
 			}
 
-			return MainFillColor;
+			solidBrush.Color = mainFillColor;
+			return solidBrush;
 		}
 
 		public override string ToString()
 		{
 			StringBuilder stringBuilder =
 				new StringBuilder(
-					$"Pallete:\n Main fill color: {MainFillColor}\n Main draw color: {MainDrawColor}\n Draw prop colors:");
-			foreach (KeyValuePair<string, Color> pair in propsDrawColor)
+					$"Pallete:\n Main fill color: {mainFillColor}\n Main draw color: {mainDrawPen.Color}\n Draw prop colors:");
+			foreach (KeyValuePair<string, Pen> pair in propsDrawPens)
 			{
-				stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
+				stringBuilder.Append($"  {pair.Key}: {pair.Value.Color}\n");
 			}
 
 			stringBuilder.Append("\n Fill prop colors:");
-			foreach (KeyValuePair<string, Color> pair in propsFillColor)
+			foreach (KeyValuePair<string, Color> pair in propsFillColors)
 			{
 				stringBuilder.Append($"  {pair.Key}: {pair.Value}\n");
 			}
 
 			return stringBuilder.ToString();
+		}
+
+		public void Dispose()
+		{
+			mainDrawPen.Dispose();
+
+			foreach (KeyValuePair<string, Pen> pair in propsDrawPens)
+			{
+				pair.Value.Dispose();
+			}
 		}
 	}
 }
