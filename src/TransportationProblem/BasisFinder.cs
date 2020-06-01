@@ -7,25 +7,25 @@ namespace TransportationProblem
 {
 	public class BasisFinder
 	{
-		private readonly Vector constraints;
-		private Matrix<double> matrix;
-		private Vector simplexFunction;
+		public readonly Vector<double> constraints;
+		public Matrix<double> matrix;
+		public Vector<double> simplexFunction;
 
-		public BasisFinder(Matrix<double> matrix, Vector simplexFunction, Vector constraints)
+		public BasisFinder(Matrix<double> matrix, Vector<double> simplexFunction, Vector<double> constraints)
 		{
 			this.matrix = matrix;
 			this.simplexFunction = simplexFunction;
 			this.constraints = constraints;
 		}
 
-		public int[] getBasis()
+		public int[] GetBasis()
 		{
 			var basis = new int[matrix.RowCount];
 			basis.Fill(-1);
 
 			for (var columnIndex = 0; columnIndex < matrix.ColumnCount; columnIndex++)
 			{
-				var rowIndex = isConvertibleToBasis(columnIndex);
+				var rowIndex = IsConvertibleToBasis(columnIndex);
 				if (rowIndex != -1 && basis[rowIndex] == -1)
 				{
 					// Reduction to a basis
@@ -41,12 +41,12 @@ namespace TransportationProblem
 			// Add artificial vector for basis creation
 			for (var i = 0; i < basis.Length; i++)
 				if (basis[i] == -1)
-					basis[i] = addArtificialVector(i);
+					basis[i] = AddArtificialVector(i);
 
 			return basis;
 		}
 
-		private int addArtificialVector(int i)
+		private int AddArtificialVector(int i)
 		{
 			var newMatrixData = new double[matrix.RowCount + 1, matrix.ColumnCount];
 			for (var row = 0; row < matrix.RowCount; row++)
@@ -63,7 +63,7 @@ namespace TransportationProblem
 			return rowCount;
 		}
 
-		private int isConvertibleToBasis(int row)
+		private int IsConvertibleToBasis(int row)
 		{
 			var columnIndex = -1;
 
