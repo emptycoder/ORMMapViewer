@@ -35,6 +35,8 @@ namespace ORMMap.Model.Data
 
         public abstract double ConvertToMapZoom(double zoom);
 
+        protected abstract byte[] GetDataFromSource(Vector3<double> lonLatZoom);
+
         public VectorTileObj GetData(Vector3<double> lonLatZoom)
         {
             if (memoryCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
@@ -107,7 +109,5 @@ namespace ORMMap.Model.Data
 
             memoryCache.Add(lonLatZoom.ToString(), data);
         }
-
-        protected abstract byte[] GetDataFromSource(Vector3<double> lonLatZoom);
     }
 }

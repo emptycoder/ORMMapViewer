@@ -64,7 +64,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ControllerView\TransportationProblem.cs" />
+    <Compile Include="ControllerView\TransportationProblem\BasisFinder.cs" />
+    <Compile Include="ControllerView\TransportationProblem\Simplex.cs" />
     <Compile Include="Model\Entitites\Graph\Graph.cs" />
     <Compile Include="Model\Entitites\Graph\LengthWeight.cs" />
     <Compile Include="Model\Entitites\Graph\Node.cs" />
