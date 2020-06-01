@@ -20,7 +20,7 @@ namespace ORMMapViewer
             camera.Position = new Point3D(camera.Position.X, camera.Position.Y, 3692.3 * (21 - zoom));
             this.Title = $"ORMMap [Zoom: {zoom}]";
 
-            // UpdateScene();
+            UpdateScene();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

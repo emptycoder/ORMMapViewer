@@ -46,11 +46,12 @@ namespace ORMMapViewer
 
         private void UpdateScene()
         {
-            Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, zoom);
+            double cZoom = dataController.ConvertToMapZoom(zoom);
+            Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
             VectorTileObj tile = dataController.GetData(new Vector3<double>(
                 tileCoordinations.X,
                 tileCoordinations.Y,
-                zoom
+                cZoom
             ));
 
             Bitmap scene = new Bitmap((int)dataController.GetTileScale(), (int)dataController.GetTileScale());

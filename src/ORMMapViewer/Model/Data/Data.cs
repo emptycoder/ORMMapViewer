@@ -1,12 +1,10 @@
 ﻿using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
-using ORMMap.VectorTile.Geometry;
 using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 
 namespace ORMMap.Model.Data
 {
@@ -17,7 +15,6 @@ namespace ORMMap.Model.Data
 
         private Dictionary<string, string> diskCache;
         private Dictionary<string, VectorTileObj> memoryCache = new Dictionary<string, VectorTileObj>(Settings.memoryCacheOpacity);
-
         private Dictionary<string, Graph> roadsCache = new Dictionary<string, Graph>();
 
         protected readonly string pathToDataFolder;
@@ -40,8 +37,6 @@ namespace ORMMap.Model.Data
 
         public VectorTileObj GetData(Vector3<double> lonLatZoom)
         {
-            lonLatZoom.Z = ConvertToMapZoom(lonLatZoom.Z);
-
             if (memoryCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
             {
                 return data;
