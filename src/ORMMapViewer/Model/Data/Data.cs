@@ -95,11 +95,12 @@ namespace ORMMap.Model.Data
 			for (int i = 0; i < layer.FeatureCount(); i++)
 			{
 				VectorTileFeature feature = layer.GetFeature(i);
-				List<Vector2<int>> geometry = feature.Geometry<int>()[0];
-
-				for (int index = 1; index < geometry.Count; index++)
+				foreach (List<Vector2<int>> geometry in feature.Geometry<int>())
 				{
-					MaskDrawer.DrawMaskLine(geometry[index - 1], geometry[index]);
+					for (int index = 1; index < geometry.Count; index++)
+					{
+						MaskDrawer.DrawMaskLine(geometry[index - 1], geometry[index]);
+					}
 				}
 			}
 

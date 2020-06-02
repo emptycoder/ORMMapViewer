@@ -63,11 +63,13 @@ namespace ORMMap
 		private static void DrawLineString(VectorTileFeature feature, Pallete pallete, Graphics graphics)
 		{
 			Dictionary<string, object> props = feature.GetProperties();
-			List<Vector2<int>> geometry = feature.Geometry<int>()[0];
-			Point[] points = geometry.Select(vector2 => new Point(vector2.X, vector2.Y)).ToArray();
+			foreach (List<Vector2<int>> geometry in feature.Geometry<int>())
+			{
+				Point[] points = geometry.Select(vector2 => new Point(vector2.X, vector2.Y)).ToArray();
 
-			// Console.WriteLine(string.Join(",\n", points) + ",\n");
-			graphics.DrawLines(pallete.GetMainDrawPen(), points);
+				// Console.WriteLine(string.Join(",\n", points) + ",\n");
+				graphics.DrawLines(pallete.GetMainDrawPen(), points);
+			}
 
 			// Draw name of street
 			/*if (props.ContainsKey("name"))

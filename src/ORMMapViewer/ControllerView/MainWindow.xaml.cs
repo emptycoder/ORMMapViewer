@@ -74,7 +74,7 @@ namespace ORMMapViewer
 				}
 
 				Graph graph = dataController.GetRoads(lonLatZoom);
-				/*LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[290], graph.nodes[291]);
+				/*LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[2585], graph.nodes[622]);
 				if (list != null && list.Count > 1)
 				{
 					MVTDrawer.DrawGraphRoads(list, graphics);
