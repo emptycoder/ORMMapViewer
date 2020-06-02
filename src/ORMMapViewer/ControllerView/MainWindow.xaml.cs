@@ -68,15 +68,12 @@ namespace ORMMapViewer
 					if (layers.Contains(layerName))
 					{
 						VectorTileLayer layer = tile.GetLayer(layerName);
-						// Console.WriteLine(layerName);
 						MVTDrawer.DrawLayer(layer, layersPallete[layerName], graphics);
 					}
 				}
 
 				Graph graph = dataController.GetRoads(lonLatZoom);
-				// MVTDrawer.DrawLinks(graph.nodes, graphics);
-				//LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[125], graph.nodes[2388]);
-				LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[2129], graph.nodes[445]);
+				LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[423], graph.nodes[83]);
 				if (list != null && list.Count > 1)
 				{
 					MVTDrawer.DrawGraphRoads(list, graphics);

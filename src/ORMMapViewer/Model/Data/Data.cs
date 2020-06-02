@@ -91,6 +91,7 @@ namespace ORMMap.Model.Data
 			}
 
 			VectorTileLayer layer = data.GetLayer("roads");
+			MaskDrawer maskDrawer = new MaskDrawer();
 
 			for (int i = 0; i < layer.FeatureCount(); i++)
 			{
@@ -99,89 +100,12 @@ namespace ORMMap.Model.Data
 				{
 					for (int index = 1; index < geometry.Count; index++)
 					{
-						MaskDrawer.DrawMaskLine(geometry[index - 1], geometry[index]);
+						maskDrawer.DrawMaskLine(geometry[index - 1], geometry[index]);
 					}
 				}
 			}
 
-			roadsCache.Add(lonLatZoom.ToString(), MaskDrawer.GetGraph());
-
-
-			/*Graph graph = new Graph();
-			List<Line> lines = new List<Line>();
-
-			for (int i = 0; i < layer.FeatureCount(); i++)
-			{
-				VectorTileFeature feature = layer.GetFeature(i);
-				List<Vector2<int>> geometry = feature.Geometry<int>()[0];
-
-				Node last = null;
-				for (int k = 0; k < geometry.Count; k++)
-				{
-					Node current = new Node(geometry[k].X, geometry[k].Y);
-					if (current.pos.X > 4500 || current.pos.Y > 4500)
-					{
-						last = null;
-						continue;
-					}
-
-					current = graph.AddNode(current);
-					if (last != null)
-					{
-						Graph.LinkNodes(last, current);
-						lines.Add(new Line(current, last));
-					}
-
-					last = current;
-				}
-			}
-
-			Line[] copyOfLines = new Line[lines.Count];
-			lines.CopyTo(copyOfLines);
-
-			foreach (Line line in copyOfLines)
-			{
-				foreach (Node node in graph.nodes)
-				{
-					if (line.IsVectorOnLine(node.pos))
-					{
-						Graph.UnlinkNodes(line.startNode, line.endNode);
-						Graph.LinkNodes(line.startNode, node);
-						Graph.LinkNodes(line.endNode, node);
-
-						lines.Remove(line);
-						lines.Add(new Line(line.startNode, node));
-						lines.Add(new Line(line.endNode, node));
-					}
-				}
-			}
-
-			foreach (Line line1 in lines)
-			{
-				foreach (Line line2 in lines)
-				{
-					if (line1 != line2)
-					{
-						graph.CheckAndAddIntersection(line1, line2);
-					}
-				}
-			}
-
-
-			// Console.WriteLine(string.Join(", ", graph.nodes[123].neighbours.Select(node=>node.Key.id)));
-
-			Console.WriteLine(new Line(graph.nodes[8], graph.nodes[42]).IsVectorOnLine(graph.nodes[100].pos));
-
-			// graph.CheckAndAddIntersection(graph.nodes[309], graph.nodes[310], graph.nodes[76], graph.nodes[75]);
-
-			foreach (Node node in graph.nodes)
-			{
-				node.UpdateNeighbours();
-			}
-
-			roadsCache.Add(lonLatZoom.ToString(), graph);*/
-
-
+			roadsCache.Add(lonLatZoom.ToString(), maskDrawer.GetGraph());
 		}
 
 		private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)

@@ -75,6 +75,7 @@
     <Compile Include="Utils\DirectoryUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
     <Compile Include="ControllerView\MainWindowEvents.cs" />
+    <Compile Include="Utils\VectorUtils.cs" />
     <Page Include="ControllerView\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

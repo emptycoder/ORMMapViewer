@@ -6,7 +6,6 @@ using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
 using ORMMap.VectorTile.Geometry;
 using ORMMapViewer.Model.Entitites;
-using ORMMapViewer.Utils;
 
 namespace ORMMap
 {
@@ -56,9 +55,8 @@ namespace ORMMap
 			}
 		}
 
-		private static void DrawPoint(VectorTileFeature feature, Pallete pallete, Graphics graphics)
-		{
-		}
+		// TOOD: Add implimentation
+		private static void DrawPoint(VectorTileFeature feature, Pallete pallete, Graphics graphics) {}
 
 		private static void DrawLineString(VectorTileFeature feature, Pallete pallete, Graphics graphics)
 		{
@@ -66,20 +64,18 @@ namespace ORMMap
 			foreach (List<Vector2<int>> geometry in feature.Geometry<int>())
 			{
 				Point[] points = geometry.Select(vector2 => new Point(vector2.X, vector2.Y)).ToArray();
-
-				// Console.WriteLine(string.Join(",\n", points) + ",\n");
 				graphics.DrawLines(pallete.GetMainDrawPen(), points);
-			}
 
-			// Draw name of street
-			/*if (props.ContainsKey("name"))
-			{
-				var text = (string)props["name"];
-				foreach (Vector2<int> point in geometry)
+				// Draw name of street
+				if (props.ContainsKey("name"))
 				{
-					graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
+					var text = (string) props["name"];
+					foreach (Vector2<int> point in geometry)
+					{
+						graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
+					}
 				}
-			}*/
+			}
 		}
 
 		public static void DrawLinks(List<Node> roads, Graphics graphics)
@@ -102,8 +98,6 @@ namespace ORMMap
 		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)
 		{
 			int index = 0;
-			// Console.WriteLine(string.Join(",\n", roads.Select((node, key) => key + ") " + node.pos)));
-
 			using (SolidBrush brush = new SolidBrush(Color.Chartreuse))
 			{
 				foreach (Node node in roads)
