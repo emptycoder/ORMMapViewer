@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
@@ -12,6 +13,7 @@ namespace ORMMapViewer
 		private bool mouseDown;
 		private Vector2<int> oldPos = new Vector2<int>(0, 0);
 		private double zoom = Settings.zoom;
+		
 
 		private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
 		{

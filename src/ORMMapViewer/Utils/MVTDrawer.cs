@@ -67,14 +67,14 @@ namespace ORMMap
 				graphics.DrawLines(pallete.GetMainDrawPen(), points);
 
 				// Draw name of street
-				if (props.ContainsKey("name"))
-				{
-					var text = (string) props["name"];
-					foreach (Vector2<int> point in geometry)
-					{
-						graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
-					}
-				}
+				// if (props.ContainsKey("name"))
+				// {
+				// 	var text = (string) props["name"];
+				// 	foreach (Vector2<int> point in geometry)
+				// 	{
+				// 		graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
+				// 	}
+				// }
 			}
 		}
 

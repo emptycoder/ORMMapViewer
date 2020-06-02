@@ -65,11 +65,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ControllerView\MapTileController.cs" />
     <Compile Include="Model\Entitites\Graph\Graph.cs" />
     <Compile Include="Model\Entitites\Graph\LengthWeight.cs" />
     <Compile Include="Model\Entitites\Graph\Line.cs" />
     <Compile Include="Model\Entitites\Graph\Node.cs" />
     <Compile Include="Model\Entitites\Graph\Weight.cs" />
+    <Compile Include="Model\Entitites\MapTile.cs" />
     <Compile Include="Utils\AStarPathSearch.cs" />
     <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\DirectoryUtils.cs" />

@@ -9,5 +9,21 @@ namespace ORMMapViewer.Utils
 		{
 			return Math.Sqrt(Math.Pow(vector1.X - vector2.X, 2) + Math.Pow(vector1.Y - vector2.Y, 2));
 		}
+		
+		public static Vector2<int> Divide(this Vector2<int> vector, int number)
+        {
+            vector.X /= number;
+            vector.Y /= number;
+            
+            return vector;
+        }
+        
+        public static Vector2<int> Multiply(this Vector2<int> vector, int number)
+        {
+            vector.X *= number;
+            vector.Y *= number;
+            
+            return vector;
+        }
 	}
 }

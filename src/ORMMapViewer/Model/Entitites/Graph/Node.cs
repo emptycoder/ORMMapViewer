@@ -39,13 +39,13 @@ namespace ORMMapViewer.Model.Entitites
 			       Math.Abs(pos.Y - node.pos.Y) < maxDistance;
 		}
 
-		/*public override int GetHashCode()
+		public override int GetHashCode()
 		{
 			int hashCode = 1502939027;
 			hashCode = hashCode * -1521134295 + pos.X.GetHashCode();
 			hashCode = hashCode * -1521134295 + pos.Y.GetHashCode();
 			return hashCode;
-		}*/
+		}
 
 		public void UpdateNeighbours()
 		{
