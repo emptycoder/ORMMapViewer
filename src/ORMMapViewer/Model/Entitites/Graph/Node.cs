@@ -57,5 +57,10 @@ namespace ORMMapViewer.Model.Entitites
 				}
 			}
 		}
+
+		public override string ToString()
+		{
+			return $"Id: {id}, pos: {pos}";
+		}
 	}
 }

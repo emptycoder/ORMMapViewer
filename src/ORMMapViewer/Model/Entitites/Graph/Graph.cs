@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ORMMap.VectorTile.Geometry;
 
 namespace ORMMapViewer.Model.Entitites
@@ -28,6 +29,10 @@ namespace ORMMapViewer.Model.Entitites
 			}
 
 			newNode.id = nodes.Count;
+			if (newNode.id == 2388)
+			{
+				Console.WriteLine("");
+			}
 			nodes.Add(newNode);
 			return newNode;
 		}

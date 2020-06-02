@@ -7,18 +7,19 @@ namespace ORMMapViewer.Utils
 {
 	public static class MaskDrawer
 	{
-		private static Line[,] mask = new Line[2048, 2048];
+		const int t = 2;
+		const int tile = 4096 / t;
+		private static Line[,] mask = new Line[tile, tile];
 		private static Graph graph = new Graph();
 
-		// 4096 / 50 = 81.92
 		public static void DrawMaskLine(Vector2<int> startPoint, Vector2<int> endPoint)
 		{
 			// Convert to normal
-			startPoint.X = startPoint.X / 2;
-			startPoint.Y = startPoint.Y / 2;
+			startPoint.X = startPoint.X / t;
+			startPoint.Y = startPoint.Y / t;
 
-			endPoint.X = endPoint.X / 2;
-			endPoint.Y = endPoint.Y / 2;
+			endPoint.X = endPoint.X / t;
+			endPoint.Y = endPoint.Y / t;
 
 			Node startNode = new Node(startPoint.X, startPoint.Y);
 			Node endNode = new Node(endPoint.X, endPoint.Y);
@@ -46,7 +47,7 @@ namespace ORMMapViewer.Utils
 			float tDeltaX = (dx != 0) ? stepX / dx : float.MaxValue;
 			float tDeltaY = (dy != 0) ? stepY / dy : float.MaxValue;
 
-			while (x != endPoint.X && y != endPoint.Y && x < 2048 && y < 2048)
+			while (x != endPoint.X && y != endPoint.Y && x < tile && y < tile)
 			{
 				if (mask[x, y] == null)
 				{
@@ -56,11 +57,15 @@ namespace ORMMapViewer.Utils
 				{
 					Line foundLine = mask[x, y];
 					Graph.UnlinkNodes(foundLine.startNode, foundLine.endNode);
+					Graph.UnlinkNodes(line.startNode, line.endNode);
 
 					Node node = new Node(x, y);
 					node = graph.AddNode(node);
 					Graph.LinkNodes(node, foundLine.startNode);
 					Graph.LinkNodes(node, foundLine.endNode);
+
+					Graph.LinkNodes(node, line.startNode);
+					Graph.LinkNodes(node, line.endNode);
 
 					line.endNode = node;
 					line = new Line(node, endNode);
@@ -103,7 +108,7 @@ namespace ORMMapViewer.Utils
 			float tDeltaX = (dx != 0) ? stepX / dx : float.MaxValue;
 			float tDeltaY = (dy != 0) ? stepY / dy : float.MaxValue;
 
-			while (x != line.endNode.pos.X && y != line.endNode.pos.Y && x < 2048 && y < 2048)
+			while (x != line.endNode.pos.X && y != line.endNode.pos.Y && x < tile && y < tile)
 			{
 				mask[x, y] = line;
 				if (tMaxX < tMaxY)
@@ -123,8 +128,8 @@ namespace ORMMapViewer.Utils
 		{
 			foreach (Node node in graph.nodes)
 			{
-				node.pos.X *= 2;
-				node.pos.Y *= 2;
+				node.pos.X *= t;
+				node.pos.Y *= t;
 			}
 
 			return graph;

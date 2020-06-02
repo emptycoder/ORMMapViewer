@@ -74,12 +74,13 @@ namespace ORMMapViewer
 				}
 
 				Graph graph = dataController.GetRoads(lonLatZoom);
-				/*LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[2585], graph.nodes[622]);
+				// MVTDrawer.DrawLinks(graph.nodes, graphics);
+				//LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[125], graph.nodes[2388]);
+				LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[2129], graph.nodes[445]);
 				if (list != null && list.Count > 1)
 				{
 					MVTDrawer.DrawGraphRoads(list, graphics);
-				}*/
-				MVTDrawer.DrawLinks(graph.nodes, graphics);
+				}
 				MVTDrawer.DrawNodeIndices(graph.nodes, graphics);
 			}
 
