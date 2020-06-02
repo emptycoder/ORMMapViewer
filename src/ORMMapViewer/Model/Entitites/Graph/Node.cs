@@ -24,6 +24,14 @@ namespace ORMMapViewer.Model.Entitites
 			}
 		}
 
+		public void RemoveNeighbour(Node node)
+		{
+			if (neighbours.ContainsKey(node))
+			{
+				neighbours.Remove(node);
+			}
+		}
+
 		public override bool Equals(object obj)
 		{
 			return obj is Node node &&
@@ -31,13 +39,13 @@ namespace ORMMapViewer.Model.Entitites
 			       Math.Abs(pos.Y - node.pos.Y) < maxDistance;
 		}
 
-		public override int GetHashCode()
+		/*public override int GetHashCode()
 		{
 			int hashCode = 1502939027;
 			hashCode = hashCode * -1521134295 + pos.X.GetHashCode();
 			hashCode = hashCode * -1521134295 + pos.Y.GetHashCode();
 			return hashCode;
-		}
+		}*/
 
 		public void UpdateNeighbours()
 		{

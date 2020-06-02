@@ -6,6 +6,7 @@ using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
 using ORMMap.VectorTile.Geometry;
 using ORMMapViewer.Model.Entitites;
+using ORMMapViewer.Utils;
 
 namespace ORMMap
 {
@@ -77,6 +78,23 @@ namespace ORMMap
 					graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
 				}
 			}*/
+		}
+
+		public static void DrawLinks(List<Node> roads, Graphics graphics)
+		{
+			using (Pen pen = new Pen(Color.Brown, 7))
+			{
+				foreach (Node node in roads)
+				{
+					foreach (var nodeN in node.neighbours)
+					{
+						if (nodeN.Key.neighbours.ContainsKey(node))
+						{
+							graphics.DrawLine(pen, node.pos.X, node.pos.Y, nodeN.Key.pos.X, nodeN.Key.pos.Y);
+						}
+					}
+				}
+			}
 		}
 
 		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)

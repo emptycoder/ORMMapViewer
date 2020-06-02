@@ -92,7 +92,21 @@ namespace ORMMap.Model.Data
 
 			VectorTileLayer layer = data.GetLayer("roads");
 
-			Graph graph = new Graph();
+			for (int i = 0; i < layer.FeatureCount(); i++)
+			{
+				VectorTileFeature feature = layer.GetFeature(i);
+				List<Vector2<int>> geometry = feature.Geometry<int>()[0];
+
+				for (int index = 1; index < geometry.Count; index++)
+				{
+					MaskDrawer.DrawMaskLine(geometry[index - 1], geometry[index]);
+				}
+			}
+
+			roadsCache.Add(lonLatZoom.ToString(), MaskDrawer.GetGraph());
+
+
+			/*Graph graph = new Graph();
 			List<Line> lines = new List<Line>();
 
 			for (int i = 0; i < layer.FeatureCount(); i++)
@@ -130,13 +144,13 @@ namespace ORMMap.Model.Data
 				{
 					if (line.IsVectorOnLine(node.pos))
 					{
-						Graph.UnlinkNodes(line.node1, line.node2);
-						Graph.LinkNodes(line.node1, node);
-						Graph.LinkNodes(line.node2, node);
+						Graph.UnlinkNodes(line.startNode, line.endNode);
+						Graph.LinkNodes(line.startNode, node);
+						Graph.LinkNodes(line.endNode, node);
 
 						lines.Remove(line);
-						lines.Add(new Line(line.node1, node));
-						lines.Add(new Line(line.node2, node));
+						lines.Add(new Line(line.startNode, node));
+						lines.Add(new Line(line.endNode, node));
 					}
 				}
 			}
@@ -151,7 +165,7 @@ namespace ORMMap.Model.Data
 					}
 				}
 			}
-			
+
 
 			// Console.WriteLine(string.Join(", ", graph.nodes[123].neighbours.Select(node=>node.Key.id)));
 
@@ -164,7 +178,9 @@ namespace ORMMap.Model.Data
 				node.UpdateNeighbours();
 			}
 
-			roadsCache.Add(lonLatZoom.ToString(), graph);
+			roadsCache.Add(lonLatZoom.ToString(), graph);*/
+
+
 		}
 
 		private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)

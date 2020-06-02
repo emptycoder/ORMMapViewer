@@ -39,13 +39,13 @@ namespace ORMMapViewer.Model.Entitites
 			{
 				Node node = new Node(intersection.X, intersection.Y);
 				node = AddNode(node);
-				UnlinkNodes(l1.node1, l1.node2);
-				UnlinkNodes(l2.node1, l2.node2);
+				UnlinkNodes(l1.startNode, l1.endNode);
+				UnlinkNodes(l2.startNode, l2.endNode);
 				
-				LinkNodes(node, l1.node1);
-				LinkNodes(node, l1.node2);
-				LinkNodes(node, l2.node1);
-				LinkNodes(node, l2.node2);
+				LinkNodes(node, l1.startNode);
+				LinkNodes(node, l1.endNode);
+				LinkNodes(node, l2.startNode);
+				LinkNodes(node, l2.endNode);
 			}
 		}
 	}

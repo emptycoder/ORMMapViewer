@@ -28,7 +28,7 @@ namespace ORMMapViewer
 			{"boundaries", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1)},
 			{"pois", new Pallete(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 255, 255), 1)},
 			{"buildings", new Pallete(ColorUtils.GetColor("#7f7f7f"), ColorUtils.GetColor("#7f7f7f"), 1)},
-			{"roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 20)},
+			{"roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 16)},
 			{"transit", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1)}
 		};
 
@@ -74,12 +74,12 @@ namespace ORMMapViewer
 				}
 
 				Graph graph = dataController.GetRoads(lonLatZoom);
-				LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[100], graph.nodes[82]);
+				/*LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[290], graph.nodes[291]);
 				if (list != null && list.Count > 1)
 				{
 					MVTDrawer.DrawGraphRoads(list, graphics);
-				}
-
+				}*/
+				MVTDrawer.DrawLinks(graph.nodes, graphics);
 				MVTDrawer.DrawNodeIndices(graph.nodes, graphics);
 			}
 

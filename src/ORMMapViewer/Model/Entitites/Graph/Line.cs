@@ -7,13 +7,13 @@ namespace ORMMapViewer.Model.Entitites
 	{
 		public static readonly Vector2<int> NotIntersected = new Vector2<int>(int.MinValue, int.MinValue);
 		public readonly int A, B, C;
-		public readonly Node node1;
-		public readonly Node node2;
+		public Node startNode;
+		public Node endNode;
 
 		public Line(Node first, Node second)
 		{
-			node1 = first;
-			node2 = second;
+			startNode = first;
+			endNode = second;
 
 			A = second.pos.Y - first.pos.Y;
 			B = first.pos.X - second.pos.X;
@@ -22,15 +22,15 @@ namespace ORMMapViewer.Model.Entitites
 
 		public bool IsVectorOnLine(Vector2<int> vector)
 		{
-			if (node1.pos.X == node2.pos.X)
+			if (startNode.pos.X == endNode.pos.X)
 			{
-				return vector.X == node2.pos.X;
+				return vector.X == endNode.pos.X;
 			}
-			if (node1.pos.Y == node2.pos.Y)
+			if (startNode.pos.Y == endNode.pos.Y)
 			{
-				return vector.Y == node2.pos.Y;
+				return vector.Y == endNode.pos.Y;
 			}
-			return (node1.pos.X - node2.pos.X) * (node1.pos.Y - node2.pos.Y) == (node2.pos.X - vector.X) * (node2.pos.Y - vector.Y);
+			return (startNode.pos.X - endNode.pos.X) * (startNode.pos.Y - endNode.pos.Y) == (endNode.pos.X - vector.X) * (endNode.pos.Y - vector.Y);
 		}
 
 		private static bool IsVectorInside(Vector2<int> vector, Line l1, Line l2)

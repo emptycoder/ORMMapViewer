@@ -83,6 +83,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Utils\MaskDrawer.cs" />
     <Compile Include="Utils\MercatorProjection.cs" />
     <Compile Include="Model\Data\Data.cs" />
     <Compile Include="Model\Data\MockupData.cs" />
