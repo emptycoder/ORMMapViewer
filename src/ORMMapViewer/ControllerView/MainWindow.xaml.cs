@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
 using System.Windows;
 using ORMMap;
 using ORMMap.Model.Data;
@@ -50,7 +49,7 @@ namespace ORMMapViewer
 
 		private void UpdateScene()
 		{
-			double cZoom = dataController.ConvertToMapZoom(zoom);
+			int cZoom = dataController.ConvertToMapZoom(zoom);
 			Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
 			Vector3<double> lonLatZoom = new Vector3<double>(
 				tileCoordinations.X,
