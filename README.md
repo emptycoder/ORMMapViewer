@@ -26,7 +26,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 **v0.12(Unstable) - 06/01/2020**
 - Working map tile with zoom, cache level for data
 
-**v0.13(Unstable) - 06/01/2020**
+**v0.13(Unstable) - 06/03/2020**
 - Roads + path finding
 
 ## About:
