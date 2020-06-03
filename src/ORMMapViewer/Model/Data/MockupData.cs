@@ -24,7 +24,7 @@ namespace ORMMap.Model.Data
 			return 4096;
 		}
 
-		public override double ConvertToMapZoom(double zoom)
+		public override int ConvertToMapZoom(double zoom)
 		{
 			return 13;
 		}

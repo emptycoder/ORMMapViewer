@@ -4,7 +4,7 @@ namespace ORMMap
 {
 	public class Settings
 	{
-		public const double zoom = 13;
+		public const int zoom = 13;
 
 		public const int memoryCacheOpacity = 100;
 

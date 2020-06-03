@@ -40,7 +40,7 @@ namespace ORMMap.Model.Data
 
 		public abstract uint GetTileSize();
 
-		public abstract double ConvertToMapZoom(double zoom);
+		public abstract int ConvertToMapZoom(double zoom);
 
 		protected abstract byte[] GetDataFromSource(Vector3<double> lonLatZoom);
 
