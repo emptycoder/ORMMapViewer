@@ -30,7 +30,7 @@ namespace ORMMap.Model.Data
 		// mapZoomLevels from 1 to 16 inclusive
 		public override int ConvertToMapZoom(double zoom)
 		{
-			return Math.Min(16, Math.Floor(zoom));
+			return (int) Math.Min(16, Math.Floor(zoom));
 		}
 
 		// {z}/{x}/{y}

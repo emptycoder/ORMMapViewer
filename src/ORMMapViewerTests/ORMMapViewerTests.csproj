@@ -54,6 +54,7 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProjectionTest.cs" />
     <Compile Include="TransportationProblemTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\ArrayUtils.cs" />
@@ -62,6 +63,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ORMMapViewer\ORMMapViewer.csproj">
+      <Project>{C6CE7C94-3A5E-4999-9545-2D4B991A91F5}</Project>
+      <Name>ORMMapViewer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TransportationProblem\TransportationProblem.csproj">
       <Project>{527d847c-c54d-4ad3-9eb3-32249d462c13}</Project>
       <Name>TransportationProblem</Name>
