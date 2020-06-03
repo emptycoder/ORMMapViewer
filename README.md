@@ -13,6 +13,7 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 - [MIConvexHull](https://github.com/DesignEngrLab/MIConvexHull) for delaunay triangulation
 - [OptimizedPriorityQueue](https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp)
 - [A* search](https://en.wikipedia.org/wiki/A*_search_algorithm)
+- [Segment line intersection](https://en.wikipedia.org/wiki/Line_segment_intersection)
 
 ## News:
 
@@ -24,6 +25,9 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 
 **v0.12(Unstable) - 06/01/2020**
 - Working map tile with zoom, cache level for data
+
+**v0.13(Unstable) - 06/01/2020**
+- Roads + path finding
 
 ## About:
 ORM map viewer developing under the [MIT license](LICENSE).
