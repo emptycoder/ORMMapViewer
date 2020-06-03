@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media.Media3D;
 using ORMMap;
 using ORMMap.Model.Data;
 using ORMMap.Model.Entitites;
@@ -36,6 +37,7 @@ namespace ORMMapViewer
 
 		private Data dataController;
 
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -48,10 +50,10 @@ namespace ORMMapViewer
 			dataController = new TangramData(Environment.CurrentDirectory + "\\data");
 		}
 
-		private void UpdateScene()
+		/*private void UpdateScene()
 		{
 			double cZoom = dataController.ConvertToMapZoom(zoom);
-			Vector2<uint> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
+			Vector2<int> tileCoordinations = MercatorProjection.LatLngToTile(nowCoordinations, cZoom);
 			Vector3<double> lonLatZoom = new Vector3<double>(
 				tileCoordinations.X,
 				tileCoordinations.Y,
@@ -82,7 +84,7 @@ namespace ORMMapViewer
 			}
 
 			map.ImageSource = ImageUtils.GetImageStream(scene);
-		}
+		}*/
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{

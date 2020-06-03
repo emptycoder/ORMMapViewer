@@ -31,7 +31,7 @@ namespace ORMMap
 			return new Vector2<double>(x, y);
 		}
 
-		public static LatLng TileToLatLng(Vector2<uint> tile, double zoom)
+		public static LatLng TileToLatLng(Vector2<int> tile, double zoom)
 		{
 			double x = tile.X * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
 			double y = -(tile.Y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
@@ -39,14 +39,14 @@ namespace ORMMap
 			return MetersToLatLng(new Vector2<double>(x, y));
 		}
 
-		public static Vector2<uint> LatLngToTile(LatLng latLng, double zoom)
+		public static Vector2<int> LatLngToTile(LatLng latLng, double zoom)
 		{
 			Vector2<double> tile = LatLngToMeters(latLng);
 
 			double x = Math.Floor((tile.X + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
 			double y = Math.Floor((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
 
-			return new Vector2<uint>((uint) x, (uint) y);
+			return new Vector2<int>((int) x, (int) y);
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using ORMMap.VectorTile.Geometry;
+using ORMMapViewer;
 
 namespace ORMMap.Model.Entitites
 {
@@ -37,12 +38,15 @@ namespace ORMMap.Model.Entitites
 		};
 
 		public Vector3<double> lonLatZoom;
+		public Vector2<int> hostPos;
 
 		public GeometryModel3D model = new GeometryModel3D();
 		public Vector2<int> pos;
 
-		public MapTile()
+		public MapTile(Vector2<int> position)
 		{
+			pos = position;
+			hostPos = MainWindow.getTileHostPosFromLocalPos(position);
 			MeshGeometry3D geometry = new MeshGeometry3D
 			{
 				Positions = new Point3DCollection
