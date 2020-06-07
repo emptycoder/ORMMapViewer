@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -31,7 +32,7 @@ namespace ORMMapViewer
 
 		private static AmbientLight defaultLight = new AmbientLight(System.Windows.Media.Color.FromRgb(255, 255, 255));
 		public static Vector2<int> startPos = MercatorProjection.LatLngToTile(Settings.startPosition, Settings.zoom);
-		private Dictionary<string, Model3DGroup> model3DCache = new Dictionary<string, Model3DGroup>();
+		private Dictionary<string, Model3DGroup> model3DCache = new Dictionary<string, Model3DGroup>(Settings.memoryMapModelsCacheOpacity);
 
 		public double fovHInRadians;
 		public double fovVInRadians;
@@ -60,15 +61,24 @@ namespace ORMMapViewer
 			int startPosX = (int)Math.Floor((camera.Position.X - (projection.Bottom / 2)) / tileSize);
 			int startPosY = (int)Math.Floor((camera.Position.Y - (projection.Left / 2)) / tileSize);
 
+			double cZoom = dataController.ConvertToMapZoom(Settings.zoom);
+			Vector2<int> startTileCoordinations = MercatorProjection.LatLngToTile(Settings.startPosition, cZoom);
+			Vector3<double> lonLatZoom = new Vector3<double>(
+				startTileCoordinations.X,
+				startTileCoordinations.Y,
+				cZoom
+			);
+
 			for (int x = startPosX; x < startPosX + tilesPerWidth; x++)
 			{
 				for (int y = startPosY; y < startPosY + tilesPerHeight; y++)
 				{
+					lonLatZoom.X = startTileCoordinations.X - x;
+					lonLatZoom.Y = startTileCoordinations.Y + y;
 					string key = x + " " + y;
 					if (!model3DCache.TryGetValue(key, out Model3DGroup model3DGroup))
 					{
-						model3DGroup = CreateTile(x, y);
-						model3DCache.Add(key, model3DGroup);
+						model3DGroup = CacheModel3DGroup(key, CreateTile(x, y, lonLatZoom));
 					}
 
 					if (zoom > 18.5)
@@ -115,20 +125,12 @@ namespace ORMMapViewer
 			return model;
 		}
 
-		private Model3DGroup CreateTile(int x, int y)
+		private Model3DGroup CreateTile(int x, int y, Vector3<double> lonLatZoom)
 		{
-			double cZoom = dataController.ConvertToMapZoom(Settings.zoom);
-			//LatLng latLng = MercatorProjection.TileToLatLng(x, y, cZoom);
-			Vector2<int> tileCoordinations = MercatorProjection.LatLngToTile(Settings.startPosition, cZoom);
-			Vector3<double> lonLatZoom = new Vector3<double>(
-				tileCoordinations.X,
-				tileCoordinations.Y,
-				cZoom
-			);
 			VectorTileObj vectorTileObj = dataController.GetData(lonLatZoom);
 
 			ReadOnlyCollection<string> layers = vectorTileObj.LayerNames();
-			Bitmap drawingObjects = new Bitmap(256, 256);
+			Bitmap drawingObjects = new Bitmap(512, 512);
 			using (Graphics graphics = Graphics.FromImage(drawingObjects))
 			{
 				foreach (string layerName in drawingLayersPallete.Keys)
@@ -158,6 +160,18 @@ namespace ORMMapViewer
 					MVTModelCreator.CreateLayer(vectorTileObj.GetLayer(layerName), modelsLayersPallete[layerName], model3DGroup);
 				}
 			}
+
+			return model3DGroup;
+		}
+
+		private Model3DGroup CacheModel3DGroup(string key, Model3DGroup model3DGroup)
+		{
+			if (model3DCache.Count == Settings.memoryMapModelsCacheOpacity)
+			{
+				model3DCache.Remove(model3DCache.Keys.First());
+			}
+
+			model3DCache.Add(key, model3DGroup);
 
 			return model3DGroup;
 		}

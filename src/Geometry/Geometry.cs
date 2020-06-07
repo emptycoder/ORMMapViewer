@@ -55,6 +55,12 @@ namespace ORMMap.VectorTile.Geometry
 			Y = y;
 		}
 
+		public Vector2(Vector2<T> vector2)
+		{
+			X = vector2.X;
+			Y = vector2.Y;
+		}
+
 		public Vector2<T> Set(T x, T y)
 		{
 			X = x;

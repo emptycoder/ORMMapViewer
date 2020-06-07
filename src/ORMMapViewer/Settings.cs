@@ -6,7 +6,8 @@ namespace ORMMap
 	{
 		public const int zoom = 13;
 
-		public const int memoryCacheOpacity = 100;
+		public const int memoryDataCacheOpacity = 100;
+		public const int memoryMapModelsCacheOpacity = 50;
 
 		// General
 		// 19376, 24637

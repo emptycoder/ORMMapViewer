@@ -22,6 +22,7 @@ namespace ORMMapViewer
 			{"places", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1)},
 			{"boundaries", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1)},
 			{"pois", new Pallete(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 255, 255), 1)},
+			{"buildings", new Pallete(ColorUtils.GetColor("#7f7f7f"), ColorUtils.GetColor("#7f7f7f"), 1)},
 			{"roads", new Pallete(ColorUtils.GetColor("#cccccc"), ColorUtils.GetColor("#cccccc"), 1)},
 			{"transit", new Pallete(Color.FromArgb(0, 0, 0), Color.FromArgb(255, 255, 255), 1)}
 		};

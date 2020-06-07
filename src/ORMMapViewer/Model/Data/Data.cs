@@ -15,7 +15,7 @@ namespace ORMMap.Model.Data
 		private readonly Dictionary<string, string> diskCache;
 
 		private readonly Dictionary<string, VectorTileObj> memoryCache =
-			new Dictionary<string, VectorTileObj>(Settings.memoryCacheOpacity);
+			new Dictionary<string, VectorTileObj>(Settings.memoryDataCacheOpacity);
 
 		protected readonly string pathToDataFolder;
 
@@ -109,7 +109,7 @@ namespace ORMMap.Model.Data
 
 		private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)
 		{
-			if (memoryCache.Count == Settings.memoryCacheOpacity)
+			if (memoryCache.Count == Settings.memoryDataCacheOpacity)
 			{
 				memoryCache.Remove(memoryCache.Keys.First());
 			}
