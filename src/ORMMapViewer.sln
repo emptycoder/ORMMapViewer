@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PbfReader", "PbfReader\PbfR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VectorTileReader", "VectorTileReader\VectorTileReader.csproj", "{4656B308-1492-4A22-A73E-06BF6AA858F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiConvexHull", "MiConvexHull\MiConvexHull.csproj", "{BE059DA0-40CF-4CF8-81CD-C3A12F0DD4D9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransportationProblem", "TransportationProblem\TransportationProblem.csproj", "{527D847C-C54D-4AD3-9EB3-32249D462C13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ORMMapViewerTests", "ORMMapViewerTests\ORMMapViewerTests.csproj", "{96495AFF-BD48-4A1D-B715-E343F972E945}"
@@ -45,10 +43,6 @@ Global
 		{4656B308-1492-4A22-A73E-06BF6AA858F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4656B308-1492-4A22-A73E-06BF6AA858F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4656B308-1492-4A22-A73E-06BF6AA858F2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE059DA0-40CF-4CF8-81CD-C3A12F0DD4D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE059DA0-40CF-4CF8-81CD-C3A12F0DD4D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE059DA0-40CF-4CF8-81CD-C3A12F0DD4D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE059DA0-40CF-4CF8-81CD-C3A12F0DD4D9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{527D847C-C54D-4AD3-9EB3-32249D462C13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{527D847C-C54D-4AD3-9EB3-32249D462C13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{527D847C-C54D-4AD3-9EB3-32249D462C13}.Release|Any CPU.ActiveCfg = Release|Any CPU

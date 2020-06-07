@@ -22,5 +22,10 @@ namespace ORMMapViewer.Model.Entitites
 			this.Top = this.Bottom = topBottom;
 			this.Left = this.Right = leftRight;
 		}
+
+		public override string ToString()
+		{
+			return $"Top: {Top}, Left: {Left}, Right: {Right}, Bottom: {Bottom}";
+		}
 	}
 }

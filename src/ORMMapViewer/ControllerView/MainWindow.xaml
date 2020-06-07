@@ -10,12 +10,12 @@
     <Grid>
         <Viewport3D>
             <Viewport3D.Camera>
-                <PerspectiveCamera x:Name="camera" Position="2048,2048,48000" LookDirection="0,-.001,-1" UpDirection="0,0,1" />
+                <PerspectiveCamera x:Name="camera" Position="2048 2048 29538.4" LookDirection="0,-.001,-1" UpDirection="0,0,1" />
             </Viewport3D.Camera>
             <ModelVisual3D>
                 <ModelVisual3D.Content>
                     <Model3DGroup x:Name="tiles">
-                        <AmbientLight Color="white" />
+                        <!--<AmbientLight Color="white" />
                         <GeometryModel3D>
                             <GeometryModel3D.Geometry>
                                 <MeshGeometry3D Positions="0,0,0 4096,0,0 4096,4096,0 0,4096,0"
@@ -31,7 +31,7 @@
                                     </DiffuseMaterial.Brush>
                                 </DiffuseMaterial>
                             </GeometryModel3D.Material>
-                        </GeometryModel3D>
+                        </GeometryModel3D>-->
                     </Model3DGroup>
                 </ModelVisual3D.Content>
             </ModelVisual3D>

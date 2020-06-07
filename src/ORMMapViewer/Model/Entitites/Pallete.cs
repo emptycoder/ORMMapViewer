@@ -9,16 +9,16 @@ namespace ORMMap.Model.Entitites
 	{
 		private static SolidBrush solidBrush = new SolidBrush(Color.Black);
 
-		private readonly Color mainFillColor;
-		private readonly Pen mainDrawPen;
+		public readonly Color MainFillColor;
+		public readonly Pen MainDrawPen;
 
 		private Dictionary<string, Color> propsFillColors;
 		private Dictionary<string, Pen> propsDrawPens;
 
 		public Pallete(Color mainFillColor, Color mainDrawColor, float thickness = 1)
 		{
-			this.mainFillColor = mainFillColor;
-			mainDrawPen = new Pen(mainDrawColor, thickness);
+			this.MainFillColor = mainFillColor;
+			MainDrawPen = new Pen(mainDrawColor, thickness);
 
 			propsFillColors = null;
 			propsDrawPens = null;
@@ -26,12 +26,12 @@ namespace ORMMap.Model.Entitites
 
 		public Pen GetMainDrawPen()
 		{
-			return mainDrawPen;
+			return MainDrawPen;
 		}
 
 		public SolidBrush GetMainFillBrush()
 		{
-			solidBrush.Color = mainFillColor;
+			solidBrush.Color = MainFillColor;
 			return solidBrush;
 		}
 
@@ -39,7 +39,7 @@ namespace ORMMap.Model.Entitites
 		{
 			if (propsFillColors == null)
 			{
-				propsFillColors = new Dictionary<string, Color> {{prop, color}};
+				propsFillColors = new Dictionary<string, Color> { { prop, color } };
 			}
 			else
 			{
@@ -53,7 +53,7 @@ namespace ORMMap.Model.Entitites
 		{
 			if (propsDrawPens == null)
 			{
-				propsDrawPens = new Dictionary<string, Pen> {{prop, new Pen(color, thickness)}};
+				propsDrawPens = new Dictionary<string, Pen> { { prop, new Pen(color, thickness) } };
 			}
 			else
 			{
@@ -70,7 +70,7 @@ namespace ORMMap.Model.Entitites
 				return pen;
 			}
 
-			return mainDrawPen;
+			return MainDrawPen;
 		}
 
 		public SolidBrush GetPropFillBrush(string prop)
@@ -81,7 +81,7 @@ namespace ORMMap.Model.Entitites
 				return solidBrush;
 			}
 
-			solidBrush.Color = mainFillColor;
+			solidBrush.Color = MainFillColor;
 			return solidBrush;
 		}
 
@@ -89,7 +89,7 @@ namespace ORMMap.Model.Entitites
 		{
 			StringBuilder stringBuilder =
 				new StringBuilder(
-					$"Pallete:\n Main fill color: {mainFillColor}\n Main draw color: {mainDrawPen.Color}\n Draw prop colors:");
+					$"Pallete:\n Main fill color: {MainFillColor}\n Main draw color: {MainDrawPen.Color}\n Draw prop colors:");
 			foreach (KeyValuePair<string, Pen> pair in propsDrawPens)
 			{
 				stringBuilder.Append($"  {pair.Key}: {pair.Value.Color}\n");
@@ -106,7 +106,7 @@ namespace ORMMap.Model.Entitites
 
 		public void Dispose()
 		{
-			mainDrawPen.Dispose();
+			MainDrawPen.Dispose();
 
 			foreach (KeyValuePair<string, Pen> pair in propsDrawPens)
 			{

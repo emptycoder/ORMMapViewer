@@ -11,7 +11,7 @@ namespace ORMMapViewer.Utils
 		const int t = 2;
 		const int tile = startTileSize / t;
 
-		private static int rectangleSize = (int)Math.Floor(Math.Sqrt(2.0 / t) * 10);
+		private static int rectangleSize = (int) Math.Floor(Math.Sqrt(2.0 / t) * 10);
 		private Line[,] mask = new Line[tile, tile];
 		private Graph graph = new Graph();
 
@@ -60,7 +60,7 @@ namespace ORMMapViewer.Utils
 				{
 					DrawRectangle(x, y, line);
 				}
-				else // Insert
+				else // Insert node
 				{
 					Line foundLine = mask[x, y];
 					if (foundLine != line)

@@ -50,7 +50,7 @@ namespace ORMMapViewer.Utils
 		/// <param name="fovH">Horizontal FOV in radians.</param>
 		/// <param name="aspect">Scene.width / scene.height.</param>
 		/// <returns>Vertical FOV in radians.</returns>
-		public static double FovVFromAspectRatio(int fovH, double aspect)
+		public static double FovVFromAspectRatio(double fovH, double aspect)
 		{
 			return fovH / aspect;
 		}

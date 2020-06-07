@@ -17,12 +17,7 @@ namespace ORMMap.Model.Data
 
 		protected override string FileExtension => ".mvt";
 
-		public override uint GetTileSize()
-		{
-			return 256;
-		}
-
-		public override uint GetTileScale()
+		public override int GetTileSize(double zoom)
 		{
 			return 4096;
 		}

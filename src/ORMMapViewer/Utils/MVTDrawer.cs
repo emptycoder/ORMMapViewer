@@ -13,6 +13,8 @@ namespace ORMMap
 	{
 		private static readonly Font font = new Font("Consolas", 48, FontStyle.Regular);
 
+		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics, double divisionRatio);
+
 		private static readonly Dictionary<GeomType, DrawDelegate> featureDrawDictionary =
 			new Dictionary<GeomType, DrawDelegate>
 			{
@@ -21,7 +23,7 @@ namespace ORMMap
 				{GeomType.POINT, DrawPoint}
 			};
 
-		public static void DrawLayer(VectorTileLayer layer, Pallete pallete, Graphics graphics)
+		public static void DrawLayer(VectorTileLayer layer, Pallete pallete, Graphics graphics, double divisionRatio)
 		{
 			int featureCount = layer.FeatureCount();
 			for (int i = 0; i < featureCount; i++)
@@ -33,48 +35,41 @@ namespace ORMMap
 					continue;
 				}
 
-				featureDrawDictionary[feature.GeometryType](feature, pallete, graphics);
+				featureDrawDictionary[feature.GeometryType](feature, pallete, graphics, divisionRatio);
 			}
 		}
 
-		private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics)
+		private static void DrawPolygon(VectorTileFeature feature, Pallete pallete, Graphics graphics, double divisionRatio)
 		{
-			List<PointF> points = new List<PointF>();
 			List<List<Vector2<int>>> list = feature.Geometry<int>();
 			foreach (List<Vector2<int>> item in list)
 			{
-				points.Clear();
-
-				foreach (Vector2<int> point in item)
-				{
-					points.Add(new PointF(point.X, point.Y));
-				}
-
-				graphics.FillPolygon(pallete.GetMainFillBrush(), points.ToArray());
-				graphics.DrawPolygon(pallete.GetMainDrawPen(), points.ToArray());
+				Point[] points = item.Select(vector2 => new Point((int)Math.Floor(vector2.X / divisionRatio), (int)Math.Floor(vector2.Y / divisionRatio))).ToArray();
+				graphics.FillPolygon(pallete.GetMainFillBrush(), points);
+				graphics.DrawPolygon(pallete.GetMainDrawPen(), points);
 			}
 		}
 
 		// TOOD: Add implimentation
-		private static void DrawPoint(VectorTileFeature feature, Pallete pallete, Graphics graphics) {}
+		private static void DrawPoint(VectorTileFeature feature, Pallete pallete, Graphics graphics, double divisionRatio) { }
 
-		private static void DrawLineString(VectorTileFeature feature, Pallete pallete, Graphics graphics)
+		private static void DrawLineString(VectorTileFeature feature, Pallete pallete, Graphics graphics, double divisionRatio)
 		{
 			Dictionary<string, object> props = feature.GetProperties();
 			foreach (List<Vector2<int>> geometry in feature.Geometry<int>())
 			{
-				Point[] points = geometry.Select(vector2 => new Point(vector2.X, vector2.Y)).ToArray();
+				Point[] points = geometry.Select(vector2 => new Point((int)Math.Floor(vector2.X / divisionRatio), (int)Math.Floor(vector2.Y / divisionRatio))).ToArray();
 				graphics.DrawLines(pallete.GetMainDrawPen(), points);
 
 				// Draw name of street
-				// if (props.ContainsKey("name"))
-				// {
-				// 	var text = (string) props["name"];
-				// 	foreach (Vector2<int> point in geometry)
-				// 	{
-				// 		graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
-				// 	}
-				// }
+				//if (props.ContainsKey("name"))
+				//{
+				//	var text = (string)props["name"];
+				//	foreach (Vector2<int> point in geometry)
+				//	{
+				//		graphics.DrawString(text, font, pallete.GetPropFillBrush("name"), point.X, point.Y);
+				//	}
+				//}
 			}
 		}
 
@@ -116,7 +111,5 @@ namespace ORMMap
 				graphics.DrawLines(pen, points);
 			}
 		}
-
-		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics);
 	}
 }

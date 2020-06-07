@@ -23,6 +23,7 @@ namespace ORMMapViewer.Utils
 			//freeze bitmapSource and clear memory to avoid memory leaks
 			bitmapSource.Freeze();
 			DeleteObject(bmpPt);
+			bitmap.Dispose();
 
 			return bitmapSource;
 		}

@@ -36,9 +36,7 @@ namespace ORMMap.Model.Data
 		public abstract string MethodName { get; }
 		protected abstract string FileExtension { get; }
 
-		public abstract uint GetTileScale();
-
-		public abstract uint GetTileSize();
+		public abstract int GetTileSize(double zoom);
 
 		public abstract int ConvertToMapZoom(double zoom);
 
@@ -46,11 +44,11 @@ namespace ORMMap.Model.Data
 
 		public VectorTileObj GetData(Vector3<double> lonLatZoom)
 		{
-			if (memoryCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
+			/*if (memoryCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
 			{
 				return data;
-			}
-
+			}*/
+			VectorTileObj data;
 			if (diskCache.TryGetValue(lonLatZoom.ToString(), out string path))
 			{
 				data = new VectorTileObj(File.ReadAllBytes(path));
@@ -67,7 +65,7 @@ namespace ORMMap.Model.Data
 				data = new VectorTileObj(byteData);
 			}
 
-			CacheToMemory(lonLatZoom, data);
+			// CacheToMemory(lonLatZoom, data);
 			CacheRoads(lonLatZoom, data);
 
 			return data;
@@ -106,6 +104,7 @@ namespace ORMMap.Model.Data
 			}
 
 			roadsCache.Add(lonLatZoom.ToString(), maskDrawer.GetGraph());
+			GC.Collect();
 		}
 
 		private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)

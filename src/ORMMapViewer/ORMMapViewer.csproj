@@ -35,6 +35,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HelixToolkit, Version=2.12.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
+      <HintPath>..\packages\HelixToolkit.2.12.0\lib\netstandard1.1\HelixToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="HelixToolkit.Wpf, Version=2.12.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
+      <HintPath>..\packages\HelixToolkit.Wpf.2.12.0\lib\net45\HelixToolkit.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -71,13 +77,13 @@
     <Compile Include="Model\Entitites\Graph\Line.cs" />
     <Compile Include="Model\Entitites\Graph\Node.cs" />
     <Compile Include="Model\Entitites\Graph\Weight.cs" />
-    <Compile Include="Model\Entitites\MapTile.cs" />
     <Compile Include="Model\Entitites\Projection.cs" />
     <Compile Include="Utils\AStarPathSearch.cs" />
     <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\DirectoryUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
     <Compile Include="ControllerView\MainWindowEvents.cs" />
+    <Compile Include="Utils\MVTModelCreator.cs" />
     <Compile Include="Utils\ProjectionUtils.cs" />
     <Compile Include="Utils\VectorUtils.cs" />
     <Page Include="ControllerView\MainWindow.xaml">
@@ -138,10 +144,6 @@
     <ProjectReference Include="..\Geometry\Geometry.csproj">
       <Project>{f0967389-29c8-4d50-b397-9bb698f13ed6}</Project>
       <Name>Geometry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MiConvexHull\MiConvexHull.csproj">
-      <Project>{be059da0-40cf-4cf8-81cd-c3a12f0dd4d9}</Project>
-      <Name>MiConvexHull</Name>
     </ProjectReference>
     <ProjectReference Include="..\PbfReader\PbfReader.csproj">
       <Project>{4bce42ee-c33f-4fa4-bfdd-86f3d45c647c}</Project>

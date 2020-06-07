@@ -39,6 +39,14 @@ namespace ORMMap
 			return MetersToLatLng(new Vector2<double>(x, y));
 		}
 
+		public static LatLng TileToLatLng(int x, int y, double zoom)
+		{
+			double xRes = x * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
+			double yRes = -(y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
+
+			return MetersToLatLng(new Vector2<double>(xRes, yRes));
+		}
+
 		public static Vector2<int> LatLngToTile(LatLng latLng, double zoom)
 		{
 			Vector2<double> tile = LatLngToMeters(latLng);

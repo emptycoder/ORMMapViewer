@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
@@ -21,7 +20,7 @@ namespace ORMMapViewer
 			camera.Position = new Point3D(camera.Position.X, camera.Position.Y, 3692.3 * (21 - zoom));
 			Title = $"ORMMap [Zoom: {zoom}]";
 
-			// UpdateScene();
+			UpdateScene(dataController.GetTileSize(dataController.ConvertToMapZoom(zoom)));
 		}
 
 		private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -37,6 +36,7 @@ namespace ORMMapViewer
 		private void Window_MouseUp(object sender, MouseButtonEventArgs e)
 		{
 			mouseDown = false;
+			UpdateScene(dataController.GetTileSize(dataController.ConvertToMapZoom(zoom)));
 		}
 
 		private void Window_MouseMove(object sender, MouseEventArgs e)

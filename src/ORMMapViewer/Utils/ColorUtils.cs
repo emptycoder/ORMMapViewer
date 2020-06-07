@@ -13,5 +13,10 @@ namespace ORMMapViewer.Utils
 		{
 			return ColorTranslator.FromHtml(hexValue);
 		}
+
+		public static System.Windows.Media.Color ToMediaColor(this Color color)
+		{
+			return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+		}
 	}
 }
