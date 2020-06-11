@@ -12,7 +12,7 @@ namespace ORMMapViewer.Utils
 {
 	public static class MVTModelCreator
 	{
-		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup);
+		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup, Vector2<int> shiftCoords);
 
 		private static readonly Dictionary<GeomType, DrawDelegate> featureCreateDictionary =
 			new Dictionary<GeomType, DrawDelegate>
@@ -22,7 +22,7 @@ namespace ORMMapViewer.Utils
 				{GeomType.POINT, CreatePoint}
 			};
 
-		public static void CreateLayer(VectorTileLayer layer, Pallete pallete, Model3DGroup model3DGroup)
+		public static void CreateLayer(VectorTileLayer layer, Pallete pallete, Model3DGroup model3DGroup, Vector2<int> shiftCoords)
 		{
 			int featureCount = layer.FeatureCount();
 			for (int i = 0; i < featureCount; i++)
@@ -34,11 +34,11 @@ namespace ORMMapViewer.Utils
 					continue;
 				}
 
-				featureCreateDictionary[feature.GeometryType](feature, pallete, model3DGroup);
+				featureCreateDictionary[feature.GeometryType](feature, pallete, model3DGroup, shiftCoords);
 			}
 		}
 
-		private static void CreatePolygon(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup)
+		private static void CreatePolygon(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup, Vector2<int> shiftCoords)
 		{
 			PointCollection points = new PointCollection();
 			List<List<Vector2<int>>> list = feature.Geometry<int>();
@@ -48,7 +48,7 @@ namespace ORMMapViewer.Utils
 
 				foreach (Vector2<int> point in item)
 				{
-					points.Add(new Point(point.X, point.Y));
+					points.Add(new Point(point.X + shiftCoords.X, point.Y + shiftCoords.Y));
 				}
 
 				points.RemoveAt(points.Count - 1);
@@ -79,8 +79,10 @@ namespace ORMMapViewer.Utils
 			}
 		}
 
-		private static void CreatePoint(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup) { }
+		// TOOD: Add implimentation
+		private static void CreatePoint(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup, Vector2<int> shiftCoords) { }
 
-		private static void CreateLineString(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup) { }
+		// TOOD: Add implimentation
+		private static void CreateLineString(VectorTileFeature feature, Pallete pallete, Model3DGroup model3DGroup, Vector2<int> shiftCoords) { }
 	}
 }

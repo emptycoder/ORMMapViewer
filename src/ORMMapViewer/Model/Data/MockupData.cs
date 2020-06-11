@@ -6,13 +6,13 @@ namespace ORMMap.Model.Data
 {
 	public class MockupData : Data
 	{
-		public MockupData(string pathToDataFolder) : base(pathToDataFolder)
-		{
-		}
+		public MockupData(string pathToDataFolder) : base(pathToDataFolder) { }
 
 		public override string MethodName => "mockupData";
 
-		protected override string FileExtension => ".mvt";
+		protected override string MapFileExtension => ".mvt";
+
+		protected override string RoadFileExtension => ".road";
 
 		public override int GetTileSize(double zoom)
 		{

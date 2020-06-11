@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Policy;
 using ORMMapViewer.Model.Entitites;
 using Priority_Queue;
 
@@ -12,13 +14,13 @@ namespace ORMMapViewer.Utils
 			return (float) Math.Sqrt(Math.Pow(first.pos.X - second.pos.X, 2) + Math.Pow(first.pos.Y - second.pos.Y, 2));
 		}
 
-		public static LinkedList<Node> FindPath(Node start, Node end)
+		public static AStarPathSearchResult FindPath(Node start, Node end)
 		{
 			LinkedList<Node> path = new LinkedList<Node>();
 			if (start.Equals(end))
 			{
 				path.AddFirst(start);
-				return path;
+				return new AStarPathSearchResult(path, 0);
 			}
 
 			SimplePriorityQueue<Node> openSet = new SimplePriorityQueue<Node>();
@@ -40,14 +42,14 @@ namespace ORMMapViewer.Utils
 						path.AddFirst(current);
 					}
 
-					return path;
+					return new AStarPathSearchResult(path, gScore.Sum((item) => item.Value));
 				}
 
-				foreach (KeyValuePair<Node, Weight> pair in current.neighbours)
+				foreach (KeyValuePair<Node, IWeight> pair in current.neighbours)
 				{
 					if (!pair.Key.Equals(current))
 					{
-						float tentativeGScore = gScore.ContainsKey(current) ? gScore[current] + pair.Value.Calculate() : float.MaxValue;
+						float tentativeGScore = gScore.ContainsKey(current) ? gScore[current] + pair.Value.Length : float.MaxValue;
 						if (tentativeGScore < (gScore.ContainsKey(pair.Key) ? gScore[pair.Key] : float.MaxValue))
 						{
 							cameFrom[pair.Key] = current;
@@ -70,6 +72,18 @@ namespace ORMMapViewer.Utils
 			Console.WriteLine("No path found!");
 
 			return null;
+		}
+
+		public sealed class AStarPathSearchResult
+		{
+			public LinkedList<Node> Path;
+			public double Score;
+
+			public AStarPathSearchResult(LinkedList<Node> path, double score)
+			{
+				this.Path = path;
+				this.Score = score;
+			}
 		}
 	}
 }

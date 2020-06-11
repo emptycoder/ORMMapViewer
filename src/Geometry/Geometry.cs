@@ -30,6 +30,24 @@ namespace ORMMap.VectorTile.Geometry
 			Lng = lng;
 		}
 
+		public bool IsEquals(LatLng latLng)
+		{
+			return Lat == latLng.Lat && Lng == latLng.Lng;
+		}
+
+		public bool InRange(LatLng latLng, double range)
+		{
+			return Math.Abs(Lat - latLng.Lat) <= range && Math.Abs(Lng - latLng.Lng) <= range;
+		}
+
+		public LatLng Round(int digits)
+		{
+			this.Lat = Math.Round(Lat, digits);
+			this.Lng = Math.Round(Lng, digits);
+
+			return this;
+		}
+
 		public override string ToString()
 		{
 			return string.Format(

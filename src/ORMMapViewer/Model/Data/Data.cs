@@ -1,40 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using ORMMap.Model.Entitites;
 using ORMMap.VectorTile;
 using ORMMap.VectorTile.Geometry;
 using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
+using ORMMapViewer.Utils.JsonConverters;
 
 namespace ORMMap.Model.Data
 {
+	/// <summary>
+	/// Data cache layer.
+	/// </summary>
 	public abstract class Data
 	{
-		private readonly Dictionary<string, string> diskCache;
+		private static JsonSerializerSettings settings = new JsonSerializerSettings()
+		{
+			ContractResolver = new DictionaryAsArrayResolver(),
+			ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+			PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+			TypeNameHandling = TypeNameHandling.Auto,
+			NullValueHandling = NullValueHandling.Ignore
+		};
 
-		private readonly Dictionary<string, VectorTileObj> memoryCache =
+		private readonly Dictionary<string, string> diskMapCache;
+		private readonly Dictionary<string, string> diskRoadCache;
+
+		private readonly Dictionary<string, VectorTileObj> memoryMapCache =
 			new Dictionary<string, VectorTileObj>(Settings.memoryDataCacheOpacity);
+		private readonly Dictionary<string, Graph> memoryRoadsCache = new Dictionary<string, Graph>();
 
 		protected readonly string pathToDataFolder;
 
-		private readonly Dictionary<string, Graph> roadsCache = new Dictionary<string, Graph>();
-
+		/// <summary>
+		/// Folder hierarchy:
+		/// - {pathToDataFolder}
+		/// - {pathToDataFolder}/roads
+		/// - {pathToDataFolder}/tiles
+		/// 
+		/// Data cache layers:
+		/// - Map cache (memory, disk)
+		/// - Road cache (memory, disk)
+		/// </summary>
+		/// <param name="pathToDataFolder">Path to data folder.</param>
 		public Data(string pathToDataFolder)
 		{
-			this.pathToDataFolder = pathToDataFolder + "//" + MethodName;
-			// Check for folder existing
+			this.pathToDataFolder = pathToDataFolder + "\\" + MethodName;
+			// Check folders existing
 			DirectoryUtils.TryCreateFolder(this.pathToDataFolder);
+			DirectoryUtils.TryCreateFolder(this.pathToDataFolder + "\\roads");
+			DirectoryUtils.TryCreateFolder(this.pathToDataFolder + "\\tiles");
 			// Scan folder for cache files
-			string[] pathes = Directory.GetFiles(this.pathToDataFolder, $"*{FileExtension}", SearchOption.AllDirectories);
-			diskCache = pathes.ToDictionary(
+			string[] mapPathes = Directory.GetFiles(this.pathToDataFolder + "\\tiles", $"*{MapFileExtension}", SearchOption.AllDirectories);
+			string[] roadPathes = Directory.GetFiles(this.pathToDataFolder + "\\roads", $"*{RoadFileExtension}", SearchOption.AllDirectories);
+			diskMapCache = mapPathes.ToDictionary(
+				path => Vector3<double>.DecodeFromJSON(Path.GetFileNameWithoutExtension(path)).ToString(),
+				path => path);
+			diskRoadCache = roadPathes.ToDictionary(
 				path => Vector3<double>.DecodeFromJSON(Path.GetFileNameWithoutExtension(path)).ToString(),
 				path => path);
 		}
 
 		public abstract string MethodName { get; }
-		protected abstract string FileExtension { get; }
+		protected abstract string MapFileExtension { get; }
+		protected abstract string RoadFileExtension { get; }
 
 		public abstract int GetTileSize(double zoom);
 
@@ -42,14 +73,13 @@ namespace ORMMap.Model.Data
 
 		protected abstract byte[] GetDataFromSource(Vector3<double> lonLatZoom);
 
-		public VectorTileObj GetData(Vector3<double> lonLatZoom)
+		public VectorTileObj GetData(Vector3<double> lonLatZoom) // throws WebException
 		{
-			/*if (memoryCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
+			if (memoryMapCache.TryGetValue(lonLatZoom.ToString(), out VectorTileObj data))
 			{
 				return data;
-			}*/
-			VectorTileObj data;
-			if (diskCache.TryGetValue(lonLatZoom.ToString(), out string path))
+			}
+			else if (diskMapCache.TryGetValue(lonLatZoom.ToString(), out string path))
 			{
 				data = new VectorTileObj(File.ReadAllBytes(path));
 			}
@@ -57,15 +87,15 @@ namespace ORMMap.Model.Data
 			{
 				byte[] byteData = GetDataFromSource(lonLatZoom);
 				// Save to disk
-				path = $"{pathToDataFolder}\\{lonLatZoom.EncodeToString()}{FileExtension}";
+				path = $"{pathToDataFolder}\\tiles\\{lonLatZoom.EncodeToString()}{MapFileExtension}";
 				File.WriteAllBytes(path, byteData);
 				// Add to disk cache
-				diskCache.Add(lonLatZoom.ToString(), path);
+				diskMapCache.Add(lonLatZoom.ToString(), path);
 
 				data = new VectorTileObj(byteData);
 			}
 
-			// CacheToMemory(lonLatZoom, data);
+			CacheMapToMemory(lonLatZoom.ToString(), data);
 			CacheRoads(lonLatZoom, data);
 
 			return data;
@@ -73,13 +103,41 @@ namespace ORMMap.Model.Data
 
 		public Graph GetRoads(Vector3<double> lonLatZoom)
 		{
-			return roadsCache[lonLatZoom.ToString()];
+			if (memoryRoadsCache.TryGetValue(lonLatZoom.ToString(), out Graph graph))
+			{
+				return graph;
+			}
+
+			if (diskRoadCache.TryGetValue(lonLatZoom.ToString(), out string path))
+			{
+				graph = JsonConvert.DeserializeObject<Graph>(File.ReadAllText(path), settings);
+				memoryRoadsCache.Add(lonLatZoom.ToString(), graph);
+				return graph;
+			}
+
+			// Try get data and then return roads
+			// If path finding need tile which wasn't shown
+			GetData(lonLatZoom);
+
+			if (memoryRoadsCache.TryGetValue(lonLatZoom.ToString(), out graph))
+			{
+				return graph;
+			}
+
+			return null;
 		}
 
+		// Need check memory and disk existing because we can load road graph for path finding
 		private void CacheRoads(Vector3<double> lonLatZoom, VectorTileObj data)
 		{
-			if (roadsCache.ContainsKey(lonLatZoom.ToString()))
+			if (memoryRoadsCache.ContainsKey(lonLatZoom.ToString()))
 			{
+				return;
+			}
+
+			if (diskRoadCache.TryGetValue(lonLatZoom.ToString(), out string path))
+			{
+				memoryRoadsCache.Add(lonLatZoom.ToString(), JsonConvert.DeserializeObject<Graph>(File.ReadAllText(path), settings));
 				return;
 			}
 
@@ -89,7 +147,7 @@ namespace ORMMap.Model.Data
 			}
 
 			VectorTileLayer layer = data.GetLayer("roads");
-			MaskDrawer maskDrawer = new MaskDrawer();
+			MaskGraphCreator maskDrawer = new MaskGraphCreator(GetTileSize(ConvertToMapZoom(Settings.zoom)));
 
 			for (int i = 0; i < layer.FeatureCount(); i++)
 			{
@@ -103,18 +161,23 @@ namespace ORMMap.Model.Data
 				}
 			}
 
-			roadsCache.Add(lonLatZoom.ToString(), maskDrawer.GetGraph());
-			GC.Collect();
+			Graph graph = maskDrawer.GetGraph();
+			memoryRoadsCache.Add(lonLatZoom.ToString(), graph);
+			// Save to disk
+			path = $"{pathToDataFolder}\\roads\\{lonLatZoom.EncodeToString()}{RoadFileExtension}";
+			File.WriteAllText(path, JsonConvert.SerializeObject(graph, settings));
+			// Add to disk cache
+			diskRoadCache.Add(lonLatZoom.ToString(), path);
 		}
 
-		private void CacheToMemory(Vector3<double> lonLatZoom, VectorTileObj data)
+		private void CacheMapToMemory(string lonLatZoom, VectorTileObj data)
 		{
-			if (memoryCache.Count == Settings.memoryDataCacheOpacity)
+			if (memoryMapCache.Count == Settings.memoryDataCacheOpacity)
 			{
-				memoryCache.Remove(memoryCache.Keys.First());
+				memoryMapCache.Remove(memoryMapCache.Keys.First());
 			}
 
-			memoryCache.Add(lonLatZoom.ToString(), data);
+			memoryMapCache.Add(lonLatZoom, data);
 		}
 	}
 }

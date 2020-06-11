@@ -18,7 +18,7 @@ namespace ORMMap
 			meters.X *= 180;
 			meters.Y *= 180;
 
-			return new LatLng(meters.X, meters.Y);
+			return new LatLng(meters.Y, meters.X);
 		}
 
 		private static Vector2<double> LatLngToMeters(LatLng latLng)
@@ -31,7 +31,7 @@ namespace ORMMap
 			return new Vector2<double>(x, y);
 		}
 
-		public static LatLng TileToLatLng(Vector2<int> tile, double zoom)
+		public static LatLng TileToLatLng(Vector2<double> tile, double zoom)
 		{
 			double x = tile.X * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
 			double y = -(tile.Y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
@@ -39,7 +39,7 @@ namespace ORMMap
 			return MetersToLatLng(new Vector2<double>(x, y));
 		}
 
-		public static LatLng TileToLatLng(int x, int y, double zoom)
+		public static LatLng TileToLatLng(double x, double y, double zoom)
 		{
 			double xRes = x * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters;
 			double yRes = -(y * circumferenceMeters / Math.Pow(2, zoom) - halfCircumferenceMeters);
@@ -47,14 +47,14 @@ namespace ORMMap
 			return MetersToLatLng(new Vector2<double>(xRes, yRes));
 		}
 
-		public static Vector2<int> LatLngToTile(LatLng latLng, double zoom)
+		public static Vector2<double> LatLngToTile(LatLng latLng, double zoom)
 		{
 			Vector2<double> tile = LatLngToMeters(latLng);
 
-			double x = Math.Floor((tile.X + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
-			double y = Math.Floor((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
+			double x = ((tile.X + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
+			double y = ((-tile.Y + halfCircumferenceMeters) / (circumferenceMeters / Math.Pow(2, zoom)));
 
-			return new Vector2<int>((int) x, (int) y);
+			return new Vector2<double>(x, y);
 		}
 	}
 }

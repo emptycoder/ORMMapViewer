@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ORMMap.VectorTile.Geometry;
+using ORMMapViewer.Utils;
 
 namespace ORMMapViewer.Model.Entitites
 {
@@ -8,13 +8,13 @@ namespace ORMMapViewer.Model.Entitites
 	{
 		public List<Node> nodes = new List<Node>();
 
-		public static void LinkNodes(Node first, Node second)
+		public void LinkNodes(Node first, Node second)
 		{
 			first.AddNeighbour(second);
 			second.AddNeighbour(first);
 		}
 		
-		public static void UnlinkNodes(Node first, Node second)
+		public void UnlinkNodes(Node first, Node second)
 		{
 			first.neighbours.Remove(second);
 			second.neighbours.Remove(first);
@@ -22,36 +22,43 @@ namespace ORMMapViewer.Model.Entitites
 
 		public Node AddNode(Node newNode)
 		{
-			int index = nodes.IndexOf(newNode);
+			int index = -1;
+			for (int i = 0; i < nodes.Count; i++)
+			{
+				if (nodes[i].pos.GetDistance(newNode.pos) < 20)
+				{
+					index = i;
+					break;
+				}
+			}
+
 			if (index != -1)
 			{
 				return nodes[index];
 			}
 
 			newNode.id = nodes.Count;
-			if (newNode.id == 2388)
-			{
-				Console.WriteLine("");
-			}
 			nodes.Add(newNode);
+
 			return newNode;
 		}
 
-		public void CheckAndAddIntersection(Line l1, Line l2)
+		public Node FindNearest(Vector2<double> pos)
 		{
-			Vector2<int> intersection = l1.CheckIntersection(l2);
-			if (!intersection.Equals(Line.NotIntersected))
+			Node nearestNode = null;
+			double minDistance = double.MaxValue;
+
+			foreach (Node node in nodes)
 			{
-				Node node = new Node(intersection.X, intersection.Y);
-				node = AddNode(node);
-				UnlinkNodes(l1.startNode, l1.endNode);
-				UnlinkNodes(l2.startNode, l2.endNode);
-				
-				LinkNodes(node, l1.startNode);
-				LinkNodes(node, l1.endNode);
-				LinkNodes(node, l2.startNode);
-				LinkNodes(node, l2.endNode);
+				double distance = node.pos.GetDistance(pos);
+				if (distance < minDistance)
+				{
+					nearestNode = node;
+					minDistance = distance;
+				}
 			}
+
+			return nearestNode;
 		}
 	}
 }

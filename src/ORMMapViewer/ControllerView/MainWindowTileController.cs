@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -31,8 +32,8 @@ namespace ORMMapViewer
 		};
 
 		private static AmbientLight defaultLight = new AmbientLight(System.Windows.Media.Color.FromRgb(255, 255, 255));
-		public static Vector2<int> startPos = MercatorProjection.LatLngToTile(Settings.startPosition, Settings.zoom);
-		private Dictionary<string, Model3DGroup> model3DCache = new Dictionary<string, Model3DGroup>(Settings.memoryMapModelsCacheOpacity);
+		public static Vector2<double> startPos = MercatorProjection.LatLngToTile(Settings.startPosition, Settings.zoom);
+		private Dictionary<string, MapTile> mapTileCache = new Dictionary<string, MapTile>(Settings.memoryMapTilesCacheOpacity);
 
 		public double fovHInRadians;
 		public double fovVInRadians;
@@ -51,6 +52,7 @@ namespace ORMMapViewer
 
 		public void UpdateScene(int tileSize)
 		{
+			// TODO: Trigger points for update scene instead recreate every control
 			tiles.Children.Clear();
 			tiles.Children.Add(defaultLight);
 			Projection projection = CalculateProjection();
@@ -58,11 +60,12 @@ namespace ORMMapViewer
 			int tilesPerWidth = (int)Math.Ceiling(projection.Bottom / tileSize) + 1;
 			int tilesPerHeight = (int)Math.Ceiling(projection.Left / tileSize) + 1;
 
+			// TileSize for tangram always 4096
 			int startPosX = (int)Math.Floor((camera.Position.X - (projection.Bottom / 2)) / tileSize);
 			int startPosY = (int)Math.Floor((camera.Position.Y - (projection.Left / 2)) / tileSize);
 
-			double cZoom = dataController.ConvertToMapZoom(Settings.zoom);
-			Vector2<int> startTileCoordinations = MercatorProjection.LatLngToTile(Settings.startPosition, cZoom);
+			double cZoom = dataController.ConvertToMapZoom(zoom);
+			Vector2<int> startTileCoordinations = MercatorProjection.LatLngToTile(Settings.startPosition, cZoom).ToVectorInt();
 			Vector3<double> lonLatZoom = new Vector3<double>(
 				startTileCoordinations.X,
 				startTileCoordinations.Y,
@@ -73,22 +76,28 @@ namespace ORMMapViewer
 			{
 				for (int y = startPosY; y < startPosY + tilesPerHeight; y++)
 				{
-					lonLatZoom.X = startTileCoordinations.X - x;
-					lonLatZoom.Y = startTileCoordinations.Y + y;
-					string key = x + " " + y;
-					if (!model3DCache.TryGetValue(key, out Model3DGroup model3DGroup))
+					try
 					{
-						model3DGroup = CacheModel3DGroup(key, CreateTile(x, y, lonLatZoom));
-					}
+						lonLatZoom.X = startTileCoordinations.X - x;
+						lonLatZoom.Y = startTileCoordinations.Y + y;
+						string tileHash = lonLatZoom.X + " " + lonLatZoom.Y + " " + cZoom;
+						if (!mapTileCache.TryGetValue(tileHash, out MapTile mapTile))
+						{
+							mapTile = CacheMapTile(tileHash, CreateTile(x, y, lonLatZoom));
+						}
 
-					if (zoom > 18.5)
-					{
-						tiles.Children.Add(model3DGroup);
+						// TODO: Create 3D buildings using MVTModelCreator
+						//if (zoom > Settings.zoomShowBuildingsAsModels)
+						//{
+						//	tiles.Children.Add(model3DGroup);
+						//}
+						//else
+						//{
+						tiles.Children.Add(mapTile.Model3DGroup.Children[0]);
+						//}
 					}
-					else
-					{
-						tiles.Children.Add(model3DGroup.Children[0]);
-					}
+					catch (WebException ex) { Console.WriteLine(ex.Message); } // TODO: Try repeat exponential time
+					//catch { } // TODO: NLog error handler
 				}
 			}
 		}
@@ -111,10 +120,7 @@ namespace ORMMapViewer
 				},
 				Material = new DiffuseMaterial(new ImageBrush
 				{
-					//ViewportUnits = BrushMappingMode.Absolute,
 					TileMode = TileMode.Tile,
-					//Viewport = new Rect(new Point(0, 0), new Point(size, size)),
-					//ViewboxUnits = BrushMappingMode.Absolute,
 					Stretch = Stretch.Fill,
 					AlignmentX = AlignmentX.Left,
 					AlignmentY = AlignmentY.Top,
@@ -125,12 +131,13 @@ namespace ORMMapViewer
 			return model;
 		}
 
-		private Model3DGroup CreateTile(int x, int y, Vector3<double> lonLatZoom)
+		private MapTile CreateTile(int x, int y, Vector3<double> lonLatZoom)
 		{
 			VectorTileObj vectorTileObj = dataController.GetData(lonLatZoom);
 
 			ReadOnlyCollection<string> layers = vectorTileObj.LayerNames();
-			Bitmap drawingObjects = new Bitmap(512, 512);
+			Bitmap drawingObjects = new Bitmap(256, 256);
+			//Graph graph = dataController.GetRoads(lonLatZoom);
 			using (Graphics graphics = Graphics.FromImage(drawingObjects))
 			{
 				foreach (string layerName in drawingLayersPallete.Keys)
@@ -138,42 +145,61 @@ namespace ORMMapViewer
 					if (layers.Contains(layerName))
 					{
 						VectorTileLayer layer = vectorTileObj.GetLayer(layerName);
-						MVTDrawer.DrawLayer(layer, drawingLayersPallete[layerName], graphics, 4096 / 256);
+						MVTDrawer.DrawLayer(layer, drawingLayersPallete[layerName], graphics, 4096 / 128);
 					}
 				}
 
-				// Graph graph = dataController.GetRoads(lonLatZoom);
-				// LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[423], graph.nodes[83]);
-				// if (list != null && list.Count > 1)
-				// {
-				// 	MVTDrawer.DrawGraphRoads(list, graphics);
-				// }
-				// MVTDrawer.DrawNodeIndices(graph.nodes, graphics);
+				//if (graph != null)
+				//{
+					// LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[423], graph.nodes[83]);
+					// if (list != null && list.Count > 1)
+					// {
+					// 	MVTDrawer.DrawGraphRoads(list, graphics);
+					// }
+					//MVTDrawer.DrawLinks(graph.nodes, graphics, 32);
+					//MVTDrawer.DrawNodeIndices(graph.nodes, graphics, 32);
+					//MVTDrawer.DrawText(lonLatZoom.ToString(), new Vector2<int>(x, y), graphics, 32);
+					//if (graph.nodes.Count > 115)
+					//{
+					//	MVTDrawer.DrawNode(graph.nodes[115], graphics, 32);
+					//}
+				//}
 			}
 
+			//Vector2<int> shiftCoords = new Vector2<int>(x * 4096, y * 4096);
 			Model3DGroup model3DGroup = new Model3DGroup();
 			model3DGroup.Children.Add(CreateTileModel(x, y, ImageUtils.GetImageStream(drawingObjects)));
-			foreach (string layerName in modelsLayersPallete.Keys)
-			{
-				if (layers.Contains(layerName))
-				{
-					MVTModelCreator.CreateLayer(vectorTileObj.GetLayer(layerName), modelsLayersPallete[layerName], model3DGroup);
-				}
-			}
+			//foreach (string layerName in modelsLayersPallete.Keys)
+			//{
+			//	if (layers.Contains(layerName))
+			//	{
+			//		MVTModelCreator.CreateLayer(vectorTileObj.GetLayer(layerName), modelsLayersPallete[layerName], model3DGroup, shiftCoords);
+			//	}
+			//}
 
-			return model3DGroup;
+			return new MapTile(model3DGroup);
 		}
 
-		private Model3DGroup CacheModel3DGroup(string key, Model3DGroup model3DGroup)
+		private sealed class MapTile
 		{
-			if (model3DCache.Count == Settings.memoryMapModelsCacheOpacity)
+			public readonly Model3DGroup Model3DGroup;
+
+			public MapTile(Model3DGroup model3DGroup)
 			{
-				model3DCache.Remove(model3DCache.Keys.First());
+				this.Model3DGroup = model3DGroup;
+			}
+		}
+
+		private MapTile CacheMapTile(string key, MapTile mapTile)
+		{
+			if (mapTileCache.Count == Settings.memoryMapTilesCacheOpacity)
+			{
+				mapTileCache.Remove(mapTileCache.Keys.First());
 			}
 
-			model3DCache.Add(key, model3DGroup);
+			mapTileCache.Add(key, mapTile);
 
-			return model3DGroup;
+			return mapTile;
 		}
 	}
 }

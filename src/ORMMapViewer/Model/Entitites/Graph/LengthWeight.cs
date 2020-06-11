@@ -1,24 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace ORMMapViewer.Model.Entitites
 {
-	internal class LengthWeight : Weight
+	public class LengthWeight : IWeight
 	{
-		private readonly float length;
+		public float Length { get; set; }
 
+		[JsonConstructor]
 		public LengthWeight(float length)
 		{
-			this.length = length;
+			this.Length = length;
 		}
 
 		public LengthWeight(Node first, Node second)
 		{
-			length = (float) Math.Sqrt(Math.Pow(first.pos.X - second.pos.X, 2) + Math.Pow(first.pos.Y - second.pos.Y, 2));
-		}
-
-		public override float Calculate()
-		{
-			return length;
+			Length = (float) Math.Sqrt(Math.Pow(first.pos.X - second.pos.X, 2) + Math.Pow(first.pos.Y - second.pos.Y, 2));
 		}
 	}
 }

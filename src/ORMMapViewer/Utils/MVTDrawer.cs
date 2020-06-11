@@ -11,7 +11,7 @@ namespace ORMMap
 {
 	public static class MVTDrawer
 	{
-		private static readonly Font font = new Font("Consolas", 48, FontStyle.Regular);
+		private static readonly Font font = new Font("Consolas", 6, FontStyle.Regular);
 
 		private delegate void DrawDelegate(VectorTileFeature feature, Pallete pallete, Graphics graphics, double divisionRatio);
 
@@ -44,9 +44,15 @@ namespace ORMMap
 			List<List<Vector2<int>>> list = feature.Geometry<int>();
 			foreach (List<Vector2<int>> item in list)
 			{
-				Point[] points = item.Select(vector2 => new Point((int)Math.Floor(vector2.X / divisionRatio), (int)Math.Floor(vector2.Y / divisionRatio))).ToArray();
-				graphics.FillPolygon(pallete.GetMainFillBrush(), points);
-				graphics.DrawPolygon(pallete.GetMainDrawPen(), points);
+				Point[] points = item.Select(vector2 => new Point((int)Math.Ceiling(vector2.X / divisionRatio), (int)Math.Ceiling(vector2.Y / divisionRatio))).ToArray();
+				using (SolidBrush solidBrush = new SolidBrush(pallete.MainFillColor))
+				{
+					graphics.FillPolygon(solidBrush, points);
+				}
+				using (Pen pen = new Pen(pallete.MainDrawPen.Color, 2))
+				{
+					graphics.DrawPolygon(pen, points);
+				}
 			}
 		}
 
@@ -58,8 +64,11 @@ namespace ORMMap
 			Dictionary<string, object> props = feature.GetProperties();
 			foreach (List<Vector2<int>> geometry in feature.Geometry<int>())
 			{
-				Point[] points = geometry.Select(vector2 => new Point((int)Math.Floor(vector2.X / divisionRatio), (int)Math.Floor(vector2.Y / divisionRatio))).ToArray();
-				graphics.DrawLines(pallete.GetMainDrawPen(), points);
+				Point[] points = geometry.Select(vector2 => new Point((int)Math.Ceiling(vector2.X / divisionRatio), (int)Math.Ceiling(vector2.Y / divisionRatio))).ToArray();
+				using (Pen pen = new Pen(pallete.MainDrawPen.Color, 2))
+				{
+					graphics.DrawLines(pen, points);
+				}
 
 				// Draw name of street
 				//if (props.ContainsKey("name"))
@@ -73,43 +82,60 @@ namespace ORMMap
 			}
 		}
 
-		public static void DrawLinks(List<Node> roads, Graphics graphics)
+		public static void DrawLinks(IEnumerable<Node> roads, Graphics graphics, double divisionRatio)
 		{
-			using (Pen pen = new Pen(Color.Brown, 7))
+			using (Pen pen = new Pen(Color.Brown, 2))
 			{
 				foreach (Node node in roads)
 				{
-					foreach (var nodeN in node.neighbours)
+					foreach (KeyValuePair<Node, IWeight> nodeNeighbour in node.neighbours)
 					{
-						if (nodeN.Key.neighbours.ContainsKey(node))
+						if (nodeNeighbour.Key.neighbours.ContainsKey(node))
 						{
-							graphics.DrawLine(pen, node.pos.X, node.pos.Y, nodeN.Key.pos.X, nodeN.Key.pos.Y);
+							graphics.DrawLine(pen,
+								(int)Math.Ceiling(node.pos.X / divisionRatio),
+								(int)Math.Ceiling(node.pos.Y / divisionRatio),
+								(int)Math.Ceiling(nodeNeighbour.Key.pos.X / divisionRatio),
+								(int)Math.Ceiling(nodeNeighbour.Key.pos.Y / divisionRatio)
+							);
+							graphics.FillEllipse(Brushes.Black, (int)Math.Ceiling(node.pos.X / divisionRatio), (int)Math.Ceiling(node.pos.Y / divisionRatio), 2, 2);
+							graphics.FillEllipse(Brushes.Black, (int)Math.Ceiling(nodeNeighbour.Key.pos.X / divisionRatio), (int)Math.Ceiling(nodeNeighbour.Key.pos.Y / divisionRatio), 2, 2);
 						}
 					}
 				}
 			}
 		}
 
-		public static void DrawNodeIndices(List<Node> roads, Graphics graphics)
+		public static void DrawNodeIndices(IEnumerable<Node> roads, Graphics graphics, double divisionRatio)
 		{
 			int index = 0;
 			using (SolidBrush brush = new SolidBrush(Color.Chartreuse))
 			{
 				foreach (Node node in roads)
 				{
-					graphics.DrawString(index++.ToString(), font, brush, node.pos.X, node.pos.Y);
-					graphics.FillEllipse(Brushes.Red, node.pos.X, node.pos.Y, 20, 20);
+					graphics.DrawString(index++.ToString(), font, brush, (int)Math.Ceiling(node.pos.X / divisionRatio), (int)Math.Ceiling(node.pos.Y / divisionRatio));
+					graphics.FillEllipse(Brushes.Red, (int)Math.Ceiling(node.pos.X / divisionRatio), (int)Math.Ceiling(node.pos.Y / divisionRatio), 2, 2);
 				}
 			}
 		}
 
-		public static void DrawGraphRoads(LinkedList<Node> roads, Graphics graphics)
+		public static void DrawGraphRoads(IEnumerable<Node> roads, Graphics graphics, double divisionRatio)
 		{
-			Point[] points = roads.Select(node => new Point(node.pos.X, node.pos.Y)).ToArray();
-			using (Pen pen = new Pen(Color.Red, 7))
+			Point[] points = roads.Select(node => new Point((int)Math.Ceiling(node.pos.X / divisionRatio), (int)Math.Ceiling(node.pos.Y / divisionRatio))).ToArray();
+			using (Pen pen = new Pen(Color.Red, 1))
 			{
 				graphics.DrawLines(pen, points);
 			}
+		}
+
+		public static void DrawNode(Node node, Graphics graphics, double divisionRatio)
+		{
+			graphics.FillEllipse(Brushes.Red, (int)Math.Ceiling(node.pos.X / divisionRatio), (int)Math.Ceiling(node.pos.Y / divisionRatio), 5, 5);
+		}
+
+		public static void DrawText(string text, Vector2<int> point, Graphics graphics, double divisionRatio)
+		{
+			graphics.DrawString(text, font, Brushes.Red, (int)Math.Ceiling(point.X / divisionRatio), (int)Math.Ceiling(point.X / divisionRatio));
 		}
 	}
 }

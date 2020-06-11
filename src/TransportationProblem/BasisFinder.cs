@@ -41,6 +41,7 @@ namespace TransportationProblem
 				}
 			}
 
+			// TODO: add unit test for AddArtificialVector
 			// Add artificial vector for basis creation
 			for (int i = 0; i < basis.Length; i++)
 			{
@@ -57,10 +58,10 @@ namespace TransportationProblem
 		{
 			var newMatrixData = new double[matrix.RowCount + 1, matrix.ColumnCount];
 			for (int row = 0; row < matrix.RowCount; row++)
-			for (int column = 0; i < matrix.ColumnCount; column++)
-			{
-				newMatrixData[row, column] = matrix[row, column];
-			}
+				for (int column = 0; i < matrix.ColumnCount; column++)
+				{
+					newMatrixData[row, column] = matrix[row, column];
+				}
 
 			int rowCount = matrix.RowCount;
 			for (int column = 0; column < matrix.ColumnCount; column++)

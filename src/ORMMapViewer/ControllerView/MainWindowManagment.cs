@@ -9,7 +9,7 @@ namespace ORMMapViewer
 {
 	public partial class MainWindow
 	{
-		private bool mouseDown;
+		private bool leftMouseDown;
 		private Vector2<int> oldPos = new Vector2<int>(0, 0);
 		private double zoom = Settings.zoom;
 
@@ -23,33 +23,52 @@ namespace ORMMapViewer
 			UpdateScene(dataController.GetTileSize(dataController.ConvertToMapZoom(zoom)));
 		}
 
-		private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+		private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			if (!mouseDown)
+			if (!leftMouseDown)
 			{
 				Point pos = e.GetPosition(this);
-				oldPos.Set((int) pos.X, (int) pos.Y);
-				mouseDown = true;
+				oldPos.Set((int)pos.X, (int)pos.Y);
+				leftMouseDown = true;
 			}
 		}
 
-		private void Window_MouseUp(object sender, MouseButtonEventArgs e)
+		private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			mouseDown = false;
+			leftMouseDown = false;
+			UpdateScene(dataController.GetTileSize(dataController.ConvertToMapZoom(zoom)));
+		}
+
+		private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			AddPointWithCheck(RayCastToMap(e.GetPosition(this)));
+		}
+
+		private void Window_MouseLeave(object sender, MouseEventArgs e)
+		{
+			leftMouseDown = false;
 			UpdateScene(dataController.GetTileSize(dataController.ConvertToMapZoom(zoom)));
 		}
 
 		private void Window_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (!mouseDown)
+			if (!leftMouseDown)
 			{
 				return;
 			}
 
 			Point pos = e.GetPosition(this);
-			camera.Position = new Point3D(camera.Position.X - (pos.X - oldPos.X) * (200 / zoom),
-				camera.Position.Y + (pos.Y - oldPos.Y) * (200 / zoom), camera.Position.Z);
+			camera.Position = new Point3D(camera.Position.X - (oldPos.X - pos.X ) * (200 / zoom),
+				camera.Position.Y + (oldPos.Y - pos.Y) * (200 / zoom), camera.Position.Z);
 			oldPos.Set((int) pos.X, (int) pos.Y);
+		}
+
+		private void Window_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (keyUpEvents.TryGetValue(e.Key, out Action action))
+			{
+				action.Invoke();
+			}
 		}
 	}
 }

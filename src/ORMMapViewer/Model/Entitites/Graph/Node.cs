@@ -1,19 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using ORMMap.VectorTile.Geometry;
 
 namespace ORMMapViewer.Model.Entitites
 {
 	public class Node
 	{
-		private const int maxDistance = 10;
-		public readonly Dictionary<Node, Weight> neighbours = new Dictionary<Node, Weight>();
+		public Dictionary<Node, IWeight> neighbours = new Dictionary<Node, IWeight>();
 		public int id = -1;
 		public Vector2<int> pos;
+
+		[JsonConstructor]
+		public Node() {}
 
 		public Node(int x, int y)
 		{
 			pos = new Vector2<int>(x, y);
+		}
+
+		public Node(Vector2<int> pos)
+		{
+			this.pos = pos;
 		}
 
 		public void AddNeighbour(Node node)
@@ -30,21 +37,6 @@ namespace ORMMapViewer.Model.Entitites
 			{
 				neighbours.Remove(node);
 			}
-		}
-
-		public override bool Equals(object obj)
-		{
-			return obj is Node node &&
-			       Math.Abs(pos.X - node.pos.X) < maxDistance &&
-			       Math.Abs(pos.Y - node.pos.Y) < maxDistance;
-		}
-
-		public override int GetHashCode()
-		{
-			int hashCode = 1502939027;
-			hashCode = hashCode * -1521134295 + pos.X.GetHashCode();
-			hashCode = hashCode * -1521134295 + pos.Y.GetHashCode();
-			return hashCode;
 		}
 
 		public void UpdateNeighbours()
