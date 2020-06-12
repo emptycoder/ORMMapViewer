@@ -32,6 +32,9 @@ ORM map viewer is a MVC based thesis that allow us to show ORM alghoritms on rea
 **v0.14(Unstable) - 06/07/2020**
 - Infinite map
 
+**v0.15(Unstable) - 06/07/2020**
+- Infinite map with simplex method calculation ONLY for 1 tile
+
 ## About:
 ORM map viewer developing under the [MIT license](LICENSE).
 
