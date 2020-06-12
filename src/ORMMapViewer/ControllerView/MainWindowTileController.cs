@@ -97,7 +97,7 @@ namespace ORMMapViewer
 						//}
 					}
 					catch (WebException ex) { Console.WriteLine(ex.Message); } // TODO: Try repeat exponential time
-					//catch { } // TODO: NLog error handler
+					catch { } // TODO: NLog error handler
 				}
 			}
 		}

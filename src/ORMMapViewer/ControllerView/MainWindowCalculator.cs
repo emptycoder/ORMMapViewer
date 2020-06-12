@@ -58,10 +58,10 @@ namespace ORMMapViewer
 			viewport.Children.Add(myCube);
 			viewport.UpdateLayout();
 			pointsList.Add(rayCastPoint);
-			//if (pointsList.Count == 1)
-			//{
-			//	countOfSources = Convert.ToInt32(Microsoft.VisualBasic.Interaction.InputBox("Count of sources", "Please, enter the field", "1"));
-			//}
+			if (pointsList.Count == 1)
+			{
+				countOfSources = Convert.ToInt32(Microsoft.VisualBasic.Interaction.InputBox("Count of sources", "Please, enter the field", "1"));
+			}
 		}
 
 		private void RemovePoint(RaycastMapResult rayCastPoint)
@@ -85,13 +85,13 @@ namespace ORMMapViewer
 			double[] constraints = new double[pointsList.Count / countOfSources];
 			for (int i = 0; i < constraints.Length; i++)
 			{
-				constraints[i] = Convert.ToInt32(Microsoft.VisualBasic.Interaction.InputBox($"Resource {i} constraint:", "Please, enter the field", "1"));
+				constraints[i] = Convert.ToInt32(Microsoft.VisualBasic.Interaction.InputBox($"Cost condition for {i}:", "Please, enter the field", "1"));
 			}
 
 			double[] simplex = new double[countOfSources];
 			for (int i = 0; i < simplex.Length; i++)
 			{
-				simplex[i] = Convert.ToInt32(Microsoft.VisualBasic.Interaction.InputBox($"Resource {i} needed:", "Please, enter the field", "1"));
+				simplex[i] = Convert.ToInt32(Microsoft.VisualBasic.Interaction.InputBox($"Satisfaction condition for {i}:", "Please, enter the field", "1"));
 			}
 
 			double cZoom = dataController.ConvertToMapZoom(zoom);
