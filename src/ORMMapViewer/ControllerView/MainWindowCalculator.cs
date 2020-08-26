@@ -47,16 +47,16 @@ namespace ORMMapViewer
 		{
 			Console.WriteLine($"Add point: {rayCastPoint}");
 			// TODO: Add 3d models to scene as map points
-			RectangleVisual3D myCube = new RectangleVisual3D();
-			myCube.Origin = rayCastPoint.HitPoint;
-			myCube.Width = 200;
-			myCube.Length = 200;
-			myCube.Normal = new Vector3D(0, 1, 0);
-			myCube.LengthDirection = new Vector3D(0, 1, 0);
-			myCube.Material = new DiffuseMaterial(Brushes.Red);
-			myCube.UpdateModel();
-			viewport.Children.Add(myCube);
-			viewport.UpdateLayout();
+			//RectangleVisual3D myCube = new RectangleVisual3D();
+			//myCube.Origin = rayCastPoint.HitPoint;
+			//myCube.Width = 200;
+			//myCube.Length = 200;
+			//myCube.Normal = new Vector3D(0, 1, 0);
+			//myCube.LengthDirection = new Vector3D(0, 1, 0);
+			//myCube.Material = new DiffuseMaterial(Brushes.Red);
+			//myCube.UpdateModel();
+			//viewport.Children.Add(myCube);
+			//viewport.UpdateLayout();
 			pointsList.Add(rayCastPoint);
 			if (pointsList.Count == 1)
 			{

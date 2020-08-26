@@ -137,7 +137,7 @@ namespace ORMMapViewer
 
 			ReadOnlyCollection<string> layers = vectorTileObj.LayerNames();
 			Bitmap drawingObjects = new Bitmap(256, 256);
-			//Graph graph = dataController.GetRoads(lonLatZoom);
+			Graph graph = dataController.GetRoads(lonLatZoom);
 			using (Graphics graphics = Graphics.FromImage(drawingObjects))
 			{
 				foreach (string layerName in drawingLayersPallete.Keys)
@@ -151,18 +151,18 @@ namespace ORMMapViewer
 
 				//if (graph != null)
 				//{
-					// LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[423], graph.nodes[83]);
-					// if (list != null && list.Count > 1)
-					// {
-					// 	MVTDrawer.DrawGraphRoads(list, graphics);
-					// }
-					//MVTDrawer.DrawLinks(graph.nodes, graphics, 32);
-					//MVTDrawer.DrawNodeIndices(graph.nodes, graphics, 32);
-					//MVTDrawer.DrawText(lonLatZoom.ToString(), new Vector2<int>(x, y), graphics, 32);
-					//if (graph.nodes.Count > 115)
-					//{
-					//	MVTDrawer.DrawNode(graph.nodes[115], graphics, 32);
-					//}
+				// LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[423], graph.nodes[83]);
+				// if (list != null && list.Count > 1)
+				// {
+				// 	MVTDrawer.DrawGraphRoads(list, graphics);
+				// }
+				MVTDrawer.DrawLinks(graph.nodes, graphics, 32);
+				//MVTDrawer.DrawNodeIndices(graph.nodes, graphics, 32);
+				//MVTDrawer.DrawText(lonLatZoom.ToString(), new Vector2<int>(x, y), graphics, 32);
+				//if (graph.nodes.Count > 115)
+				//{
+				//	MVTDrawer.DrawNode(graph.nodes[115], graphics, 32);
+				//}
 				//}
 			}
 
