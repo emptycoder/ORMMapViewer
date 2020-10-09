@@ -12,7 +12,7 @@
     <Grid>
         <Viewport3D x:Name="viewport">
             <Viewport3D.Camera>
-                <PerspectiveCamera x:Name="camera" Position="2048 2048 29538.4" LookDirection="0,-.001,-1" UpDirection="0,0,1" />
+                <PerspectiveCamera x:Name="camera" Position="2048 2048 29538.4" LookDirection="0,-.01,-1" UpDirection="0,0,1" />
             </Viewport3D.Camera>
             <ModelVisual3D>
                 <ModelVisual3D.Content>

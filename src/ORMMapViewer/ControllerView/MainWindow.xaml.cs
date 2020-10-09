@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using ORMMap;
@@ -51,6 +53,10 @@ namespace ORMMapViewer
 			Title = $"ORMMap [Zoom: {zoom}]";
 		}
 
-		private void Window_Loaded(object sender, RoutedEventArgs e) => UpdateScene(dataController.GetTileSize(dataController.ConvertToMapZoom(Settings.zoom)));
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			tiles.Children.Add(defaultLight);
+			UpdateScene(dataController.GetTileSize(dataController.ConvertToMapZoom(Settings.zoom)));
+		}
 	}
 }

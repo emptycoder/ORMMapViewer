@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -13,6 +14,8 @@ using ORMMap.VectorTile;
 using ORMMap.VectorTile.Geometry;
 using ORMMapViewer.Model.Entitites;
 using ORMMapViewer.Utils;
+using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
 
 namespace ORMMapViewer
 {
@@ -25,81 +28,164 @@ namespace ORMMapViewer
 
 		private static readonly PointCollection defaultTextureCoordinates = new PointCollection
 		{
-			new System.Windows.Point(0, 0),
-			new System.Windows.Point(-4096, 0),
-			new System.Windows.Point(-4096, 4096),
-			new System.Windows.Point(0, 4096)
+			new Point(0, 0),
+			new Point(-4096, 0),
+			new Point(-4096, 4096),
+			new Point(0, 4096)
 		};
 
-		private static AmbientLight defaultLight = new AmbientLight(System.Windows.Media.Color.FromRgb(255, 255, 255));
+		private static readonly AmbientLight defaultLight = new AmbientLight(Color.FromRgb(255, 255, 255));
 		public static Vector2<double> startPos = MercatorProjection.LatLngToTile(Settings.startPosition, Settings.zoom);
-		private Dictionary<string, MapTile> mapTileCache = new Dictionary<string, MapTile>(Settings.memoryMapTilesCacheOpacity);
+
+		private static readonly ConcurrentExclusiveSchedulerPair schedulerPair = new ConcurrentExclusiveSchedulerPair(TaskScheduler.Default, 1);
+		private static readonly TaskFactory taskFactory = new TaskFactory(schedulerPair.ExclusiveScheduler);
+		private readonly Dictionary<Vector2<int>, Model3D> currentTiles = new Dictionary<Vector2<int>, Model3D>();
+
+		private readonly Dictionary<string, MapTile> mapTileCache = new Dictionary<string, MapTile>(Settings.memoryMapTilesCacheOpacity);
 
 		public double fovHInRadians;
 		public double fovVInRadians;
+		
+		private int oldEndX;
+		private int oldEndY;
+		private int oldStartX;
+		private int oldStartY;
+		private int oldZoom;
 
 		private void InitializeProjection()
 		{
 			fovHInRadians = camera.FieldOfView * Math.PI / 180;
-			double aspect = this.Width / this.Height;
+			double aspect = Width / Height;
 			fovVInRadians = ProjectionUtils.FovVFromAspectRatio(fovHInRadians, aspect);
 		}
 
 		private Projection CalculateProjection()
 		{
-			return ProjectionUtils.GetRectangleProjection(fovHInRadians, fovVInRadians, (int)camera.Position.Z);
+			return ProjectionUtils.GetRectangleProjection(fovHInRadians, fovVInRadians, (int) camera.Position.Z);
 		}
 
 		public void UpdateScene(int tileSize)
 		{
-			// TODO: Trigger points for update scene instead recreate every control
-			tiles.Children.Clear();
-			tiles.Children.Add(defaultLight);
-			Projection projection = CalculateProjection();
-
-			int tilesPerWidth = (int)Math.Ceiling(projection.Bottom / tileSize) + 1;
-			int tilesPerHeight = (int)Math.Ceiling(projection.Left / tileSize) + 1;
-
-			// TileSize for tangram always 4096
-			int startPosX = (int)Math.Floor((camera.Position.X - (projection.Bottom / 2)) / tileSize);
-			int startPosY = (int)Math.Floor((camera.Position.Y - (projection.Left / 2)) / tileSize);
-
-			double cZoom = dataController.ConvertToMapZoom(zoom);
-			Vector2<int> startTileCoordinations = MercatorProjection.LatLngToTile(Settings.startPosition, cZoom).ToVectorInt();
-			Vector3<double> lonLatZoom = new Vector3<double>(
-				startTileCoordinations.X,
-				startTileCoordinations.Y,
-				cZoom
-			);
-
-			for (int x = startPosX; x < startPosX + tilesPerWidth; x++)
+			taskFactory.StartNew(() =>
 			{
-				for (int y = startPosY; y < startPosY + tilesPerHeight; y++)
+				// TODO: Trigger points for update scene instead recreate every control
+
+				int tilesPerWidth = 0, tilesPerHeight = 0, startPosX = 0, startPosY = 0;
+
+				Dispatcher.Invoke(() =>
 				{
-					try
+					Projection projection = CalculateProjection();
+					tilesPerWidth = (int) Math.Ceiling(projection.Bottom / tileSize) + 7;
+					tilesPerHeight = (int) Math.Ceiling(projection.Left / tileSize) + 4;
+
+					// TileSize for tangram always 4096
+					startPosX = (int) Math.Floor((camera.Position.X - projection.Bottom / 2) / tileSize)-3;
+					startPosY = (int) Math.Floor((camera.Position.Y - projection.Left / 2) / tileSize)-2;
+				});
+				double cZoom = dataController.ConvertToMapZoom(zoom);
+
+				List<Vector2<int>> tilesToAdd = new List<Vector2<int>>();
+				List<Vector2<int>> tilesToRemove = new List<Vector2<int>>();
+
+				for (int x = oldStartX; x < oldEndX; x++)
+				{
+					for (int y = oldStartY; y < oldEndY; y++)
 					{
-						lonLatZoom.X = startTileCoordinations.X - x;
-						lonLatZoom.Y = startTileCoordinations.Y + y;
-						string tileHash = lonLatZoom.X + " " + lonLatZoom.Y + " " + cZoom;
-						if (!mapTileCache.TryGetValue(tileHash, out MapTile mapTile))
+						tilesToRemove.Add(new Vector2<int>(x, y));
+					}
+				}
+
+				for (int x = startPosX; x < startPosX + tilesPerWidth; x++)
+				{
+					for (int y = startPosY; y < startPosY + tilesPerHeight; y++)
+					{
+						if (oldZoom == (int) cZoom)
 						{
-							mapTile = CacheMapTile(tileHash, CreateTile(x, y, lonLatZoom));
+							tilesToRemove.Remove(new Vector2<int>(x, y));
 						}
 
-						// TODO: Create 3D buildings using MVTModelCreator
-						//if (zoom > Settings.zoomShowBuildingsAsModels)
-						//{
-						//	tiles.Children.Add(model3DGroup);
-						//}
-						//else
-						//{
-						tiles.Children.Add(mapTile.Model3DGroup.Children[0]);
-						//}
+						tilesToAdd.Add(new Vector2<int>(x, y));
 					}
-					catch (WebException ex) { Console.WriteLine(ex.Message); } // TODO: Try repeat exponential time
-					catch { } // TODO: NLog error handler
 				}
-			}
+
+				if (oldZoom == (int) cZoom)
+				{
+					for (int x = oldStartX; x < oldEndX; x++)
+					{
+						for (int y = oldStartY; y < oldEndY; y++)
+						{
+							tilesToAdd.Remove(new Vector2<int>(x, y));
+						}
+					}
+				}
+
+				oldStartX = startPosX;
+				oldStartY = startPosY;
+				oldEndX = startPosX + tilesPerWidth;
+				oldEndY = startPosY + tilesPerHeight;
+				oldZoom = (int) cZoom;
+				
+				Vector2<int> startTileCoordinations = MercatorProjection.LatLngToTile(Settings.startPosition, cZoom).ToVectorInt();
+
+				List<Task> tasks = new List<Task>();
+
+				foreach (Vector2<int> tile in tilesToRemove)
+				{
+					Dispatcher.Invoke(() => { tiles.Children.Remove(currentTiles[tile]); });
+					currentTiles.Remove(tile);
+				}
+
+				foreach (Vector2<int> tile in tilesToAdd)
+				{
+					Vector3<double> lonLatZoom = new Vector3<double>(
+						startTileCoordinations.X - tile.X,
+						startTileCoordinations.Y + tile.Y,
+						cZoom
+					);
+					string tileHash = lonLatZoom.X + " " + lonLatZoom.Y + " " + cZoom;
+					if (mapTileCache.TryGetValue(tileHash, out MapTile mapTile))
+					{
+						Dispatcher.Invoke(() =>
+						{
+							tiles.Children.Add(mapTile.Model3DGroup.Children[0]);
+							currentTiles.Add(tile, mapTile.Model3DGroup.Children[0]);
+						});
+					}
+					else
+					{
+						tasks.Add(ProcessMapTile(tileHash, tile.X, tile.Y, lonLatZoom));
+					}
+				}
+
+				foreach (Task task in tasks)
+				{
+					task.Wait();
+				}
+			});
+		}
+
+		private Task ProcessMapTile(string tileHash, int x, int y, Vector3<double> lonLatZoom)
+		{
+			return Task.Run(() =>
+			{
+				try
+				{
+					MapTile mapTile = CacheMapTile(tileHash, CreateTile(x, y, lonLatZoom));
+					Dispatcher.Invoke(() =>
+					{
+						tiles.Children.Add(mapTile.Model3DGroup.Children[0]);
+						currentTiles.Add(new Vector2<int>(x, y), mapTile.Model3DGroup.Children[0]);
+					});
+				}
+				catch (WebException ex)
+				{
+					Console.WriteLine(ex.Message);
+				} // TODO: Try repeat exponential time
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex);
+				} // TODO: NLog error handler
+			});
 		}
 
 		private GeometryModel3D CreateTileModel(int x, int y, BitmapSource drawingObjects)
@@ -167,8 +253,13 @@ namespace ORMMapViewer
 			}
 
 			//Vector2<int> shiftCoords = new Vector2<int>(x * 4096, y * 4096);
-			Model3DGroup model3DGroup = new Model3DGroup();
-			model3DGroup.Children.Add(CreateTileModel(x, y, ImageUtils.GetImageStream(drawingObjects)));
+			return Dispatcher.Invoke(() =>
+			{
+				Model3DGroup model3DGroup = new Model3DGroup();
+				model3DGroup.Children.Add(CreateTileModel(x, y, ImageUtils.GetImageStream(drawingObjects)));
+				return new MapTile(model3DGroup);
+			});
+
 			//foreach (string layerName in modelsLayersPallete.Keys)
 			//{
 			//	if (layers.Contains(layerName))
@@ -176,18 +267,6 @@ namespace ORMMapViewer
 			//		MVTModelCreator.CreateLayer(vectorTileObj.GetLayer(layerName), modelsLayersPallete[layerName], model3DGroup, shiftCoords);
 			//	}
 			//}
-
-			return new MapTile(model3DGroup);
-		}
-
-		private sealed class MapTile
-		{
-			public readonly Model3DGroup Model3DGroup;
-
-			public MapTile(Model3DGroup model3DGroup)
-			{
-				this.Model3DGroup = model3DGroup;
-			}
 		}
 
 		private MapTile CacheMapTile(string key, MapTile mapTile)
@@ -200,6 +279,16 @@ namespace ORMMapViewer
 			mapTileCache.Add(key, mapTile);
 
 			return mapTile;
+		}
+
+		private sealed class MapTile
+		{
+			public readonly Model3DGroup Model3DGroup;
+
+			public MapTile(Model3DGroup model3DGroup)
+			{
+				Model3DGroup = model3DGroup;
+			}
 		}
 	}
 }

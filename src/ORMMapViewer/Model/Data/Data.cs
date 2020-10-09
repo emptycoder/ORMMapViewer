@@ -117,7 +117,7 @@ namespace ORMMap.Model.Data
 
 			// Try get data and then return roads
 			// If path finding need tile which wasn't shown
-			GetData(lonLatZoom);
+			// GetData(lonLatZoom);
 
 			if (memoryRoadsCache.TryGetValue(lonLatZoom.ToString(), out graph))
 			{
@@ -141,27 +141,30 @@ namespace ORMMap.Model.Data
 				return;
 			}
 
-			if (!data.LayerNames().Contains("roads"))
+			Graph graph;
+			if (data.LayerNames().Contains("roads"))
 			{
-				return;
-			}
+				VectorTileLayer layer = data.GetLayer("roads");
+				MaskGraphCreator maskDrawer = new MaskGraphCreator(GetTileSize(ConvertToMapZoom(Settings.zoom)));
 
-			VectorTileLayer layer = data.GetLayer("roads");
-			MaskGraphCreator maskDrawer = new MaskGraphCreator(GetTileSize(ConvertToMapZoom(Settings.zoom)));
-
-			for (int i = 0; i < layer.FeatureCount(); i++)
-			{
-				VectorTileFeature feature = layer.GetFeature(i);
-				foreach (List<Vector2<int>> geometry in feature.Geometry<int>())
+				for (int i = 0; i < layer.FeatureCount(); i++)
 				{
-					for (int index = 1; index < geometry.Count; index++)
+					VectorTileFeature feature = layer.GetFeature(i);
+					foreach (List<Vector2<int>> geometry in feature.Geometry<int>())
 					{
-						maskDrawer.DrawMaskLine(geometry[index - 1], geometry[index]);
+						for (int index = 1; index < geometry.Count; index++)
+						{
+							maskDrawer.DrawMaskLine(geometry[index - 1], geometry[index]);
+						}
 					}
 				}
+				graph = maskDrawer.GetGraph();
 			}
-
-			Graph graph = maskDrawer.GetGraph();
+			else
+			{
+				graph = new Graph();
+			}
+			
 			memoryRoadsCache.Add(lonLatZoom.ToString(), graph);
 			// Save to disk
 			path = $"{pathToDataFolder}\\roads\\{lonLatZoom.EncodeToString()}{RoadFileExtension}";
