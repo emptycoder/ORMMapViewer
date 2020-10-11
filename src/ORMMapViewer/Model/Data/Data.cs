@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -25,12 +26,11 @@ namespace ORMMap.Model.Data
 			NullValueHandling = NullValueHandling.Ignore
 		};
 
-		private readonly Dictionary<string, string> diskMapCache;
-		private readonly Dictionary<string, string> diskRoadCache;
+		private readonly ConcurrentDictionary<string, string> diskMapCache;
+		private readonly ConcurrentDictionary<string, string> diskRoadCache;
 
-		private readonly Dictionary<string, VectorTileObj> memoryMapCache =
-			new Dictionary<string, VectorTileObj>(Settings.memoryDataCacheOpacity);
-		private readonly Dictionary<string, Graph> memoryRoadsCache = new Dictionary<string, Graph>();
+		private readonly ConcurrentDictionary<string, VectorTileObj> memoryMapCache = new ConcurrentDictionary<string, VectorTileObj>();
+		private readonly ConcurrentDictionary<string, Graph> memoryRoadsCache = new ConcurrentDictionary<string, Graph>();
 
 		protected readonly string pathToDataFolder;
 
@@ -55,12 +55,12 @@ namespace ORMMap.Model.Data
 			// Scan folder for cache files
 			string[] mapPathes = Directory.GetFiles(this.pathToDataFolder + "\\tiles", $"*{MapFileExtension}", SearchOption.AllDirectories);
 			string[] roadPathes = Directory.GetFiles(this.pathToDataFolder + "\\roads", $"*{RoadFileExtension}", SearchOption.AllDirectories);
-			diskMapCache = mapPathes.ToDictionary(
+			diskMapCache = new ConcurrentDictionary<string, string>(mapPathes.ToDictionary(
 				path => Vector3<double>.DecodeFromJSON(Path.GetFileNameWithoutExtension(path)).ToString(),
-				path => path);
-			diskRoadCache = roadPathes.ToDictionary(
+				path => path));
+			diskRoadCache = new ConcurrentDictionary<string, string>(roadPathes.ToDictionary(
 				path => Vector3<double>.DecodeFromJSON(Path.GetFileNameWithoutExtension(path)).ToString(),
-				path => path);
+				path => path));
 		}
 
 		public abstract string MethodName { get; }
@@ -90,7 +90,7 @@ namespace ORMMap.Model.Data
 				path = $"{pathToDataFolder}\\tiles\\{lonLatZoom.EncodeToString()}{MapFileExtension}";
 				File.WriteAllBytes(path, byteData);
 				// Add to disk cache
-				diskMapCache.Add(lonLatZoom.ToString(), path);
+				diskMapCache.TryAdd(lonLatZoom.ToString(), path);
 
 				data = new VectorTileObj(byteData);
 			}
@@ -111,7 +111,7 @@ namespace ORMMap.Model.Data
 			if (diskRoadCache.TryGetValue(lonLatZoom.ToString(), out string path))
 			{
 				graph = JsonConvert.DeserializeObject<Graph>(File.ReadAllText(path), settings);
-				memoryRoadsCache.Add(lonLatZoom.ToString(), graph);
+				memoryRoadsCache.TryAdd(lonLatZoom.ToString(), graph);
 				return graph;
 			}
 
@@ -119,10 +119,10 @@ namespace ORMMap.Model.Data
 			// If path finding need tile which wasn't shown
 			// GetData(lonLatZoom);
 
-			if (memoryRoadsCache.TryGetValue(lonLatZoom.ToString(), out graph))
-			{
-				return graph;
-			}
+			// if (memoryRoadsCache.TryGetValue(lonLatZoom.ToString(), out graph))
+			// {
+			// 	return graph;
+			// }
 
 			return null;
 		}
@@ -137,7 +137,7 @@ namespace ORMMap.Model.Data
 
 			if (diskRoadCache.TryGetValue(lonLatZoom.ToString(), out string path))
 			{
-				memoryRoadsCache.Add(lonLatZoom.ToString(), JsonConvert.DeserializeObject<Graph>(File.ReadAllText(path), settings));
+				memoryRoadsCache.TryAdd(lonLatZoom.ToString(), JsonConvert.DeserializeObject<Graph>(File.ReadAllText(path), settings));
 				return;
 			}
 
@@ -165,22 +165,22 @@ namespace ORMMap.Model.Data
 				graph = new Graph();
 			}
 			
-			memoryRoadsCache.Add(lonLatZoom.ToString(), graph);
+			memoryRoadsCache.TryAdd(lonLatZoom.ToString(), graph);
 			// Save to disk
 			path = $"{pathToDataFolder}\\roads\\{lonLatZoom.EncodeToString()}{RoadFileExtension}";
 			File.WriteAllText(path, JsonConvert.SerializeObject(graph, settings));
 			// Add to disk cache
-			diskRoadCache.Add(lonLatZoom.ToString(), path);
+			diskRoadCache.TryAdd(lonLatZoom.ToString(), path);
 		}
 
 		private void CacheMapToMemory(string lonLatZoom, VectorTileObj data)
 		{
 			if (memoryMapCache.Count == Settings.memoryDataCacheOpacity)
 			{
-				memoryMapCache.Remove(memoryMapCache.Keys.First());
+				memoryMapCache.TryRemove(memoryMapCache.Keys.First(), out data);
 			}
 
-			memoryMapCache.Add(lonLatZoom, data);
+			memoryMapCache.TryAdd(lonLatZoom, data);
 		}
 	}
 }

@@ -131,8 +131,11 @@ namespace ORMMapViewer
 
 				foreach (Vector2<int> tile in tilesToRemove)
 				{
-					Dispatcher.Invoke(() => { tiles.Children.Remove(currentTiles[tile]); });
-					currentTiles.Remove(tile);
+					Dispatcher.Invoke(() =>
+					{
+						tiles.Children.Remove(currentTiles[tile]); 
+						currentTiles.Remove(tile);
+					});
 				}
 
 				foreach (Vector2<int> tile in tilesToAdd)
@@ -153,7 +156,7 @@ namespace ORMMapViewer
 					}
 					else
 					{
-						tasks.Add(ProcessMapTile(tileHash, tile.X, tile.Y, lonLatZoom));
+						tasks.Add(ProcessMapTile(tileHash, tile.X, tile.Y, lonLatZoom, TimeSpan.Zero));
 					}
 				}
 
@@ -164,10 +167,11 @@ namespace ORMMapViewer
 			});
 		}
 
-		private Task ProcessMapTile(string tileHash, int x, int y, Vector3<double> lonLatZoom)
+		private Task ProcessMapTile(string tileHash, int x, int y, Vector3<double> lonLatZoom, TimeSpan delay)
 		{
-			return Task.Run(() =>
+			return Task.Run(async delegate
 			{
+				await Task.Delay(delay);
 				try
 				{
 					MapTile mapTile = CacheMapTile(tileHash, CreateTile(x, y, lonLatZoom));
@@ -179,8 +183,10 @@ namespace ORMMapViewer
 				}
 				catch (WebException ex)
 				{
-					Console.WriteLine(ex.Message);
-				} // TODO: Try repeat exponential time
+					delay = delay == TimeSpan.Zero ? TimeSpan.FromSeconds(1) : TimeSpan.FromSeconds(delay.Seconds*2);
+					Console.WriteLine($"Can't download tile ({x}, {y}) data: {ex.Message}, retrying again in {delay.Seconds} seconds");
+					ProcessMapTile(tileHash, x, y, lonLatZoom, delay);
+				}
 				catch (Exception ex)
 				{
 					Console.WriteLine(ex);
@@ -234,39 +240,15 @@ namespace ORMMapViewer
 						MVTDrawer.DrawLayer(layer, drawingLayersPallete[layerName], graphics, 4096 / 128);
 					}
 				}
-
-				//if (graph != null)
-				//{
-				// LinkedList<Node> list = AStarPathSearch.FindPath(graph.nodes[423], graph.nodes[83]);
-				// if (list != null && list.Count > 1)
-				// {
-				// 	MVTDrawer.DrawGraphRoads(list, graphics);
-				// }
 				MVTDrawer.DrawLinks(graph.nodes, graphics, 32);
-				//MVTDrawer.DrawNodeIndices(graph.nodes, graphics, 32);
-				//MVTDrawer.DrawText(lonLatZoom.ToString(), new Vector2<int>(x, y), graphics, 32);
-				//if (graph.nodes.Count > 115)
-				//{
-				//	MVTDrawer.DrawNode(graph.nodes[115], graphics, 32);
-				//}
-				//}
 			}
 
-			//Vector2<int> shiftCoords = new Vector2<int>(x * 4096, y * 4096);
 			return Dispatcher.Invoke(() =>
 			{
 				Model3DGroup model3DGroup = new Model3DGroup();
 				model3DGroup.Children.Add(CreateTileModel(x, y, ImageUtils.GetImageStream(drawingObjects)));
 				return new MapTile(model3DGroup);
 			});
-
-			//foreach (string layerName in modelsLayersPallete.Keys)
-			//{
-			//	if (layers.Contains(layerName))
-			//	{
-			//		MVTModelCreator.CreateLayer(vectorTileObj.GetLayer(layerName), modelsLayersPallete[layerName], model3DGroup, shiftCoords);
-			//	}
-			//}
 		}
 
 		private MapTile CacheMapTile(string key, MapTile mapTile)
